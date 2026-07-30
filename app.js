@@ -1,0 +1,30 @@
+const express = require("express");
+const Test = require("./models/Test.model");
+const authRoutes = require("./routes/authRoutes");
+
+const app = express();
+
+app.use(express.json());
+
+// Auth Routes
+app.use("/api/auth", authRoutes);
+
+// Test API
+app.post("/test", async (req, res) => {
+  try {
+    const data = await Test.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: "Data Saved Successfully",
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+module.exports = app;
