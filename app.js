@@ -1,4 +1,5 @@
 const express = require("express");
+const addressRoutes = require("./routes/addressRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const Test = require("./models/Test.model");
 const authRoutes = require("./routes/authRoutes");
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/address", addressRoutes);
 // Auth Routes
 app.use("/api/auth", authRoutes);
 
