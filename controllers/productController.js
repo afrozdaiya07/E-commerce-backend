@@ -143,10 +143,78 @@ const deleteProduct = async (req, res) => {
     });
   }
 };
+// Search Products
+const searchProducts = async (req, res) => {
+  try {
+    const keyword = req.query.keyword || "";
 
+    const products = await Product.find({
+      name: {
+        $regex: keyword,
+        $options: "i",
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// Filter Products
+const filterProducts = async (req, res) => {
+  try {
+    const { category, brand, minPrice, maxPrice } = req.query;
+
+    let filter = {};
+
+    if (category) {
+      filter.category = category;
+    }
+
+    if (brand) {
+      filter.brand = brand;
+    }
+
+    if (minPrice || maxPrice) {
+      filter.price = {};
+
+      if (minPrice) {
+        filter.price.$gte = Number(minPrice);
+      }
+
+      if (maxPrice) {
+        filter.price.$lte = Number(maxPrice);
+      }
+    }
+
+    const products = await Product.find(filter);
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   addProduct,
   getProducts,
+  searchProducts,
+  filterProducts,
   getSingleProduct,
   updateProduct,
   deleteProduct,
