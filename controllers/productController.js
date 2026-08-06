@@ -1,9 +1,34 @@
 const Product = require("../models/Product");
+const cloudinary = require("../config/cloudinary");
 
 // Add Product
 const addProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    let imageUrl = "";
+
+    // Upload image to Cloudinary
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              folder: "ecommerce-products",
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          )
+          .end(req.file.buffer);
+      });
+
+      imageUrl = result.secure_url;
+    }
+
+    const product = await Product.create({
+      ...req.body,
+      image: imageUrl,
+    });
 
     res.status(201).json({
       success: true,
@@ -18,6 +43,7 @@ const addProduct = async (req, res) => {
     });
   }
 };
+
 // Get All Products
 const getProducts = async (req, res) => {
   try {
@@ -35,6 +61,7 @@ const getProducts = async (req, res) => {
     });
   }
 };
+
 // Get Single Product
 const getSingleProduct = async (req, res) => {
   try {
@@ -58,6 +85,7 @@ const getSingleProduct = async (req, res) => {
     });
   }
 };
+
 // Update Product
 const updateProduct = async (req, res) => {
   try {
@@ -90,6 +118,7 @@ const updateProduct = async (req, res) => {
     });
   }
 };
+
 // Delete Product
 const deleteProduct = async (req, res) => {
   try {
@@ -114,6 +143,7 @@ const deleteProduct = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   addProduct,
   getProducts,
