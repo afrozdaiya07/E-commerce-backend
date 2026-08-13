@@ -41,11 +41,15 @@ const getMyAddresses = async (req, res) => {
     });
   }
 };
+
 // Update Address
 const updateAddress = async (req, res) => {
   try {
-    const address = await Address.findByIdAndUpdate(
-      req.params.id,
+    const address = await Address.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user.id,
+      },
       req.body,
       {
         new: true,
@@ -76,7 +80,10 @@ const updateAddress = async (req, res) => {
 // Delete Address
 const deleteAddress = async (req, res) => {
   try {
-    const address = await Address.findByIdAndDelete(req.params.id);
+    const address = await Address.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
 
     if (!address) {
       return res.status(404).json({

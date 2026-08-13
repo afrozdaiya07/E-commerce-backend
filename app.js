@@ -1,4 +1,6 @@
 const express = require("express");
+const paymentRoutes = require("./routes/paymentRoutes");
+const couponRoutes = require("./routes/couponRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
@@ -19,6 +21,8 @@ app.use("/api/address", addressRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/coupons", couponRoutes);
+app.use("/api/payments", paymentRoutes);
 // Auth Routes
 app.use("/api/auth", authRoutes);
 

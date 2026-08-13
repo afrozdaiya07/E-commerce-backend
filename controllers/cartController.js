@@ -6,6 +6,14 @@ const addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
 
+    // Check quantity
+    if (!quantity || quantity < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Quantity must be at least 1",
+      });
+    }
+
     const product = await Product.findById(productId);
 
     if (!product) {
@@ -34,6 +42,8 @@ const addToCart = async (req, res) => {
     });
   }
 };
+
+
 // Get Cart
 const getCart = async (req, res) => {
   try {
@@ -45,6 +55,7 @@ const getCart = async (req, res) => {
       success: true,
       cart,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -52,14 +63,28 @@ const getCart = async (req, res) => {
     });
   }
 };
+
+
 // Update Cart Quantity
 const updateCart = async (req, res) => {
   try {
     const { quantity } = req.body;
 
-    const cartItem = await Cart.findByIdAndUpdate(
-      req.params.id,
-      { quantity },
+    if (!quantity || quantity < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Quantity must be at least 1",
+      });
+    }
+
+    const cartItem = await Cart.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user.id,
+      },
+      {
+        quantity,
+      },
       {
         new: true,
         runValidators: true,
@@ -86,10 +111,15 @@ const updateCart = async (req, res) => {
     });
   }
 };
+
+
 // Remove From Cart
 const removeFromCart = async (req, res) => {
   try {
-    const cartItem = await Cart.findByIdAndDelete(req.params.id);
+    const cartItem = await Cart.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
 
     if (!cartItem) {
       return res.status(404).json({
@@ -110,6 +140,8 @@ const removeFromCart = async (req, res) => {
     });
   }
 };
+
+
 module.exports = {
   addToCart,
   getCart,

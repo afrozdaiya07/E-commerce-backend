@@ -56,9 +56,13 @@ const getWishlist = async (req, res) => {
   }
 };
 // Remove From Wishlist
+// Remove From Wishlist
 const removeFromWishlist = async (req, res) => {
   try {
-    const wishlist = await Wishlist.findByIdAndDelete(req.params.id);
+    const wishlist = await Wishlist.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
 
     if (!wishlist) {
       return res.status(404).json({
@@ -78,7 +82,8 @@ const removeFromWishlist = async (req, res) => {
       message: error.message,
     });
   }
-};module.exports = {
+};
+module.exports = {
   addToWishlist,
   getWishlist,
   removeFromWishlist,
