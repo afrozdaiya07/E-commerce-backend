@@ -1,15 +1,76 @@
 const Order = require("../models/Order");
+const Product = require("../models/Product");
+const Cart = require("../models/Cart");
 
 // Place Order
 const placeOrder = async (req, res) => {
   try {
-    const { items, totalPrice } = req.body;
+    const { items } = req.body;
 
+    if (!items || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Order Items are Required",
+      });
+    }
+
+    let totalPrice = 0;
+    const validatedItems = [];
+
+    for (const item of items) {
+      const product = await Product.findById(item.product);
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product Not Found",
+        });
+      }
+
+      if (!item.quantity || item.quantity < 1) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Quantity",
+        });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient Stock for ${product.name}`,
+        });
+      }
+
+      totalPrice += product.price * item.quantity;
+
+      validatedItems.push({
+        product: product._id,
+        quantity: item.quantity,
+      });
+    }
+
+    // Create Order
     const order = await Order.create({
       user: req.user.id,
-      items,
+      items: validatedItems,
       totalPrice,
     });
+
+    // Reduce Product Stock
+    for (const item of validatedItems) {
+      await Product.findByIdAndUpdate(
+        item.product,
+        {
+          $inc: {
+            stock: -item.quantity,
+          },
+        }
+      );
+    }
+// Clear User Cart
+await Cart.deleteMany({
+  user: req.user.id,
+});
 
     res.status(201).json({
       success: true,
@@ -24,6 +85,7 @@ const placeOrder = async (req, res) => {
     });
   }
 };
+
 // Get My Orders
 const getMyOrders = async (req, res) => {
   try {
@@ -44,10 +106,25 @@ const getMyOrders = async (req, res) => {
     });
   }
 };
+
 // Update Order Status
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
+
+    const allowedStatuses = [
+      "Pending",
+      "Confirmed",
+      "Shipped",
+      "Delivered",
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Order Status",
+      });
+    }
 
     const order = await Order.findByIdAndUpdate(
       req.params.id,
@@ -78,6 +155,7 @@ const updateOrderStatus = async (req, res) => {
     });
   }
 };
+
 // Get All Orders (Admin)
 const getAllOrders = async (req, res) => {
   try {
@@ -98,6 +176,7 @@ const getAllOrders = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   placeOrder,
   getMyOrders,

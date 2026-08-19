@@ -46,9 +46,13 @@ const getProductReviews = async (req, res) => {
   }
 };
 // Delete Review
+// Delete Review
 const deleteReview = async (req, res) => {
   try {
-    const review = await Review.findByIdAndDelete(req.params.id);
+    const review = await Review.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
 
     if (!review) {
       return res.status(404).json({

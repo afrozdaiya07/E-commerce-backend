@@ -52,13 +52,26 @@ const getMyPayments = async (req, res) => {
     });
   }
 };
+
 // Update Payment Status
 const updatePaymentStatus = async (req, res) => {
   try {
     const { paymentStatus, transactionId } = req.body;
 
-    const payment = await Payment.findByIdAndUpdate(
-      req.params.id,
+    const allowedStatuses = ["PENDING", "PAID", "FAILED"];
+
+    if (!allowedStatuses.includes(paymentStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Payment Status",
+      });
+    }
+
+    const payment = await Payment.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user.id,
+      },
       {
         paymentStatus,
         transactionId,
