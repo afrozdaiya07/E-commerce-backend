@@ -2,11 +2,52 @@ const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
 // Add Product
+// Add Product
 const addProduct = async (req, res) => {
   try {
+    const {
+      name,
+      description,
+      price,
+      category,
+      brand,
+      stock,
+    } = req.body;
+
+    // Required fields
+    if (
+      !name ||
+      !description ||
+      price === undefined ||
+      !category ||
+      !brand ||
+      stock === undefined
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All product fields are required",
+      });
+    }
+
+    // Validate price
+    if (Number(price) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Price must be greater than 0",
+      });
+    }
+
+    // Validate stock
+    if (Number(stock) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Stock cannot be negative",
+      });
+    }
+
+    // Upload image
     let imageUrl = "";
 
-    // Upload image to Cloudinary
     if (req.file) {
       const result = await new Promise((resolve, reject) => {
         cloudinary.uploader
@@ -26,7 +67,12 @@ const addProduct = async (req, res) => {
     }
 
     const product = await Product.create({
-      ...req.body,
+      name,
+      description,
+      price: Number(price),
+      category,
+      brand,
+      stock: Number(stock),
       image: imageUrl,
     });
 
@@ -87,11 +133,46 @@ const getSingleProduct = async (req, res) => {
 };
 
 // Update Product
+// Update Product
 const updateProduct = async (req, res) => {
   try {
+    const {
+      name,
+      description,
+      price,
+      category,
+      brand,
+      stock,
+    } = req.body;
+
+    // Validate price
+    if (price !== undefined && Number(price) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Price must be greater than 0",
+      });
+    }
+
+    // Validate stock
+    if (stock !== undefined && Number(stock) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Stock cannot be negative",
+      });
+    }
+
+    const updateData = {};
+
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (price !== undefined) updateData.price = Number(price);
+    if (category !== undefined) updateData.category = category;
+    if (brand !== undefined) updateData.brand = brand;
+    if (stock !== undefined) updateData.stock = Number(stock);
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       {
         new: true,
         runValidators: true,
@@ -118,7 +199,6 @@ const updateProduct = async (req, res) => {
     });
   }
 };
-
 // Delete Product
 const deleteProduct = async (req, res) => {
   try {
@@ -168,12 +248,18 @@ const searchProducts = async (req, res) => {
     });
   }
 };
+
 // Filter Products
 const filterProducts = async (req, res) => {
   try {
-    const { category, brand, minPrice, maxPrice } = req.query;
+    const {
+      category,
+      brand,
+      minPrice,
+      maxPrice,
+    } = req.query;
 
-    let filter = {};
+    const filter = {};
 
     if (category) {
       filter.category = category;
@@ -183,16 +269,50 @@ const filterProducts = async (req, res) => {
       filter.brand = brand;
     }
 
-    if (minPrice || maxPrice) {
-      filter.price = {};
+    // Validate minPrice
+    if (minPrice !== undefined) {
+      const min = Number(minPrice);
 
-      if (minPrice) {
-        filter.price.$gte = Number(minPrice);
+      if (Number.isNaN(min) || min < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Minimum Price",
+        });
       }
 
-      if (maxPrice) {
-        filter.price.$lte = Number(maxPrice);
+      filter.price = {
+        ...filter.price,
+        $gte: min,
+      };
+    }
+
+    // Validate maxPrice
+    if (maxPrice !== undefined) {
+      const max = Number(maxPrice);
+
+      if (Number.isNaN(max) || max < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Maximum Price",
+        });
       }
+
+      filter.price = {
+        ...filter.price,
+        $lte: max,
+      };
+    }
+
+    // Check price range
+    if (
+      minPrice !== undefined &&
+      maxPrice !== undefined &&
+      Number(minPrice) > Number(maxPrice)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Minimum Price cannot be greater than Maximum Price",
+      });
     }
 
     const products = await Product.find(filter);
