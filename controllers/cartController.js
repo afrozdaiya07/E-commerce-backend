@@ -23,6 +23,42 @@ const addToCart = async (req, res) => {
       });
     }
 
+    // Check stock
+    if (product.stock < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${product.stock} items available in stock`,
+      });
+    }
+
+    // Check existing cart item
+    const existingCartItem = await Cart.findOne({
+      user: req.user.id,
+      product: productId,
+    });
+
+    if (existingCartItem) {
+      const newQuantity = existingCartItem.quantity + quantity;
+
+      // Check total quantity with stock
+      if (newQuantity > product.stock) {
+        return res.status(400).json({
+          success: false,
+          message: `Only ${product.stock} items available in stock`,
+        });
+      }
+
+      existingCartItem.quantity = newQuantity;
+      await existingCartItem.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Cart Quantity Updated",
+        cartItem: existingCartItem,
+      });
+    }
+
+    // Create new cart item
     const cartItem = await Cart.create({
       user: req.user.id,
       product: productId,
@@ -42,8 +78,6 @@ const addToCart = async (req, res) => {
     });
   }
 };
-
-
 // Get Cart
 const getCart = async (req, res) => {
   try {
@@ -66,10 +100,12 @@ const getCart = async (req, res) => {
 
 
 // Update Cart Quantity
+// Update Cart Quantity
 const updateCart = async (req, res) => {
   try {
     const { quantity } = req.body;
 
+    // Check quantity
     if (!quantity || quantity < 1) {
       return res.status(400).json({
         success: false,
@@ -77,19 +113,11 @@ const updateCart = async (req, res) => {
       });
     }
 
-    const cartItem = await Cart.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        user: req.user.id,
-      },
-      {
-        quantity,
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    // Find user's cart item
+    const cartItem = await Cart.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    }).populate("product");
 
     if (!cartItem) {
       return res.status(404).json({
@@ -97,6 +125,18 @@ const updateCart = async (req, res) => {
         message: "Cart Item Not Found",
       });
     }
+
+    // Check product stock
+    if (cartItem.product.stock < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${cartItem.product.stock} items available in stock`,
+      });
+    }
+
+    cartItem.quantity = quantity;
+
+    await cartItem.save();
 
     res.status(200).json({
       success: true,
@@ -111,8 +151,6 @@ const updateCart = async (req, res) => {
     });
   }
 };
-
-
 // Remove From Cart
 const removeFromCart = async (req, res) => {
   try {

@@ -223,10 +223,18 @@ const deleteProduct = async (req, res) => {
     });
   }
 };
+
 // Search Products
 const searchProducts = async (req, res) => {
   try {
-    const keyword = req.query.keyword || "";
+    const keyword = req.query.keyword?.trim();
+
+    if (!keyword) {
+      return res.status(400).json({
+        success: false,
+        message: "Search keyword is required",
+      });
+    }
 
     const products = await Product.find({
       name: {
