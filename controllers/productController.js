@@ -2,7 +2,6 @@ const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
 // Add Product
-// Add Product
 const addProduct = async (req, res) => {
   try {
     const {
@@ -90,16 +89,128 @@ const addProduct = async (req, res) => {
   }
 };
 
-// Get All Products
+
+// Get Products - Search + Filter + Pagination + Sorting
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const {
+      keyword,
+      category,
+      brand,
+      minPrice,
+      maxPrice,
+      page,
+      limit,
+      sort,
+    } = req.query;
+
+    const currentPage = Math.max(Number(page) || 1, 1);
+
+    const currentLimit = Math.min(
+      Math.max(Number(limit) || 10, 1),
+      100
+    );
+
+    const skip = (currentPage - 1) * currentLimit;
+
+    const filter = {};
+
+    // Search
+    if (keyword?.trim()) {
+      filter.name = {
+        $regex: keyword.trim(),
+        $options: "i",
+      };
+    }
+
+    // Category
+    if (category) {
+      filter.category = category;
+    }
+
+    // Brand
+    if (brand) {
+      filter.brand = brand;
+    }
+
+    // Minimum Price
+    if (minPrice !== undefined) {
+      const min = Number(minPrice);
+
+      if (Number.isNaN(min) || min < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Minimum Price",
+        });
+      }
+
+      filter.price = {
+        ...filter.price,
+        $gte: min,
+      };
+    }
+
+    // Maximum Price
+    if (maxPrice !== undefined) {
+      const max = Number(maxPrice);
+
+      if (Number.isNaN(max) || max < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Maximum Price",
+        });
+      }
+
+      filter.price = {
+        ...filter.price,
+        $lte: max,
+      };
+    }
+
+    // Check price range
+    if (
+      minPrice !== undefined &&
+      maxPrice !== undefined &&
+      Number(minPrice) > Number(maxPrice)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Minimum Price cannot be greater than Maximum Price",
+      });
+    }
+
+    // Sorting
+    let sortOption = {};
+
+    if (sort === "price_asc") {
+      sortOption.price = 1;
+    } else if (sort === "price_desc") {
+      sortOption.price = -1;
+    } else if (sort === "name_asc") {
+      sortOption.name = 1;
+    } else if (sort === "name_desc") {
+      sortOption.name = -1;
+    } else {
+      sortOption.createdAt = -1;
+    }
+
+    // Get Products
+    const products = await Product.find(filter)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(currentLimit);
+
+    const totalProducts = await Product.countDocuments(filter);
 
     res.status(200).json({
       success: true,
-      count: products.length,
+      page: currentPage,
+      limit: currentLimit,
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / currentLimit),
       products,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -107,6 +218,7 @@ const getProducts = async (req, res) => {
     });
   }
 };
+
 
 // Get Single Product
 const getSingleProduct = async (req, res) => {
@@ -124,6 +236,7 @@ const getSingleProduct = async (req, res) => {
       success: true,
       product,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -132,7 +245,7 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
-// Update Product
+
 // Update Product
 const updateProduct = async (req, res) => {
   try {
@@ -199,6 +312,8 @@ const updateProduct = async (req, res) => {
     });
   }
 };
+
+
 // Delete Product
 const deleteProduct = async (req, res) => {
   try {
@@ -223,6 +338,7 @@ const deleteProduct = async (req, res) => {
     });
   }
 };
+
 
 // Search Products
 const searchProducts = async (req, res) => {
@@ -256,6 +372,7 @@ const searchProducts = async (req, res) => {
     });
   }
 };
+
 
 // Filter Products
 const filterProducts = async (req, res) => {
@@ -338,6 +455,8 @@ const filterProducts = async (req, res) => {
     });
   }
 };
+
+
 module.exports = {
   addProduct,
   getProducts,

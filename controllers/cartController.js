@@ -72,12 +72,22 @@ const addToCart = async (req, res) => {
     });
 
   } catch (error) {
+    // Duplicate cart item
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Product Already In Cart",
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 // Get Cart
 const getCart = async (req, res) => {
   try {
@@ -99,7 +109,6 @@ const getCart = async (req, res) => {
 };
 
 
-// Update Cart Quantity
 // Update Cart Quantity
 const updateCart = async (req, res) => {
   try {
@@ -151,6 +160,8 @@ const updateCart = async (req, res) => {
     });
   }
 };
+
+
 // Remove From Cart
 const removeFromCart = async (req, res) => {
   try {

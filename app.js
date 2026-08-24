@@ -1,4 +1,6 @@
 const express = require("express");
+const errorMiddleware = require("./middleware/errorMiddleware");
+const notFoundMiddleware = require("./middleware/notFoundMiddleware");
 const paymentRoutes = require("./routes/paymentRoutes");
 const couponRoutes = require("./routes/couponRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
@@ -25,8 +27,12 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/users", userRoutes);
+
 // Auth Routes
 app.use("/api/auth", authRoutes);
+app.use(errorMiddleware);
+app.use(notFoundMiddleware);
+
 
 // Test API
 app.post("/test", async (req, res) => {
