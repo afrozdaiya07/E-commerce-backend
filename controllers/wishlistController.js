@@ -56,7 +56,6 @@ const getWishlist = async (req, res) => {
   }
 };
 // Remove From Wishlist
-// Remove From Wishlist
 const removeFromWishlist = async (req, res) => {
   try {
     const wishlist = await Wishlist.findOneAndDelete({

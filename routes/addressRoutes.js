@@ -7,11 +7,30 @@ const {
   updateAddress,
   deleteAddress,
 } = require("../controllers/addressController");
-const protect = require("../middleware/authMiddleware");
 
+const protect = require("../middleware/authMiddleware");
+const validateObjectId = require("../middleware/validateObjectId");
+
+// Add Address
 router.post("/", protect, addAddress);
+
+// Get My Addresses
 router.get("/", protect, getMyAddresses);
-router.put("/:id", protect, updateAddress);
-router.delete("/:id", protect, deleteAddress);
+
+// Update Address
+router.put(
+  "/:id",
+  protect,
+  validateObjectId("id"),
+  updateAddress
+);
+
+// Delete Address
+router.delete(
+  "/:id",
+  protect,
+  validateObjectId("id"),
+  deleteAddress
+);
 
 module.exports = router;

@@ -8,17 +8,33 @@ const {
   updateCoupon,
   deleteCoupon,
 } = require("../controllers/couponController");
+
 const protect = require("../middleware/authMiddleware");
 const admin = require("../middleware/adminMiddleware");
+const validateObjectId = require("../middleware/validateObjectId");
 
-// Admin: Create Coupon
+// Admin Routes
 router.post("/", protect, admin, createCoupon);
-router.post("/apply", protect, applyCoupon);
-router.put("/:id", protect, admin, updateCoupon);
 
-router.delete("/:id", protect, admin, deleteCoupon);
-
-// Admin: Get All Coupons
 router.get("/", protect, admin, getCoupons);
+
+router.put(
+  "/:id",
+  protect,
+  admin,
+  validateObjectId("id"),
+  updateCoupon
+);
+
+router.delete(
+  "/:id",
+  protect,
+  admin,
+  validateObjectId("id"),
+  deleteCoupon
+);
+
+// User Route
+router.post("/apply", protect, applyCoupon);
 
 module.exports = router;

@@ -12,7 +12,16 @@ const createCoupon = async (req, res) => {
       expiryDate,
     } = req.body;
 
-    const existingCoupon = await Coupon.findOne({ code });
+    if (!code || !discountType || discountValue === undefined || !expiryDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Required coupon fields are missing",
+      });
+    }
+
+    const existingCoupon = await Coupon.findOne({
+      code: code.toUpperCase().trim(),
+    });
 
     if (existingCoupon) {
       return res.status(400).json({
@@ -22,7 +31,7 @@ const createCoupon = async (req, res) => {
     }
 
     const coupon = await Coupon.create({
-      code,
+      code: code.toUpperCase().trim(),
       discountType,
       discountValue,
       minOrderAmount,
@@ -35,15 +44,20 @@ const createCoupon = async (req, res) => {
       message: "Coupon Created Successfully",
       coupon,
     });
-
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Coupon Already Exists",
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
-
 
 // Get All Coupons
 const getCoupons = async (req, res) => {
@@ -55,7 +69,6 @@ const getCoupons = async (req, res) => {
       count: coupons.length,
       coupons,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -63,13 +76,27 @@ const getCoupons = async (req, res) => {
     });
   }
 };
+
 // Apply Coupon
 const applyCoupon = async (req, res) => {
   try {
     const { code, orderAmount } = req.body;
 
+    // Validate input
+    if (
+      !code ||
+      orderAmount === undefined ||
+      orderAmount === null ||
+      orderAmount < 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid Coupon Code and Order Amount are required",
+      });
+    }
+
     const coupon = await Coupon.findOne({
-      code: code.toUpperCase(),
+      code: code.toUpperCase().trim(),
       isActive: true,
     });
 
@@ -128,7 +155,6 @@ const applyCoupon = async (req, res) => {
       discount,
       finalAmount,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -136,6 +162,7 @@ const applyCoupon = async (req, res) => {
     });
   }
 };
+
 // Update Coupon
 const updateCoupon = async (req, res) => {
   try {
@@ -160,7 +187,6 @@ const updateCoupon = async (req, res) => {
       message: "Coupon Updated Successfully",
       coupon,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -168,7 +194,6 @@ const updateCoupon = async (req, res) => {
     });
   }
 };
-
 
 // Delete Coupon
 const deleteCoupon = async (req, res) => {
@@ -186,7 +211,6 @@ const deleteCoupon = async (req, res) => {
       success: true,
       message: "Coupon Deleted Successfully",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -194,6 +218,7 @@ const deleteCoupon = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   createCoupon,
   getCoupons,

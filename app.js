@@ -30,9 +30,8 @@ app.use("/api/users", userRoutes);
 
 // Auth Routes
 app.use("/api/auth", authRoutes);
-app.use(errorMiddleware);
 app.use(notFoundMiddleware);
-
+app.use(errorMiddleware);
 
 // Test API
 app.post("/test", async (req, res) => {

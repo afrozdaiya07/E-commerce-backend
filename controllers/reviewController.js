@@ -46,7 +46,6 @@ const getProductReviews = async (req, res) => {
   }
 };
 // Delete Review
-// Delete Review
 const deleteReview = async (req, res) => {
   try {
     const review = await Review.findOneAndDelete({

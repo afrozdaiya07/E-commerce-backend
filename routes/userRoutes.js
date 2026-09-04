@@ -10,12 +10,16 @@ const {
 
 const protect = require("../middleware/authMiddleware");
 
-// Get My Profile
+// Get Profile
 router.get("/profile", protect, getMyProfile);
-router.put("/change-password", protect, changePassword);
-router.delete("/profile", protect, deleteMyAccount);
 
-// Update My Profile
+// Update Profile
 router.put("/profile", protect, updateMyProfile);
+
+// Change Password
+router.put("/change-password", protect, changePassword);
+
+// Delete Account
+router.delete("/profile", protect, deleteMyAccount);
 
 module.exports = router;
