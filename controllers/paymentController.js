@@ -6,6 +6,7 @@ const createPayment = async (req, res) => {
   try {
     const { orderId, paymentMethod } = req.body;
 
+    // Validate input
     if (!orderId || !paymentMethod) {
       return res.status(400).json({
         success: false,
@@ -13,6 +14,17 @@ const createPayment = async (req, res) => {
       });
     }
 
+    // Validate payment method
+    const allowedMethods = ["COD", "ONLINE"];
+
+    if (!allowedMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Payment Method",
+      });
+    }
+
+    // Find user's order
     const order = await Order.findOne({
       _id: orderId,
       user: req.user.id,
@@ -25,6 +37,7 @@ const createPayment = async (req, res) => {
       });
     }
 
+    // Cannot pay for cancelled order
     if (order.status === "Cancelled") {
       return res.status(400).json({
         success: false,
@@ -32,6 +45,7 @@ const createPayment = async (req, res) => {
       });
     }
 
+    // Check existing payment
     const existingPayment = await Payment.findOne({
       order: orderId,
       user: req.user.id,
@@ -44,6 +58,7 @@ const createPayment = async (req, res) => {
       });
     }
 
+    // Create payment
     const payment = await Payment.create({
       user: req.user.id,
       order: orderId,
@@ -57,7 +72,6 @@ const createPayment = async (req, res) => {
       message: "Payment Created Successfully",
       payment,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -72,14 +86,15 @@ const getMyPayments = async (req, res) => {
   try {
     const payments = await Payment.find({
       user: req.user.id,
-    }).populate("order");
+    })
+      .populate("order")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: payments.length,
       payments,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -87,6 +102,7 @@ const getMyPayments = async (req, res) => {
     });
   }
 };
+
 
 // Update Payment Status
 const updatePaymentStatus = async (req, res) => {
@@ -95,6 +111,7 @@ const updatePaymentStatus = async (req, res) => {
 
     const allowedStatuses = ["PENDING", "PAID", "FAILED"];
 
+    // Validate payment status
     if (!allowedStatuses.includes(paymentStatus)) {
       return res.status(400).json({
         success: false,
@@ -102,20 +119,11 @@ const updatePaymentStatus = async (req, res) => {
       });
     }
 
-    const payment = await Payment.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        user: req.user.id,
-      },
-      {
-        paymentStatus,
-        transactionId,
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    // Find user's payment
+    const payment = await Payment.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
 
     if (!payment) {
       return res.status(404).json({
@@ -124,12 +132,48 @@ const updatePaymentStatus = async (req, res) => {
       });
     }
 
+    // Prevent changing already paid payment
+    if (payment.paymentStatus === "PAID") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment Already Completed",
+      });
+    }
+
+    // Update payment
+    payment.paymentStatus = paymentStatus;
+
+    if (transactionId) {
+      payment.transactionId = transactionId;
+    }
+
+    await payment.save();
+
+    // Get related order
+    const order = await Order.findOne({
+      _id: payment.order,
+      user: req.user.id,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Related Order Not Found",
+      });
+    }
+
+    // Update order status
+    if (paymentStatus === "PAID") {
+      order.status = "Confirmed";
+      await order.save();
+    }
+
     res.status(200).json({
       success: true,
       message: "Payment Status Updated Successfully",
       payment,
+      order,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -137,6 +181,8 @@ const updatePaymentStatus = async (req, res) => {
     });
   }
 };
+
+
 module.exports = {
   createPayment,
   getMyPayments,

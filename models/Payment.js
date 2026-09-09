@@ -17,6 +17,7 @@ const paymentSchema = new mongoose.Schema(
     amount: {
       type: Number,
       required: true,
+      min: 0,
     },
 
     paymentMethod: {
@@ -34,11 +35,18 @@ const paymentSchema = new mongoose.Schema(
     transactionId: {
       type: String,
       default: null,
+      trim: true,
     },
   },
   {
     timestamps: true,
   }
+);
+
+// One payment per order
+paymentSchema.index(
+  { order: 1 },
+  { unique: true }
 );
 
 module.exports = mongoose.model("Payment", paymentSchema);

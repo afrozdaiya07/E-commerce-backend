@@ -3,13 +3,13 @@ const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 const Coupon = require("../models/Coupon");
 
-
 // Place Order
 const placeOrder = async (req, res) => {
   try {
     const { items, couponCode } = req.body;
 
-    if (!items || items.length === 0) {
+    // Validate order items
+    if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         success: false,
         message: "Order Items are Required",
@@ -21,6 +21,13 @@ const placeOrder = async (req, res) => {
 
     // Validate Products + Calculate Total
     for (const item of items) {
+      if (!item.product || !item.quantity || item.quantity < 1) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Product or Quantity",
+        });
+      }
+
       const product = await Product.findById(item.product);
 
       if (!product) {
@@ -30,13 +37,7 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      if (!item.quantity || item.quantity < 1) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid Quantity",
-        });
-      }
-
+      // Check stock
       if (product.stock < item.quantity) {
         return res.status(400).json({
           success: false,
@@ -59,7 +60,7 @@ const placeOrder = async (req, res) => {
 
     if (couponCode) {
       const coupon = await Coupon.findOne({
-        code: couponCode.toUpperCase(),
+        code: couponCode.toUpperCase().trim(),
         isActive: true,
       });
 
@@ -70,6 +71,7 @@ const placeOrder = async (req, res) => {
         });
       }
 
+      // Check expiry
       if (new Date() > coupon.expiryDate) {
         return res.status(400).json({
           success: false,
@@ -77,6 +79,7 @@ const placeOrder = async (req, res) => {
         });
       }
 
+      // Check minimum order amount
       if (totalPrice < coupon.minOrderAmount) {
         return res.status(400).json({
           success: false,
@@ -84,6 +87,7 @@ const placeOrder = async (req, res) => {
         });
       }
 
+      // Percentage discount
       if (coupon.discountType === "percentage") {
         discount = (totalPrice * coupon.discountValue) / 100;
 
@@ -95,6 +99,7 @@ const placeOrder = async (req, res) => {
         }
       }
 
+      // Fixed discount
       if (coupon.discountType === "fixed") {
         discount = coupon.discountValue;
 
@@ -119,14 +124,27 @@ const placeOrder = async (req, res) => {
 
     // Reduce Product Stock
     for (const item of validatedItems) {
-      await Product.findByIdAndUpdate(
-        item.product,
+      const updatedProduct = await Product.findOneAndUpdate(
+        {
+          _id: item.product,
+          stock: { $gte: item.quantity },
+        },
         {
           $inc: {
             stock: -item.quantity,
           },
+        },
+        {
+          new: true,
         }
       );
+
+      if (!updatedProduct) {
+        return res.status(400).json({
+          success: false,
+          message: "Stock changed while placing order. Please try again.",
+        });
+      }
     }
 
     // Clear User Cart
@@ -139,7 +157,6 @@ const placeOrder = async (req, res) => {
       message: "Order Placed Successfully",
       order,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -147,19 +164,21 @@ const placeOrder = async (req, res) => {
     });
   }
 };
+
 // Get My Orders
 const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({
       user: req.user.id,
-    }).populate("items.product");
+    })
+      .populate("items.product")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: orders.length,
       orders,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -208,7 +227,6 @@ const updateOrderStatus = async (req, res) => {
       message: "Order Status Updated Successfully",
       order,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -222,14 +240,14 @@ const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("user", "name email")
-      .populate("items.product");
+      .populate("items.product")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: orders.length,
       orders,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -237,6 +255,7 @@ const getAllOrders = async (req, res) => {
     });
   }
 };
+
 // Cancel My Order
 const cancelOrder = async (req, res) => {
   try {
@@ -286,7 +305,6 @@ const cancelOrder = async (req, res) => {
       message: "Order Cancelled Successfully",
       order,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,

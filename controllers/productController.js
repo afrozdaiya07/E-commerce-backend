@@ -28,8 +28,11 @@ const addProduct = async (req, res) => {
       });
     }
 
+    const productPrice = Number(price);
+    const productStock = Number(stock);
+
     // Validate price
-    if (Number(price) <= 0) {
+    if (Number.isNaN(productPrice) || productPrice <= 0) {
       return res.status(400).json({
         success: false,
         message: "Price must be greater than 0",
@@ -37,7 +40,7 @@ const addProduct = async (req, res) => {
     }
 
     // Validate stock
-    if (Number(stock) < 0) {
+    if (Number.isNaN(productStock) || productStock < 0) {
       return res.status(400).json({
         success: false,
         message: "Stock cannot be negative",
@@ -66,12 +69,12 @@ const addProduct = async (req, res) => {
     }
 
     const product = await Product.create({
-      name,
-      description,
-      price: Number(price),
-      category,
-      brand,
-      stock: Number(stock),
+      name: name.trim(),
+      description: description.trim(),
+      price: productPrice,
+      category: category.trim(),
+      brand: brand.trim(),
+      stock: productStock,
       image: imageUrl,
     });
 
@@ -80,7 +83,6 @@ const addProduct = async (req, res) => {
       message: "Product Added Successfully",
       product,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -124,13 +126,13 @@ const getProducts = async (req, res) => {
     }
 
     // Category
-    if (category) {
-      filter.category = category;
+    if (category?.trim()) {
+      filter.category = category.trim();
     }
 
     // Brand
-    if (brand) {
-      filter.brand = brand;
+    if (brand?.trim()) {
+      filter.brand = brand.trim();
     }
 
     // Minimum Price
@@ -194,7 +196,6 @@ const getProducts = async (req, res) => {
       sortOption.createdAt = -1;
     }
 
-    // Get Products
     const products = await Product.find(filter)
       .sort(sortOption)
       .skip(skip)
@@ -210,7 +211,6 @@ const getProducts = async (req, res) => {
       totalPages: Math.ceil(totalProducts / currentLimit),
       products,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -236,7 +236,6 @@ const getSingleProduct = async (req, res) => {
       success: true,
       product,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -258,30 +257,71 @@ const updateProduct = async (req, res) => {
       stock,
     } = req.body;
 
-    // Validate price
-    if (price !== undefined && Number(price) <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Price must be greater than 0",
-      });
-    }
-
-    // Validate stock
-    if (stock !== undefined && Number(stock) < 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Stock cannot be negative",
-      });
-    }
-
     const updateData = {};
 
-    if (name !== undefined) updateData.name = name;
-    if (description !== undefined) updateData.description = description;
-    if (price !== undefined) updateData.price = Number(price);
-    if (category !== undefined) updateData.category = category;
-    if (brand !== undefined) updateData.brand = brand;
-    if (stock !== undefined) updateData.stock = Number(stock);
+    if (name !== undefined) {
+      if (!name.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Product name cannot be empty",
+        });
+      }
+
+      updateData.name = name.trim();
+    }
+
+    if (description !== undefined) {
+      if (!description.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Product description cannot be empty",
+        });
+      }
+
+      updateData.description = description.trim();
+    }
+
+    if (price !== undefined) {
+      const productPrice = Number(price);
+
+      if (Number.isNaN(productPrice) || productPrice <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Price must be greater than 0",
+        });
+      }
+
+      updateData.price = productPrice;
+    }
+
+    if (category !== undefined) {
+      updateData.category = category.trim();
+    }
+
+    if (brand !== undefined) {
+      updateData.brand = brand.trim();
+    }
+
+    if (stock !== undefined) {
+      const productStock = Number(stock);
+
+      if (Number.isNaN(productStock) || productStock < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Stock cannot be negative",
+        });
+      }
+
+      updateData.stock = productStock;
+    }
+
+    // Check if any field is provided
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No Product Data Provided",
+      });
+    }
 
     const product = await Product.findByIdAndUpdate(
       req.params.id,
@@ -304,7 +344,6 @@ const updateProduct = async (req, res) => {
       message: "Product Updated Successfully",
       product,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -330,7 +369,6 @@ const deleteProduct = async (req, res) => {
       success: true,
       message: "Product Deleted Successfully",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -364,7 +402,6 @@ const searchProducts = async (req, res) => {
       count: products.length,
       products,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -386,15 +423,14 @@ const filterProducts = async (req, res) => {
 
     const filter = {};
 
-    if (category) {
-      filter.category = category;
+    if (category?.trim()) {
+      filter.category = category.trim();
     }
 
-    if (brand) {
-      filter.brand = brand;
+    if (brand?.trim()) {
+      filter.brand = brand.trim();
     }
 
-    // Validate minPrice
     if (minPrice !== undefined) {
       const min = Number(minPrice);
 
@@ -411,7 +447,6 @@ const filterProducts = async (req, res) => {
       };
     }
 
-    // Validate maxPrice
     if (maxPrice !== undefined) {
       const max = Number(maxPrice);
 
@@ -428,7 +463,6 @@ const filterProducts = async (req, res) => {
       };
     }
 
-    // Check price range
     if (
       minPrice !== undefined &&
       maxPrice !== undefined &&
@@ -447,7 +481,6 @@ const filterProducts = async (req, res) => {
       count: products.length,
       products,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,

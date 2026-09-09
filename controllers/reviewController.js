@@ -5,11 +5,40 @@ const addReview = async (req, res) => {
   try {
     const { productId, rating, comment } = req.body;
 
+    // Validate input
+    if (!productId || !rating || !comment) {
+      return res.status(400).json({
+        success: false,
+        message: "Product, Rating and Comment are required",
+      });
+    }
+
+    // Validate rating
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating must be between 1 and 5",
+      });
+    }
+
+    // Check duplicate review
+    const existingReview = await Review.findOne({
+      user: req.user.id,
+      product: productId,
+    });
+
+    if (existingReview) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already reviewed this product",
+      });
+    }
+
     const review = await Review.create({
       user: req.user.id,
       product: productId,
       rating,
-      comment,
+      comment: comment.trim(),
     });
 
     res.status(201).json({
@@ -19,12 +48,22 @@ const addReview = async (req, res) => {
     });
 
   } catch (error) {
+    // Duplicate index error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already reviewed this product",
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 // Get Product Reviews
 const getProductReviews = async (req, res) => {
   try {
@@ -45,6 +84,8 @@ const getProductReviews = async (req, res) => {
     });
   }
 };
+
+
 // Delete Review
 const deleteReview = async (req, res) => {
   try {
@@ -72,6 +113,8 @@ const deleteReview = async (req, res) => {
     });
   }
 };
+
+
 // Get Average Rating
 const getAverageRating = async (req, res) => {
   try {
@@ -96,7 +139,7 @@ const getAverageRating = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      averageRating: averageRating.toFixed(1),
+      averageRating: Number(averageRating.toFixed(1)),
       totalReviews: reviews.length,
     });
 
@@ -107,6 +150,8 @@ const getAverageRating = async (req, res) => {
     });
   }
 };
+
+
 module.exports = {
   addReview,
   getProductReviews,

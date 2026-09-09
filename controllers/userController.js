@@ -5,6 +5,7 @@ const Wishlist = require("../models/Wishlist");
 const Address = require("../models/Address");
 const Review = require("../models/Review");
 const Order = require("../models/Order");
+
 // Get My Profile
 const getMyProfile = async (req, res) => {
   try {
@@ -21,7 +22,6 @@ const getMyProfile = async (req, res) => {
       success: true,
       user,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -29,6 +29,7 @@ const getMyProfile = async (req, res) => {
     });
   }
 };
+
 
 // Update My Profile
 const updateMyProfile = async (req, res) => {
@@ -45,11 +46,11 @@ const updateMyProfile = async (req, res) => {
     }
 
     if (name) {
-      user.name = name;
+      user.name = name.trim();
     }
 
     if (email) {
-      user.email = email;
+      user.email = email.toLowerCase().trim();
     }
 
     await user.save();
@@ -64,14 +65,22 @@ const updateMyProfile = async (req, res) => {
         role: user.role,
       },
     });
-
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Email Already Exists",
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 // Change Password
 const changePassword = async (req, res) => {
   try {
@@ -120,7 +129,6 @@ const changePassword = async (req, res) => {
       success: true,
       message: "Password Changed Successfully",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -128,6 +136,7 @@ const changePassword = async (req, res) => {
     });
   }
 };
+
 
 // Delete My Account
 const deleteMyAccount = async (req, res) => {
@@ -157,7 +166,6 @@ const deleteMyAccount = async (req, res) => {
       success: true,
       message: "Account and Related Data Deleted Successfully",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -165,6 +173,8 @@ const deleteMyAccount = async (req, res) => {
     });
   }
 };
+
+
 module.exports = {
   getMyProfile,
   updateMyProfile,
