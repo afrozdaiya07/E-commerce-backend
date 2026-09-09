@@ -1,6 +1,9 @@
 const express = require("express");
+const cors = require("cors");
+
 const errorMiddleware = require("./middleware/errorMiddleware");
 const notFoundMiddleware = require("./middleware/notFoundMiddleware");
+
 const paymentRoutes = require("./routes/paymentRoutes");
 const couponRoutes = require("./routes/couponRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
@@ -17,6 +20,9 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 
 app.use(express.json());
+app.use(cors());
+
+// Routes
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
@@ -27,11 +33,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/users", userRoutes);
-
-// Auth Routes
 app.use("/api/auth", authRoutes);
-app.use(notFoundMiddleware);
-app.use(errorMiddleware);
 
 // Test API
 app.post("/test", async (req, res) => {
@@ -50,5 +52,9 @@ app.post("/test", async (req, res) => {
     });
   }
 });
+
+// Error handling — always last
+app.use(notFoundMiddleware);
+app.use(errorMiddleware);
 
 module.exports = app;
