@@ -19,8 +19,15 @@ const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
+// Middleware
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-app.use(cors());
 
 // Routes
 app.use("/api/products", productRoutes);
@@ -53,7 +60,7 @@ app.post("/test", async (req, res) => {
   }
 });
 
-// Error handling — always last
+// Error handling
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
