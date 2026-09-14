@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -16,13 +17,15 @@ function Products() {
         "http://localhost:5000/api/products",
         {
           params: {
-            keyword: search || undefined,
+            keyword: search.trim() || undefined,
           },
         }
       );
 
-      setProducts(response.data.products);
+      setProducts(response.data.products || []);
     } catch (error) {
+      console.error("PRODUCT ERROR:", error);
+
       setError(
         error.response?.data?.message ||
           "Failed to fetch products"
@@ -87,11 +90,13 @@ function Products() {
                 <p>Brand: {product.brand}</p>
                 <p>Stock: {product.stock}</p>
 
-                <button>
-                  View Details
-                </button>
+                <Link to={`/products/${product._id}`}>
+                  <button type="button">
+                    View Details
+                  </button>
+                </Link>
 
-                <button>
+                <button type="button">
                   Add To Cart
                 </button>
 

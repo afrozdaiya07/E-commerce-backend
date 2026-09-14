@@ -8,6 +8,13 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Delivery Address
+    address: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+      required: true,
+    },
+
     items: [
       {
         product: {
@@ -19,6 +26,7 @@ const orderSchema = new mongoose.Schema(
         quantity: {
           type: Number,
           required: true,
+          min: 1,
         },
       },
     ],
@@ -26,34 +34,38 @@ const orderSchema = new mongoose.Schema(
     totalPrice: {
       type: Number,
       required: true,
+      min: 0,
     },
+
     couponCode: {
-  type: String,
-  default: null,
-},
+      type: String,
+      default: null,
+      trim: true,
+    },
 
-discount: {
-  type: Number,
-  default: 0,
-},
+    discount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
 
-finalAmount: {
-  type: Number,
-  required: true,
-},
+    finalAmount: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
 
     status: {
-  type: String,
-  enum: [
-    "Pending",
-    "Confirmed",
-    "Shipped",
-    "Delivered",
-    "Cancelled",
-  ],
-
-  default: "Pending",
-},
+      type: String,
+      enum: [
+        "Pending",
+        "Confirmed",
+        "Shipped",
+        "Delivered",
+        "Cancelled",
+      ],
+      default: "Pending",
+    },
   },
   {
     timestamps: true,

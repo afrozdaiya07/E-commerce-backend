@@ -2,17 +2,39 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 const Coupon = require("../models/Coupon");
+const Address = require("../models/Address");
 
 // Place Order
 const placeOrder = async (req, res) => {
   try {
-    const { items, couponCode } = req.body;
+    const { items, couponCode, addressId } = req.body;
 
     // Validate order items
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         success: false,
         message: "Order Items are Required",
+      });
+    }
+
+    // Validate address
+    if (!addressId) {
+      return res.status(400).json({
+        success: false,
+        message: "Address is Required",
+      });
+    }
+
+    // Check user's address
+    const address = await Address.findOne({
+      _id: addressId,
+      user: req.user.id,
+    });
+
+    if (!address) {
+      return res.status(404).json({
+        success: false,
+        message: "Address Not Found",
       });
     }
 
@@ -115,6 +137,7 @@ const placeOrder = async (req, res) => {
     // Create Order
     const order = await Order.create({
       user: req.user.id,
+      address: address._id,
       items: validatedItems,
       totalPrice,
       couponCode: appliedCouponCode,
@@ -142,7 +165,8 @@ const placeOrder = async (req, res) => {
       if (!updatedProduct) {
         return res.status(400).json({
           success: false,
-          message: "Stock changed while placing order. Please try again.",
+          message:
+            "Stock changed while placing order. Please try again.",
         });
       }
     }
@@ -165,12 +189,14 @@ const placeOrder = async (req, res) => {
   }
 };
 
+
 // Get My Orders
 const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({
       user: req.user.id,
     })
+      .populate("address")
       .populate("items.product")
       .sort({ createdAt: -1 });
 
@@ -186,6 +212,7 @@ const getMyOrders = async (req, res) => {
     });
   }
 };
+
 
 // Update Order Status
 const updateOrderStatus = async (req, res) => {
@@ -235,11 +262,13 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+
 // Get All Orders (Admin)
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("user", "name email")
+      .populate("address")
       .populate("items.product")
       .sort({ createdAt: -1 });
 
@@ -255,6 +284,7 @@ const getAllOrders = async (req, res) => {
     });
   }
 };
+
 
 // Cancel My Order
 const cancelOrder = async (req, res) => {
@@ -312,6 +342,7 @@ const cancelOrder = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   placeOrder,
