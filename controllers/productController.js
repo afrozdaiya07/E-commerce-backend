@@ -11,6 +11,7 @@ const addProduct = async (req, res) => {
       category,
       brand,
       stock,
+      image,
     } = req.body;
 
     // Required fields
@@ -32,7 +33,10 @@ const addProduct = async (req, res) => {
     const productStock = Number(stock);
 
     // Validate price
-    if (Number.isNaN(productPrice) || productPrice <= 0) {
+    if (
+      Number.isNaN(productPrice) ||
+      productPrice <= 0
+    ) {
       return res.status(400).json({
         success: false,
         message: "Price must be greater than 0",
@@ -40,34 +44,47 @@ const addProduct = async (req, res) => {
     }
 
     // Validate stock
-    if (Number.isNaN(productStock) || productStock < 0) {
+    if (
+      Number.isNaN(productStock) ||
+      productStock < 0
+    ) {
       return res.status(400).json({
         success: false,
         message: "Stock cannot be negative",
       });
     }
 
-    // Upload image
-    let imageUrl = "";
+    // Image URL from frontend
+    let imageUrl =
+      typeof image === "string"
+        ? image.trim()
+        : "";
 
+    // Optional: direct file upload
     if (req.file) {
-      const result = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream(
-            {
-              folder: "ecommerce-products",
-            },
-            (error, result) => {
-              if (error) return reject(error);
-              resolve(result);
-            }
-          )
-          .end(req.file.buffer);
-      });
+      const result = await new Promise(
+        (resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream(
+              {
+                folder: "ecommerce-products",
+              },
+              (error, result) => {
+                if (error) {
+                  return reject(error);
+                }
+
+                resolve(result);
+              }
+            )
+            .end(req.file.buffer);
+        }
+      );
 
       imageUrl = result.secure_url;
     }
 
+    // Create Product
     const product = await Product.create({
       name: name.trim(),
       description: description.trim(),
@@ -84,6 +101,11 @@ const addProduct = async (req, res) => {
       product,
     });
   } catch (error) {
+    console.error(
+      "ADD PRODUCT ERROR:",
+      error
+    );
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -106,14 +128,18 @@ const getProducts = async (req, res) => {
       sort,
     } = req.query;
 
-    const currentPage = Math.max(Number(page) || 1, 1);
+    const currentPage = Math.max(
+      Number(page) || 1,
+      1
+    );
 
     const currentLimit = Math.min(
       Math.max(Number(limit) || 10, 1),
       100
     );
 
-    const skip = (currentPage - 1) * currentLimit;
+    const skip =
+      (currentPage - 1) * currentLimit;
 
     const filter = {};
 
@@ -177,7 +203,8 @@ const getProducts = async (req, res) => {
     ) {
       return res.status(400).json({
         success: false,
-        message: "Minimum Price cannot be greater than Maximum Price",
+        message:
+          "Minimum Price cannot be greater than Maximum Price",
       });
     }
 
@@ -201,14 +228,17 @@ const getProducts = async (req, res) => {
       .skip(skip)
       .limit(currentLimit);
 
-    const totalProducts = await Product.countDocuments(filter);
+    const totalProducts =
+      await Product.countDocuments(filter);
 
     res.status(200).json({
       success: true,
       page: currentPage,
       limit: currentLimit,
       totalProducts,
-      totalPages: Math.ceil(totalProducts / currentLimit),
+      totalPages: Math.ceil(
+        totalProducts / currentLimit
+      ),
       products,
     });
   } catch (error) {
@@ -223,7 +253,9 @@ const getProducts = async (req, res) => {
 // Get Single Product
 const getSingleProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(
+      req.params.id
+    );
 
     if (!product) {
       return res.status(404).json({
@@ -255,6 +287,7 @@ const updateProduct = async (req, res) => {
       category,
       brand,
       stock,
+      image,
     } = req.body;
 
     const updateData = {};
@@ -274,17 +307,22 @@ const updateProduct = async (req, res) => {
       if (!description.trim()) {
         return res.status(400).json({
           success: false,
-          message: "Product description cannot be empty",
+          message:
+            "Product description cannot be empty",
         });
       }
 
-      updateData.description = description.trim();
+      updateData.description =
+        description.trim();
     }
 
     if (price !== undefined) {
       const productPrice = Number(price);
 
-      if (Number.isNaN(productPrice) || productPrice <= 0) {
+      if (
+        Number.isNaN(productPrice) ||
+        productPrice <= 0
+      ) {
         return res.status(400).json({
           success: false,
           message: "Price must be greater than 0",
@@ -305,7 +343,10 @@ const updateProduct = async (req, res) => {
     if (stock !== undefined) {
       const productStock = Number(stock);
 
-      if (Number.isNaN(productStock) || productStock < 0) {
+      if (
+        Number.isNaN(productStock) ||
+        productStock < 0
+      ) {
         return res.status(400).json({
           success: false,
           message: "Stock cannot be negative",
@@ -315,22 +356,33 @@ const updateProduct = async (req, res) => {
       updateData.stock = productStock;
     }
 
+    // Update Image URL
+    if (image !== undefined) {
+      updateData.image =
+        typeof image === "string"
+          ? image.trim()
+          : "";
+    }
+
     // Check if any field is provided
-    if (Object.keys(updateData).length === 0) {
+    if (
+      Object.keys(updateData).length === 0
+    ) {
       return res.status(400).json({
         success: false,
         message: "No Product Data Provided",
       });
     }
 
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const product =
+      await Product.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
 
     if (!product) {
       return res.status(404).json({
@@ -341,7 +393,8 @@ const updateProduct = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Product Updated Successfully",
+      message:
+        "Product Updated Successfully",
       product,
     });
   } catch (error) {
@@ -356,7 +409,10 @@ const updateProduct = async (req, res) => {
 // Delete Product
 const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product =
+      await Product.findByIdAndDelete(
+        req.params.id
+      );
 
     if (!product) {
       return res.status(404).json({
@@ -367,7 +423,8 @@ const deleteProduct = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Product Deleted Successfully",
+      message:
+        "Product Deleted Successfully",
     });
   } catch (error) {
     res.status(500).json({
@@ -381,7 +438,8 @@ const deleteProduct = async (req, res) => {
 // Search Products
 const searchProducts = async (req, res) => {
   try {
-    const keyword = req.query.keyword?.trim();
+    const keyword =
+      req.query.keyword?.trim();
 
     if (!keyword) {
       return res.status(400).json({
@@ -470,11 +528,13 @@ const filterProducts = async (req, res) => {
     ) {
       return res.status(400).json({
         success: false,
-        message: "Minimum Price cannot be greater than Maximum Price",
+        message:
+          "Minimum Price cannot be greater than Maximum Price",
       });
     }
 
-    const products = await Product.find(filter);
+    const products =
+      await Product.find(filter);
 
     res.status(200).json({
       success: true,

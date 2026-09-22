@@ -14,11 +14,25 @@ const protect = require("../middleware/authMiddleware");
 const admin = require("../middleware/adminMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 
-// User Routes
-router.post("/", protect, placeOrder);
+// ======================================
+// USER ROUTES
+// ======================================
 
-router.get("/", protect, getMyOrders);
+// Place Order
+router.post(
+  "/",
+  protect,
+  placeOrder
+);
 
+// Get My Orders
+router.get(
+  "/",
+  protect,
+  getMyOrders
+);
+
+// Cancel My Order
 router.put(
   "/:id/cancel",
   protect,
@@ -26,7 +40,11 @@ router.put(
   cancelOrder
 );
 
-// Admin Routes
+// ======================================
+// ADMIN ROUTES
+// ======================================
+
+// Get All Orders
 router.get(
   "/all",
   protect,
@@ -34,6 +52,7 @@ router.get(
   getAllOrders
 );
 
+// Update Order Status
 router.put(
   "/:id",
   protect,

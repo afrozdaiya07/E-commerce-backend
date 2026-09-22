@@ -176,6 +176,10 @@ const placeOrder = async (req, res) => {
       user: req.user.id,
     });
 
+    // Populate order details
+    await order.populate("address");
+    await order.populate("items.product");
+
     res.status(201).json({
       success: true,
       message: "Order Placed Successfully",
@@ -240,7 +244,9 @@ const updateOrderStatus = async (req, res) => {
         new: true,
         runValidators: true,
       }
-    );
+    )
+      .populate("address")
+      .populate("items.product");
 
     if (!order) {
       return res.status(404).json({
@@ -301,6 +307,7 @@ const cancelOrder = async (req, res) => {
       });
     }
 
+    // Cannot cancel shipped or delivered order
     if (["Shipped", "Delivered"].includes(order.status)) {
       return res.status(400).json({
         success: false,
@@ -308,6 +315,7 @@ const cancelOrder = async (req, res) => {
       });
     }
 
+    // Already cancelled
     if (order.status === "Cancelled") {
       return res.status(400).json({
         success: false,
@@ -317,18 +325,21 @@ const cancelOrder = async (req, res) => {
 
     // Restore Product Stock
     for (const item of order.items) {
-      await Product.findByIdAndUpdate(
-        item.product,
-        {
-          $inc: {
-            stock: item.quantity,
-          },
-        }
-      );
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: {
+          stock: item.quantity,
+        },
+      });
     }
 
+    // Update Order Status
     order.status = "Cancelled";
+
     await order.save();
+
+    // Populate address and product details
+    await order.populate("address");
+    await order.populate("items.product");
 
     res.status(200).json({
       success: true,

@@ -1,41 +1,56 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import "./Cart.css";
 
 function Cart() {
-  const [cart, setCart] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-
   const navigate = useNavigate();
+
+  const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [updatingId, setUpdatingId] = useState(null);
+  const [removingId, setRemovingId] = useState(null);
+
+  const [error, setError] = useState("");
+
+  const token = localStorage.getItem("token");
+
+  const getHeaders = () => ({
+    Authorization: `Bearer ${token}`,
+  });
+
+  // ==========================
+  // Fetch Cart
+  // ==========================
 
   const fetchCart = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const token = localStorage.getItem("token");
-
       if (!token) {
-        setError("Please Login First");
+        navigate("/login");
         return;
       }
 
       const response = await axios.get(
         "http://localhost:5000/api/cart",
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: getHeaders(),
         }
       );
 
-      setCart(response.data.cart || []);
+      setCart(response.data.cart);
     } catch (error) {
+      console.log(
+        "Cart Error:",
+        error.response?.data || error.message
+      );
+
       setError(
         error.response?.data?.message ||
-          "Failed to fetch cart"
+          "Failed to load cart"
       );
     } finally {
       setLoading(false);
@@ -46,64 +61,57 @@ function Cart() {
     fetchCart();
   }, []);
 
+  // ==========================
   // Update Quantity
-  const updateQuantity = async (cartId, quantity) => {
+  // ==========================
+
+  const handleQuantityChange = async (
+    productId,
+    newQuantity
+  ) => {
+    if (newQuantity < 1) {
+      return;
+    }
+
     try {
-      setMessage("");
+      setUpdatingId(productId);
       setError("");
 
-      if (quantity < 1) {
-        return;
-      }
-
-      const token = localStorage.getItem("token");
-
-      const response = await axios.put(
-        `http://localhost:5000/api/cart/${cartId}`,
+      await axios.put(
+        `http://localhost:5000/api/cart/${productId}`,
         {
-          quantity,
+          quantity: newQuantity,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: getHeaders(),
         }
-      );
-
-      setMessage(
-        response.data.message ||
-          "Cart Updated Successfully"
       );
 
       await fetchCart();
     } catch (error) {
       setError(
         error.response?.data?.message ||
-          "Failed to update cart"
+          "Failed to update quantity"
       );
+    } finally {
+      setUpdatingId(null);
     }
   };
 
+  // ==========================
   // Remove Item
-  const removeItem = async (cartId) => {
+  // ==========================
+
+  const handleRemove = async (productId) => {
     try {
-      setMessage("");
+      setRemovingId(productId);
       setError("");
 
-      const token = localStorage.getItem("token");
-
-      const response = await axios.delete(
-        `http://localhost:5000/api/cart/${cartId}`,
+      await axios.delete(
+        `http://localhost:5000/api/cart/${productId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: getHeaders(),
         }
-      );
-
-      setMessage(
-        response.data.message ||
-          "Product Removed From Cart"
       );
 
       await fetchCart();
@@ -112,115 +120,320 @@ function Cart() {
         error.response?.data?.message ||
           "Failed to remove product"
       );
+    } finally {
+      setRemovingId(null);
     }
   };
 
-  // Total Items
-  const totalItems = cart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-
-  // Subtotal
-  const subtotal = cart.reduce(
-    (total, item) =>
-      total + item.product.price * item.quantity,
-    0
-  );
+  // ==========================
+  // Loading
+  // ==========================
 
   if (loading) {
-    return <h2>Loading Cart...</h2>;
+    return (
+      <div className="cart-page">
+        <div className="cart-loading">
+          <h2>Loading Cart...</h2>
+        </div>
+      </div>
+    );
   }
 
-  if (error && cart.length === 0) {
-    return <h2>{error}</h2>;
-  }
+  // ==========================
+  // Cart Items
+  // ==========================
+
+  const cartItems = cart?.items || [];
+
+  const subtotal = cartItems.reduce(
+    (total, item) => {
+      const price = Number(
+        item.product?.price || 0
+      );
+
+      const quantity = Number(
+        item.quantity || 0
+      );
+
+      return total + price * quantity;
+    },
+    0
+  );
 
   return (
-    <div>
-      <h1>My Cart</h1>
+    <div className="cart-page">
 
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
+      {/* ==========================
+          Header
+      ========================== */}
 
-      {cart.length === 0 ? (
-        <p>Your cart is empty</p>
-      ) : (
+      <div className="cart-header">
         <div>
-          {cart.map((item) => (
-            <div key={item._id}>
-              <h2>{item.product.name}</h2>
+          <h1>Shopping Cart</h1>
 
-              <p>
-                Price: ₹{item.product.price}
-              </p>
+          <p>
+            Review your items before checkout.
+          </p>
+        </div>
 
-              <div>
-                <button
-                  onClick={() =>
-                    updateQuantity(
-                      item._id,
-                      item.quantity - 1
-                    )
-                  }
-                  disabled={item.quantity <= 1}
-                >
-                  -
-                </button>
+        <Link
+          to="/products"
+          className="continue-shopping-btn"
+        >
+          ← Continue Shopping
+        </Link>
+      </div>
 
-                <span style={{ margin: "0 10px" }}>
-                  {item.quantity}
-                </span>
+      {/* ==========================
+          Error
+      ========================== */}
 
-                <button
-                  onClick={() =>
-                    updateQuantity(
-                      item._id,
-                      item.quantity + 1
-                    )
-                  }
-                  disabled={
-                    item.quantity >= item.product.stock
-                  }
-                >
-                  +
-                </button>
-              </div>
+      {error && (
+        <div className="cart-error">
+          {error}
+        </div>
+      )}
 
-              <p>
-                Total: ₹
-                {item.product.price * item.quantity}
-              </p>
+      {/* ==========================
+          Empty Cart
+      ========================== */}
 
-              <button
-                onClick={() =>
-                  removeItem(item._id)
-                }
-              >
-                Remove
-              </button>
+      {cartItems.length === 0 ? (
+        <div className="empty-cart">
+          <div className="empty-cart-icon">
+            🛒
+          </div>
 
-              <hr />
+          <h2>Your Cart Is Empty</h2>
+
+          <p>
+            Add some products to your cart and
+            come back here.
+          </p>
+
+          <Link
+            to="/products"
+            className="shop-now-btn"
+          >
+            Start Shopping
+          </Link>
+        </div>
+      ) : (
+        <div className="cart-layout">
+
+          {/* ==========================
+              Cart Items
+          ========================== */}
+
+          <div className="cart-items-section">
+
+            <div className="cart-items-header">
+              <h2>
+                Cart Items ({cartItems.length})
+              </h2>
             </div>
-          ))}
 
-          {/* Cart Summary */}
-          <div>
-            <h2>Cart Summary</h2>
+            <div className="cart-items-list">
 
-            <p>
-              Total Items: {totalItems}
-            </p>
+              {cartItems.map((item) => {
+                const product = item.product;
 
-            <h2>
-              Subtotal: ₹{subtotal}
-            </h2>
+                if (!product) {
+                  return null;
+                }
+
+                const itemPrice =
+                  Number(product.price) || 0;
+
+                const itemQuantity =
+                  Number(item.quantity) || 0;
+
+                const itemTotal =
+                  itemPrice * itemQuantity;
+
+                const isUpdating =
+                  updatingId === product._id;
+
+                const isRemoving =
+                  removingId === product._id;
+
+                return (
+                  <div
+                    className="cart-item"
+                    key={product._id}
+                  >
+
+                    {/* Product Image */}
+
+                    <div className="cart-item-image">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                        />
+                      ) : (
+                        <span>
+                          No Image
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Product Info */}
+
+                    <div className="cart-item-info">
+
+                      <Link
+                        to={`/products/${product._id}`}
+                        className="cart-product-name"
+                      >
+                        {product.name}
+                      </Link>
+
+                      {product.brand && (
+                        <p>
+                          Brand:{" "}
+                          {product.brand}
+                        </p>
+                      )}
+
+                      <p className="cart-item-price">
+                        ₹
+                        {itemPrice.toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+
+                      {/* Quantity */}
+
+                      <div className="cart-quantity">
+                        <button
+                          type="button"
+                          disabled={
+                            isUpdating ||
+                            itemQuantity <= 1
+                          }
+                          onClick={() =>
+                            handleQuantityChange(
+                              product._id,
+                              itemQuantity - 1
+                            )
+                          }
+                        >
+                          −
+                        </button>
+
+                        <span>
+                          {isUpdating
+                            ? "..."
+                            : itemQuantity}
+                        </span>
+
+                        <button
+                          type="button"
+                          disabled={
+                            isUpdating ||
+                            itemQuantity >=
+                              product.stock
+                          }
+                          onClick={() =>
+                            handleQuantityChange(
+                              product._id,
+                              itemQuantity + 1
+                            )
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* Remove */}
+
+                      <button
+                        type="button"
+                        className="remove-cart-btn"
+                        disabled={isRemoving}
+                        onClick={() =>
+                          handleRemove(
+                            product._id
+                          )
+                        }
+                      >
+                        {isRemoving
+                          ? "Removing..."
+                          : "Remove"}
+                      </button>
+                    </div>
+
+                    {/* Total */}
+
+                    <div className="cart-item-total">
+                      ₹
+                      {itemTotal.toLocaleString(
+                        "en-IN"
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ==========================
+              Summary
+          ========================== */}
+
+          <div className="cart-summary">
+
+            <h2>Order Summary</h2>
+
+            <div className="summary-row">
+              <span>Subtotal</span>
+
+              <strong>
+                ₹
+                {subtotal.toLocaleString(
+                  "en-IN"
+                )}
+              </strong>
+            </div>
+
+            <div className="summary-row">
+              <span>Shipping</span>
+
+              <strong>
+                Free
+              </strong>
+            </div>
+
+            <div className="summary-divider" />
+
+            <div className="summary-total">
+              <span>Total</span>
+
+              <strong>
+                ₹
+                {subtotal.toLocaleString(
+                  "en-IN"
+                )}
+              </strong>
+            </div>
 
             <button
-              onClick={() => navigate("/checkout")}
+              type="button"
+              className="checkout-btn"
+              onClick={() =>
+                navigate("/checkout")
+              }
             >
-              Checkout
+              Proceed To Checkout
             </button>
+
+            <Link
+              to="/products"
+              className="summary-shopping-link"
+            >
+              Continue Shopping
+            </Link>
           </div>
         </div>
       )}

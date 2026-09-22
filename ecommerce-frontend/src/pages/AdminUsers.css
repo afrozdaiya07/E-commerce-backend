@@ -1,0 +1,71 @@
+.admin-users-page {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.admin-users-page h1 {
+  margin-bottom: 10px;
+}
+
+.admin-users-page h2 {
+  margin: 20px 0;
+}
+
+.admin-users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.admin-user-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.admin-user-card h3 {
+  margin-bottom: 15px;
+}
+
+.admin-user-card p {
+  margin: 8px 0;
+  word-break: break-word;
+}
+
+.admin-user-card select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.admin-user-card button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #dc3545;
+  color: white;
+  font-weight: bold;
+}
+
+.admin-user-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  margin: 10px 0;
+}
+
+.success-message {
+  color: #198754;
+  margin: 10px 0;
+}
