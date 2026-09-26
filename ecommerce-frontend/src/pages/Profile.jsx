@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "./Profile.css";
 
 function Profile() {
-  const { logout } = useAuth();
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const [profile, setProfile] = useState(null);
 
@@ -13,43 +14,55 @@ function Profile() {
   const [email, setEmail] = useState("");
 
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // Get Profile
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  // ==========================
+  // Fetch Profile
+  // ==========================
+
   const fetchProfile = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const token = localStorage.getItem("token");
-
       if (!token) {
-        setError("Please Login First");
+        navigate("/login");
         return;
       }
 
       const response = await axios.get(
         "http://localhost:5000/api/users/profile",
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         }
       );
 
       const user = response.data.user;
 
       setProfile(user);
+
       setName(user.name || "");
       setEmail(user.email || "");
     } catch (error) {
+      console.log(
+        "Profile Error:",
+        error.response?.data ||
+          error.message
+      );
+
       setError(
         error.response?.data?.message ||
-          "Failed to fetch profile"
+          "Failed to load profile"
       );
     } finally {
       setLoading(false);
@@ -60,24 +73,25 @@ function Profile() {
     fetchProfile();
   }, []);
 
+  // ==========================
   // Update Profile
-  const handleUpdateProfile = async (e) => {
+  // ==========================
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      setUpdating(true);
+      setSaving(true);
       setError("");
       setMessage("");
 
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("Please Login First");
+      if (!name.trim()) {
+        setError("Name is required");
         return;
       }
 
-      if (!name.trim() || !email.trim()) {
-        setError("Name and Email are required");
+      if (!email.trim()) {
+        setError("Email is required");
         return;
       }
 
@@ -88,32 +102,42 @@ function Profile() {
           email: email.trim(),
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         }
       );
 
-      setProfile(response.data.user);
+      const updatedUser =
+        response.data.user;
 
-      setName(response.data.user.name);
-      setEmail(response.data.user.email);
+      setProfile(updatedUser);
+
+      setName(updatedUser.name || "");
+      setEmail(updatedUser.email || "");
 
       setMessage(
         response.data.message ||
-          "Profile Updated Successfully ✅"
+          "Profile updated successfully ✅"
       );
     } catch (error) {
+      console.log(
+        "Update Profile Error:",
+        error.response?.data ||
+          error.message
+      );
+
       setError(
         error.response?.data?.message ||
           "Failed to update profile"
       );
     } finally {
-      setUpdating(false);
+      setSaving(false);
     }
   };
 
+  // ==========================
   // Delete Account
+  // ==========================
+
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
       "Are you sure you want to delete your account? This action cannot be undone."
@@ -128,34 +152,23 @@ function Profile() {
       setError("");
       setMessage("");
 
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("Please Login First");
-        return;
-      }
-
-      const response = await axios.delete(
+      await axios.delete(
         "http://localhost:5000/api/users/profile",
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         }
       );
 
-      setMessage(
-        response.data.message ||
-          "Account Deleted Successfully ✅"
-      );
-
-      // Remove token and user from AuthContext
       logout();
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
+      navigate("/register");
     } catch (error) {
+      console.log(
+        "Delete Account Error:",
+        error.response?.data ||
+          error.message
+      );
+
       setError(
         error.response?.data?.message ||
           "Failed to delete account"
@@ -165,100 +178,258 @@ function Profile() {
     }
   };
 
+  // ==========================
+  // Loading
+  // ==========================
+
   if (loading) {
-    return <h2>Loading Profile...</h2>;
+    return (
+      <div className="profile-page">
+        <div className="profile-loading">
+          <h2>Loading Profile...</h2>
+        </div>
+      </div>
+    );
   }
 
-  if (error && !profile) {
-    return <h2>{error}</h2>;
+  // ==========================
+  // Profile Not Found
+  // ==========================
+
+  if (!profile) {
+    return (
+      <div className="profile-page">
+        <div className="profile-not-found">
+          <h2>Profile Not Found</h2>
+
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+          >
+            Go To Login
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>My Profile</h1>
+    <div className="profile-page">
 
-      {error && <p>{error}</p>}
-      {message && <p>{message}</p>}
+      {/* ==========================
+          Header
+      ========================== */}
 
-      {profile && (
+      <div className="profile-header">
         <div>
-          <p>
-            <strong>User ID:</strong>{" "}
-            {profile._id}
-          </p>
+          <h1>My Profile</h1>
 
           <p>
-            <strong>Role:</strong>{" "}
-            {profile.role}
+            Manage your account information.
           </p>
+        </div>
 
-          <hr />
+        <button
+          type="button"
+          className="profile-orders-btn"
+          onClick={() =>
+            navigate("/orders")
+          }
+        >
+          My Orders
+        </button>
+      </div>
 
-          <h2>Update Profile</h2>
+      {/* ==========================
+          Messages
+      ========================== */}
 
-          <form onSubmit={handleUpdateProfile}>
+      {error && (
+        <div className="profile-message error">
+          {error}
+        </div>
+      )}
+
+      {message && (
+        <div className="profile-message success">
+          {message}
+        </div>
+      )}
+
+      <div className="profile-layout">
+
+        {/* ==========================
+            Profile Overview
+        ========================== */}
+
+        <div className="profile-overview">
+
+          <div className="profile-avatar">
+            {profile.name
+              ?.charAt(0)
+              .toUpperCase() || "U"}
+          </div>
+
+          <h2>{profile.name}</h2>
+
+          <p>{profile.email}</p>
+
+          <span
+            className={`profile-role ${
+              profile.role === "admin"
+                ? "admin-role"
+                : "user-role"
+            }`}
+          >
+            {profile.role === "admin"
+              ? "Admin"
+              : "User"}
+          </span>
+
+          <div className="profile-info-list">
+
             <div>
-              <label>Name</label>
-              <br />
+              <span>Account Status</span>
+              <strong>Active</strong>
+            </div>
+
+            <div>
+              <span>Member Since</span>
+              <strong>
+                {profile.createdAt
+                  ? new Date(
+                      profile.createdAt
+                    ).toLocaleDateString(
+                      "en-IN"
+                    )
+                  : "—"}
+              </strong>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ==========================
+            Edit Profile
+        ========================== */}
+
+        <div className="profile-form-card">
+
+          <h2>Account Information</h2>
+
+          <form
+            className="profile-form"
+            onSubmit={handleSubmit}
+          >
+
+            <div className="profile-form-group">
+              <label htmlFor="name">
+                Full Name
+              </label>
 
               <input
+                id="name"
                 type="text"
                 value={name}
                 onChange={(e) =>
                   setName(e.target.value)
                 }
-                placeholder="Enter Name"
+                placeholder="Enter your name"
+                required
               />
             </div>
 
-            <br />
-
-            <div>
-              <label>Email</label>
-              <br />
+            <div className="profile-form-group">
+              <label htmlFor="email">
+                Email Address
+              </label>
 
               <input
+                id="email"
                 type="email"
                 value={email}
                 onChange={(e) =>
                   setEmail(e.target.value)
                 }
-                placeholder="Enter Email"
+                placeholder="Enter your email"
+                required
               />
             </div>
 
-            <br />
+            <div className="profile-form-group">
+              <label>Role</label>
+
+              <input
+                type="text"
+                value={profile.role}
+                disabled
+                className="disabled-input"
+              />
+            </div>
 
             <button
               type="submit"
-              disabled={updating || deleting}
+              className="save-profile-btn"
+              disabled={saving}
             >
-              {updating
-                ? "Updating..."
-                : "Update Profile"}
+              {saving
+                ? "Saving..."
+                : "Save Changes"}
             </button>
+
           </form>
 
-          <hr />
+          <div className="profile-security-links">
 
-          <h2>Danger Zone</h2>
+            <button
+              type="button"
+              onClick={() =>
+                navigate("/change-password")
+              }
+            >
+              Change Password →
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                navigate("/address")
+              }
+            >
+              Manage Addresses →
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      {/* ==========================
+          Danger Zone
+      ========================== */}
+
+      <div className="profile-danger-zone">
+
+        <div>
+          <h2>Delete Account</h2>
 
           <p>
-            Deleting your account will remove your
-            account data.
+            Permanently delete your account and
+            related account data.
           </p>
-
-          <button
-            type="button"
-            onClick={handleDeleteAccount}
-            disabled={deleting || updating}
-          >
-            {deleting
-              ? "Deleting Account..."
-              : "Delete Account"}
-          </button>
         </div>
-      )}
+
+        <button
+          type="button"
+          className="delete-account-btn"
+          disabled={deleting}
+          onClick={handleDeleteAccount}
+        >
+          {deleting
+            ? "Deleting..."
+            : "Delete My Account"}
+        </button>
+
+      </div>
     </div>
   );
 }

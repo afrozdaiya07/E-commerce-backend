@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
+import "./AdminOrders.css";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -9,27 +10,13 @@ function AdminOrders() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const token = localStorage.getItem("token");
-
   // Fetch All Orders
   const fetchOrders = async () => {
     try {
       setLoading(true);
       setError("");
 
-      if (!token) {
-        setError("Please Login First");
-        return;
-      }
-
-      const response = await axios.get(
-        "http://localhost:5000/api/orders/all",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get("/orders/all");
 
       setOrders(response.data.orders || []);
     } catch (error) {
@@ -53,24 +40,16 @@ function AdminOrders() {
       setError("");
       setMessage("");
 
-      const response = await axios.put(
-        `http://localhost:5000/api/orders/${orderId}`,
-        {
-          status,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.put(`/orders/${orderId}`, {
+        status,
+      });
 
       setMessage(
         response.data.message ||
           "Order Status Updated Successfully ✅"
       );
 
-      fetchOrders();
+      await fetchOrders();
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -81,117 +60,298 @@ function AdminOrders() {
     }
   };
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Pending":
+        return "status-pending";
+
+      case "Confirmed":
+        return "status-confirmed";
+
+      case "Shipped":
+        return "status-shipped";
+
+      case "Delivered":
+        return "status-delivered";
+
+      default:
+        return "";
+    }
+  };
+
   if (loading) {
-    return <h2>Loading Orders...</h2>;
+    return (
+      <div className="admin-orders-page">
+        <div className="admin-orders-container">
+          <div className="orders-loading-card">
+            <div className="loading-spinner"></div>
+            <h2>Loading Orders...</h2>
+            <p>Please wait while we load all orders.</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Admin Order Management</h1>
+    <div className="admin-orders-page">
+      <div className="admin-orders-container">
 
-      {error && <p>{error}</p>}
-      {message && <p>{message}</p>}
+        {/* Header */}
+        <div className="admin-orders-header">
+          <div>
+            <span className="admin-orders-label">
+              ADMIN PANEL
+            </span>
 
-      <hr />
+            <h1>Order Management</h1>
 
-      <h2>All Orders</h2>
+            <p>
+              Manage customer orders and update their
+              delivery status.
+            </p>
+          </div>
 
-      {orders.length === 0 ? (
-        <p>No Orders Found</p>
-      ) : (
-        orders.map((order) => {
-          const totalItems = order.items.reduce(
-            (total, item) =>
-              total + item.quantity,
-            0
-          );
+          <div className="orders-count-box">
+            <span>Total Orders</span>
+            <strong>{orders.length}</strong>
+          </div>
+        </div>
 
-          return (
-            <div key={order._id}>
-              <h3>
-                Order ID: {order._id}
-              </h3>
+        {/* Messages */}
+        {error && (
+          <div className="order-message order-error">
+            ❌ {error}
+          </div>
+        )}
 
-              <p>
-                Customer:{" "}
-                {order.user?.name || "Unknown"}
-              </p>
+        {message && (
+          <div className="order-message order-success">
+            ✅ {message}
+          </div>
+        )}
 
-              <p>
-                Email:{" "}
-                {order.user?.email || "Unknown"}
-              </p>
-
-              <p>
-                Total Items: {totalItems}
-              </p>
-
-              <p>
-                Total Price: ₹{order.totalPrice}
-              </p>
-
-              <p>
-                Discount: ₹{order.discount}
-              </p>
-
-              <h3>
-                Final Amount: ₹
-                {order.finalAmount}
-              </h3>
-
-              <p>
-                Order Date:{" "}
-                {new Date(
-                  order.createdAt
-                ).toLocaleString()}
-              </p>
-
-              <h3>
-                Current Status: {order.status}
-              </h3>
-
-              <label>
-                Change Status:
-              </label>
-
-              <select
-                value={order.status}
-                onChange={(e) =>
-                  handleStatusChange(
-                    order._id,
-                    e.target.value
-                  )
-                }
-                disabled={
-                  updatingId === order._id
-                }
-              >
-                <option value="Pending">
-                  Pending
-                </option>
-
-                <option value="Confirmed">
-                  Confirmed
-                </option>
-
-                <option value="Shipped">
-                  Shipped
-                </option>
-
-                <option value="Delivered">
-                  Delivered
-                </option>
-              </select>
-
-              {updatingId === order._id && (
-                <p>Updating...</p>
-              )}
-
-              <hr />
+        {/* Orders */}
+        <div className="orders-section">
+          <div className="section-heading">
+            <div>
+              <h2>All Orders</h2>
+              <p>View and manage every customer order.</p>
             </div>
-          );
-        })
-      )}
+          </div>
+
+          {orders.length === 0 ? (
+            <div className="no-orders-card">
+              <div className="empty-icon">📦</div>
+
+              <h3>No Orders Found</h3>
+
+              <p>
+                There are currently no customer orders
+                available.
+              </p>
+            </div>
+          ) : (
+            <div className="orders-grid">
+              {orders.map((order) => {
+                const totalItems = (order.items || []).reduce(
+                  (total, item) =>
+                    total + Number(item.quantity || 0),
+                  0
+                );
+
+                return (
+                  <div
+                    className="admin-order-card"
+                    key={order._id}
+                  >
+                    {/* Card Top */}
+                    <div className="order-card-top">
+                      <div>
+                        <span className="order-small-label">
+                          ORDER ID
+                        </span>
+
+                        <h3 className="order-id">
+                          #{order._id}
+                        </h3>
+                      </div>
+
+                      <span
+                        className={`order-status ${getStatusClass(
+                          order.status
+                        )}`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
+
+                    {/* Customer */}
+                    <div className="order-customer">
+                      <div className="customer-avatar">
+                        {(order.user?.name || "U")
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
+
+                      <div>
+                        <p className="customer-name">
+                          {order.user?.name || "Unknown Customer"}
+                        </p>
+
+                        <p className="customer-email">
+                          {order.user?.email || "No email available"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Order Stats */}
+                    <div className="order-stats">
+                      <div className="order-stat">
+                        <span>Total Items</span>
+                        <strong>{totalItems}</strong>
+                      </div>
+
+                      <div className="order-stat">
+                        <span>Total Price</span>
+                        <strong>
+                          ₹{Number(order.totalPrice || 0).toLocaleString()}
+                        </strong>
+                      </div>
+
+                      <div className="order-stat">
+                        <span>Discount</span>
+                        <strong>
+                          ₹{Number(order.discount || 0).toLocaleString()}
+                        </strong>
+                      </div>
+                    </div>
+
+                    {/* Final Amount */}
+                    <div className="final-amount-box">
+                      <div>
+                        <span>Final Amount</span>
+                        <small>
+                          After discount
+                        </small>
+                      </div>
+
+                      <strong>
+                        ₹
+                        {Number(
+                          order.finalAmount || 0
+                        ).toLocaleString()}
+                      </strong>
+                    </div>
+
+                    {/* Products */}
+                    <div className="order-items-section">
+                      <h4>Order Items</h4>
+
+                      <div className="order-items-list">
+                        {(order.items || []).map(
+                          (item, index) => (
+                            <div
+                              className="order-item"
+                              key={item._id || index}
+                            >
+                              <div className="item-number">
+                                {index + 1}
+                              </div>
+
+                              <div className="item-info">
+                                <p>
+                                  {item.product?.name ||
+                                    item.name ||
+                                    "Product"}
+                                </p>
+
+                                <span>
+                                  Quantity:{" "}
+                                  {item.quantity || 0}
+                                </span>
+                              </div>
+
+                              <strong>
+                                ₹
+                                {Number(
+                                  item.price || 0
+                                ).toLocaleString()}
+                              </strong>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Date */}
+                    <div className="order-date">
+                      <span>Order Date</span>
+
+                      <strong>
+                        {order.createdAt
+                          ? new Date(
+                              order.createdAt
+                            ).toLocaleString()
+                          : "Not Available"}
+                      </strong>
+                    </div>
+
+                    {/* Status Update */}
+                    <div className="status-update-section">
+                      <label htmlFor={`status-${order._id}`}>
+                        Update Order Status
+                      </label>
+
+                      <select
+                        id={`status-${order._id}`}
+                        value={order.status}
+                        onChange={(e) =>
+                          handleStatusChange(
+                            order._id,
+                            e.target.value
+                          )
+                        }
+                        disabled={
+                          updatingId === order._id
+                        }
+                        className={
+                          updatingId === order._id
+                            ? "status-select updating"
+                            : "status-select"
+                        }
+                      >
+                        <option value="Pending">
+                          Pending
+                        </option>
+
+                        <option value="Confirmed">
+                          Confirmed
+                        </option>
+
+                        <option value="Shipped">
+                          Shipped
+                        </option>
+
+                        <option value="Delivered">
+                          Delivered
+                        </option>
+                      </select>
+
+                      {updatingId === order._id && (
+                        <div className="updating-text">
+                          <span className="mini-spinner"></span>
+                          Updating order status...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

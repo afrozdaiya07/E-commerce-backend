@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
 import "./Cart.css";
 
 function Cart() {
   const navigate = useNavigate();
 
-  const [cart, setCart] = useState(null);
+  // ==========================
+  // State
+  // ==========================
+
+  const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [updatingId, setUpdatingId] = useState(null);
   const [removingId, setRemovingId] = useState(null);
 
   const [error, setError] = useState("");
-
-  const token = localStorage.getItem("token");
-
-  const getHeaders = () => ({
-    Authorization: `Bearer ${token}`,
-  });
 
   // ==========================
   // Fetch Cart
@@ -29,19 +27,25 @@ function Cart() {
       setLoading(true);
       setError("");
 
+      const token = localStorage.getItem("token");
+
       if (!token) {
         navigate("/login");
         return;
       }
 
-      const response = await axios.get(
-        "http://localhost:5000/api/cart",
-        {
-          headers: getHeaders(),
-        }
-      );
+      const response = await api.get("/cart");
 
-      setCart(response.data.cart);
+      // Backend response check
+      console.log("CART RESPONSE:", response.data);
+
+      // Backend returns:
+      // {
+      //   success: true,
+      //   cart: [...]
+      // }
+
+      setCart(response.data.cart || []);
     } catch (error) {
       console.log(
         "Cart Error:",
@@ -56,6 +60,10 @@ function Cart() {
       setLoading(false);
     }
   };
+
+  // ==========================
+  // Fetch cart on page load
+  // ==========================
 
   useEffect(() => {
     fetchCart();
@@ -77,18 +85,17 @@ function Cart() {
       setUpdatingId(productId);
       setError("");
 
-      await axios.put(
-        `http://localhost:5000/api/cart/${productId}`,
-        {
-          quantity: newQuantity,
-        },
-        {
-          headers: getHeaders(),
-        }
-      );
+      await api.put(`/cart/${productId}`, {
+        quantity: newQuantity,
+      });
 
       await fetchCart();
     } catch (error) {
+      console.log(
+        "Update Cart Error:",
+        error.response?.data || error.message
+      );
+
       setError(
         error.response?.data?.message ||
           "Failed to update quantity"
@@ -107,15 +114,15 @@ function Cart() {
       setRemovingId(productId);
       setError("");
 
-      await axios.delete(
-        `http://localhost:5000/api/cart/${productId}`,
-        {
-          headers: getHeaders(),
-        }
-      );
+      await api.delete(`/cart/${productId}`);
 
       await fetchCart();
     } catch (error) {
+      console.log(
+        "Remove Cart Error:",
+        error.response?.data || error.message
+      );
+
       setError(
         error.response?.data?.message ||
           "Failed to remove product"
@@ -143,7 +150,11 @@ function Cart() {
   // Cart Items
   // ==========================
 
-  const cartItems = cart?.items || [];
+  const cartItems = cart;
+
+  // ==========================
+  // Subtotal
+  // ==========================
 
   const subtotal = cartItems.reduce(
     (total, item) => {
@@ -159,6 +170,10 @@ function Cart() {
     },
     0
   );
+
+  // ==========================
+  // UI
+  // ==========================
 
   return (
     <div className="cart-page">
@@ -200,6 +215,7 @@ function Cart() {
 
       {cartItems.length === 0 ? (
         <div className="empty-cart">
+
           <div className="empty-cart-icon">
             🛒
           </div>
@@ -217,12 +233,14 @@ function Cart() {
           >
             Start Shopping
           </Link>
+
         </div>
       ) : (
+
         <div className="cart-layout">
 
           {/* ==========================
-              Cart Items
+              Cart Items Section
           ========================== */}
 
           <div className="cart-items-section">
@@ -236,8 +254,10 @@ function Cart() {
             <div className="cart-items-list">
 
               {cartItems.map((item) => {
+
                 const product = item.product;
 
+                // Safety check
                 if (!product) {
                   return null;
                 }
@@ -260,12 +280,18 @@ function Cart() {
                 return (
                   <div
                     className="cart-item"
-                    key={product._id}
+                    key={
+                      item._id ||
+                      product._id
+                    }
                   >
 
-                    {/* Product Image */}
+                    {/* ==========================
+                        Product Image
+                    ========================== */}
 
                     <div className="cart-item-image">
+
                       {product.image ? (
                         <img
                           src={product.image}
@@ -276,9 +302,12 @@ function Cart() {
                           No Image
                         </span>
                       )}
+
                     </div>
 
-                    {/* Product Info */}
+                    {/* ==========================
+                        Product Info
+                    ========================== */}
 
                     <div className="cart-item-info">
 
@@ -289,12 +318,16 @@ function Cart() {
                         {product.name}
                       </Link>
 
+                      {/* Brand */}
+
                       {product.brand && (
                         <p>
                           Brand:{" "}
                           {product.brand}
                         </p>
                       )}
+
+                      {/* Price */}
 
                       <p className="cart-item-price">
                         ₹
@@ -303,9 +336,14 @@ function Cart() {
                         )}
                       </p>
 
-                      {/* Quantity */}
+                      {/* ==========================
+                          Quantity
+                      ========================== */}
 
                       <div className="cart-quantity">
+
+                        {/* Minus */}
+
                         <button
                           type="button"
                           disabled={
@@ -322,11 +360,15 @@ function Cart() {
                           −
                         </button>
 
+                        {/* Quantity */}
+
                         <span>
                           {isUpdating
                             ? "..."
                             : itemQuantity}
                         </span>
+
+                        {/* Plus */}
 
                         <button
                           type="button"
@@ -344,9 +386,12 @@ function Cart() {
                         >
                           +
                         </button>
+
                       </div>
 
-                      {/* Remove */}
+                      {/* ==========================
+                          Remove Button
+                      ========================== */}
 
                       <button
                         type="button"
@@ -362,9 +407,12 @@ function Cart() {
                           ? "Removing..."
                           : "Remove"}
                       </button>
+
                     </div>
 
-                    {/* Total */}
+                    {/* ==========================
+                        Item Total
+                    ========================== */}
 
                     <div className="cart-item-total">
                       ₹
@@ -372,19 +420,23 @@ function Cart() {
                         "en-IN"
                       )}
                     </div>
+
                   </div>
                 );
               })}
+
             </div>
           </div>
 
           {/* ==========================
-              Summary
+              Order Summary
           ========================== */}
 
           <div className="cart-summary">
 
             <h2>Order Summary</h2>
+
+            {/* Subtotal */}
 
             <div className="summary-row">
               <span>Subtotal</span>
@@ -397,6 +449,8 @@ function Cart() {
               </strong>
             </div>
 
+            {/* Shipping */}
+
             <div className="summary-row">
               <span>Shipping</span>
 
@@ -405,9 +459,14 @@ function Cart() {
               </strong>
             </div>
 
+            {/* Divider */}
+
             <div className="summary-divider" />
 
+            {/* Total */}
+
             <div className="summary-total">
+
               <span>Total</span>
 
               <strong>
@@ -416,7 +475,10 @@ function Cart() {
                   "en-IN"
                 )}
               </strong>
+
             </div>
+
+            {/* Checkout */}
 
             <button
               type="button"
@@ -428,15 +490,20 @@ function Cart() {
               Proceed To Checkout
             </button>
 
+            {/* Continue Shopping */}
+
             <Link
               to="/products"
               className="summary-shopping-link"
             >
               Continue Shopping
             </Link>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 }

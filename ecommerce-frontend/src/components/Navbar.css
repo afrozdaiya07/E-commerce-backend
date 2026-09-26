@@ -1,104 +1,402 @@
+/* =========================
+   NAVBAR
+========================= */
+
 .navbar {
-  width: 100%;
-  background: #111;
-  color: white;
   position: sticky;
   top: 0;
   z-index: 1000;
+
+  width: 100%;
+
+  border-bottom: 1px solid var(--border);
+
+  background: rgba(255, 255, 255, 0.96);
+
+  box-shadow: var(--shadow-sm);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
+/* =========================
+   CONTAINER
+========================= */
+
 .navbar-container {
-  max-width: 1300px;
+  width: 100%;
+  max-width: 1400px;
+  min-height: 70px;
+
   margin: 0 auto;
-  padding: 14px 25px;
+  padding: 12px 24px;
 
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
   gap: 20px;
 }
 
+/* =========================
+   LOGO
+========================= */
+
 .navbar-logo {
-  color: white;
-  text-decoration: none;
+  flex-shrink: 0;
+
+  color: var(--primary-dark);
+
   font-size: 22px;
-  font-weight: bold;
-  white-space: nowrap;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
+
+.navbar-logo:hover {
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   LINKS
+========================= */
 
 .navbar-links {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+
+  gap: 6px;
+
   flex-wrap: wrap;
-  gap: 14px;
 }
 
-.navbar-links a {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  transition: 0.2s;
+.navbar-links > a {
+  position: relative;
+
+  padding: 8px 10px;
+
+  border-radius: var(--radius-sm);
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+  font-weight: 650;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
-.navbar-links a:hover {
-  opacity: 0.7;
+.navbar-links > a:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
+
+/* =========================
+   ACTIVE-LIKE HOVER LINE
+========================= */
+
+.navbar-links > a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+
+  height: 2px;
+
+  border-radius: 10px;
+
+  background: var(--primary);
+
+  transform: scaleX(0);
+  transform-origin: center;
+
+  transition: transform 0.2s ease;
+}
+
+.navbar-links > a:hover::after {
+  transform: scaleX(1);
+}
+
+/* =========================
+   USER SECTION
+========================= */
 
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-left: 5px;
+  gap: 9px;
+
+  margin-left: 6px;
+  padding-left: 12px;
+
+  border-left: 1px solid var(--border);
 }
 
 .navbar-user span {
-  font-size: 14px;
+  max-width: 130px;
+
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 13px;
+  font-weight: 650;
+
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* =========================
+   LOGOUT BUTTON
+========================= */
+
 .navbar-user button {
-  border: none;
-  background: white;
-  color: #111;
+  min-height: 36px;
+
   padding: 7px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
+
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+
+  background: var(--danger-light);
+  color: #991b1b;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .navbar-user button:hover {
-  background: #eee;
+  border-color: #fca5a5;
+  background: #fecaca;
+  transform: translateY(-1px);
 }
 
-/* ==========================
-   Mobile
-========================== */
+.navbar-user button:active {
+  transform: translateY(0);
+}
 
-@media (max-width: 900px) {
+/* =========================
+   LOGIN / REGISTER
+========================= */
+
+.navbar-links > a[href="/login"] {
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+.navbar-links > a[href="/login"]:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.navbar-links > a[href="/register"] {
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: var(--white);
+}
+
+.navbar-links > a[href="/register"]:hover {
+  border-color: var(--primary-dark);
+  background: var(--primary-dark);
+  color: var(--white);
+}
+
+.navbar-links > a[href="/register"]::after,
+.navbar-links > a[href="/login"]::after {
+  display: none;
+}
+
+/* =========================
+   ADMIN LINKS
+========================= */
+
+.navbar-links > a[href="/admin"],
+.navbar-links > a[href="/admin/products"],
+.navbar-links > a[href="/admin/orders"],
+.navbar-links > a[href="/admin/coupons"],
+.navbar-links > a[href="/admin/users"] {
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
+.navbar-links > a[href="/admin"]:hover,
+.navbar-links > a[href="/admin/products"]:hover,
+.navbar-links > a[href="/admin/orders"]:hover,
+.navbar-links > a[href="/admin/coupons"]:hover,
+.navbar-links > a[href="/admin/users"]:hover {
+  background: var(--primary-light);
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1100px) {
   .navbar-container {
-    flex-direction: column;
     align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .navbar-links {
-    justify-content: flex-start;
     width: 100%;
+    justify-content: flex-start;
+  }
+
+  .navbar-user {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
   }
 }
+
+/* =========================
+   SMALL TABLET
+========================= */
+
+@media (max-width: 800px) {
+  .navbar-container {
+    padding: 14px 18px;
+  }
+
+  .navbar-logo {
+    font-size: 21px;
+  }
+
+  .navbar-links {
+    gap: 5px;
+  }
+
+  .navbar-links > a {
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+
+  .navbar-user span {
+    max-width: 110px;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 600px) {
+  .navbar {
+    position: relative;
+  }
+
   .navbar-container {
-    padding: 15px;
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .navbar-logo {
+    font-size: 20px;
   }
 
   .navbar-links {
-    gap: 10px;
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+  }
+
+  .navbar-links > a {
+    width: 100%;
+
+    padding: 9px 8px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--white);
+
+    text-align: center;
+  }
+
+  .navbar-links > a::after {
+    display: none;
+  }
+
+  .navbar-links > a:hover {
+    border-color: #bbf7d0;
+    background: var(--primary-light);
   }
 
   .navbar-user {
     width: 100%;
+
+    display: flex;
+
     justify-content: space-between;
+
+    margin-top: 3px;
+    padding-top: 10px;
+
+    border-top: 1px solid var(--border);
+  }
+
+  .navbar-user span {
+    max-width: 180px;
+  }
+
+  .navbar-user button {
+    min-width: 85px;
+  }
+
+  .navbar-links > a[href="/register"] {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+}
+
+/* =========================
+   VERY SMALL MOBILE
+========================= */
+
+@media (max-width: 380px) {
+  .navbar-container {
+    padding: 12px;
+  }
+
+  .navbar-logo {
+    font-size: 18px;
+  }
+
+  .navbar-links {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar-user {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .navbar-user span {
+    max-width: 100%;
+  }
+
+  .navbar-user button {
+    width: 100%;
   }
 }

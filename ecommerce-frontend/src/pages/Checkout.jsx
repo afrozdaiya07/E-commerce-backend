@@ -6,7 +6,11 @@ import "./Checkout.css";
 function Checkout() {
   const navigate = useNavigate();
 
-  const [cart, setCart] = useState(null);
+  // ==========================
+  // State
+  // ==========================
+
+  const [cart, setCart] = useState([]);
   const [addresses, setAddresses] = useState([]);
 
   const [selectedAddress, setSelectedAddress] =
@@ -27,6 +31,10 @@ function Checkout() {
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+
+  // ==========================
+  // Token
+  // ==========================
 
   const token = localStorage.getItem("token");
 
@@ -52,33 +60,65 @@ function Checkout() {
         await Promise.all([
           axios.get(
             "http://localhost:5000/api/cart",
-            { headers }
+            {
+              headers,
+            }
           ),
 
           axios.get(
             "http://localhost:5000/api/address",
-            { headers }
+            {
+              headers,
+            }
           ),
         ]);
 
+      // ==========================
+      // Cart Data
+      // ==========================
+
       const cartData =
-        cartResponse.data.cart;
+        cartResponse.data.cart || [];
+
+      console.log(
+        "CHECKOUT CART RESPONSE:",
+        cartResponse.data
+      );
+
+      // ==========================
+      // Address Data
+      // ==========================
 
       const addressData =
         addressResponse.data.addresses || [];
 
+      // Cart is direct array
       setCart(cartData);
+
       setAddresses(addressData);
 
+      // ==========================
+      // Select First Address
+      // ==========================
+
       if (addressData.length > 0) {
-        setSelectedAddress(
-          addressData[0]._id
-        );
+        const firstAddressId =
+          addressData[0]?._id;
+
+        if (firstAddressId) {
+          setSelectedAddress(
+            firstAddressId
+          );
+        }
       }
 
-      const items = cartData?.items || [];
+      // ==========================
+      // Calculate Initial Total
+      // ==========================
 
-      const subtotal = items.reduce(
+      const items = cartData;
+
+      const subtotalAmount = items.reduce(
         (total, item) => {
           const price =
             Number(
@@ -86,18 +126,23 @@ function Checkout() {
             );
 
           const quantity =
-            Number(item.quantity || 0);
+            Number(
+              item.quantity || 0
+            );
 
-          return total + price * quantity;
+          return (
+            total + price * quantity
+          );
         },
         0
       );
 
-      setFinalAmount(subtotal);
+      setFinalAmount(subtotalAmount);
     } catch (error) {
       console.log(
         "Checkout Error:",
-        error.response?.data || error.message
+        error.response?.data ||
+          error.message
       );
 
       setError(
@@ -109,15 +154,23 @@ function Checkout() {
     }
   };
 
+  // ==========================
+  // Load Checkout
+  // ==========================
+
   useEffect(() => {
     fetchCheckoutData();
   }, []);
 
   // ==========================
-  // Calculate Subtotal
+  // Cart Items
   // ==========================
 
-  const cartItems = cart?.items || [];
+  const cartItems = cart;
+
+  // ==========================
+  // Calculate Subtotal
+  // ==========================
 
   const subtotal = cartItems.reduce(
     (total, item) => {
@@ -129,7 +182,9 @@ function Checkout() {
       const quantity =
         Number(item.quantity || 0);
 
-      return total + price * quantity;
+      return (
+        total + price * quantity
+      );
     },
     0
   );
@@ -140,7 +195,9 @@ function Checkout() {
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
-      setError("Please enter a coupon code");
+      setError(
+        "Please enter a coupon code"
+      );
       return;
     }
 
@@ -152,7 +209,10 @@ function Checkout() {
       const response = await axios.post(
         "http://localhost:5000/api/coupons/apply",
         {
-          code: couponCode.trim(),
+          code: couponCode
+            .trim()
+            .toUpperCase(),
+
           orderAmount: subtotal,
         },
         {
@@ -174,6 +234,7 @@ function Checkout() {
         Number(data.discount) || 0;
 
       setDiscount(discountAmount);
+
       setFinalAmount(
         Math.max(
           0,
@@ -186,6 +247,12 @@ function Checkout() {
           "Coupon Applied Successfully ✅"
       );
     } catch (error) {
+      console.log(
+        "Coupon Error:",
+        error.response?.data ||
+          error.message
+      );
+
       setAppliedCoupon(null);
       setDiscount(0);
       setFinalAmount(subtotal);
@@ -207,7 +274,9 @@ function Checkout() {
     setCouponCode("");
     setAppliedCoupon(null);
     setDiscount(0);
+
     setFinalAmount(subtotal);
+
     setMessage("Coupon Removed");
     setError("");
   };
@@ -217,13 +286,19 @@ function Checkout() {
   // ==========================
 
   const handlePlaceOrder = async () => {
-    if (!selectedAddress) {
-      setError(
-        "Please select a delivery address"
-      );
+    // Selected address first
+    // Otherwise use first saved address
+    const addressId =
+      selectedAddress ||
+      addresses[0]?._id;
+
+    // Check address
+    if (!addressId) {
+      setError("Address is Required");
       return;
     }
 
+    // Check cart
     if (cartItems.length === 0) {
       setError("Your cart is empty");
       return;
@@ -234,18 +309,47 @@ function Checkout() {
       setError("");
       setMessage("");
 
+      // ==========================
+      // Prepare Order Items
+      // ==========================
+
       const items = cartItems.map(
         (item) => ({
-          product: item.product._id,
-          quantity: item.quantity,
+          product:
+            item.product._id,
+
+          quantity:
+            item.quantity,
         })
       );
+
+      // ==========================
+      // Debug
+      // ==========================
+
+      console.log(
+        "ORDER ADDRESS ID:",
+        addressId
+      );
+
+      console.log(
+        "ORDER ITEMS:",
+        items
+      );
+
+      // ==========================
+      // Create Order
+      // ==========================
 
       const response = await axios.post(
         "http://localhost:5000/api/orders",
         {
-          address: selectedAddress,
+          // Send both for compatibility
+          addressId: addressId,
+          address: addressId,
+
           items,
+
           couponCode:
             appliedCoupon?.code || "",
         },
@@ -254,12 +358,25 @@ function Checkout() {
         }
       );
 
+      console.log(
+        "ORDER RESPONSE:",
+        response.data
+      );
+
+      // ==========================
+      // Order Data
+      // ==========================
+
       const order =
         response.data.order;
 
       setMessage(
         "Order placed successfully ✅"
       );
+
+      // ==========================
+      // Go To Payment
+      // ==========================
 
       navigate("/payment", {
         state: {
@@ -289,9 +406,15 @@ function Checkout() {
   if (loading) {
     return (
       <div className="checkout-page">
+
         <div className="checkout-loading">
-          <h2>Loading Checkout...</h2>
+
+          <h2>
+            Loading Checkout...
+          </h2>
+
         </div>
+
       </div>
     );
   }
@@ -303,12 +426,20 @@ function Checkout() {
   if (cartItems.length === 0) {
     return (
       <div className="checkout-page">
+
         <div className="checkout-empty">
-          <h2>Your Cart Is Empty</h2>
+
+          <div className="checkout-empty-icon">
+            🛒
+          </div>
+
+          <h2>
+            Your Cart Is Empty
+          </h2>
 
           <p>
-            Add products before going to
-            checkout.
+            Add products before going
+            to checkout.
           </p>
 
           <button
@@ -319,10 +450,16 @@ function Checkout() {
           >
             Continue Shopping
           </button>
+
         </div>
+
       </div>
     );
   }
+
+  // ==========================
+  // UI
+  // ==========================
 
   return (
     <div className="checkout-page">
@@ -332,11 +469,15 @@ function Checkout() {
       ========================== */}
 
       <div className="checkout-header">
-        <h1>Checkout</h1>
+
+        <h1>
+          Checkout
+        </h1>
 
         <p>
           Complete your order securely.
         </p>
+
       </div>
 
       {/* ==========================
@@ -355,6 +496,10 @@ function Checkout() {
         </div>
       )}
 
+      {/* ==========================
+          Checkout Layout
+      ========================== */}
+
       <div className="checkout-layout">
 
         {/* ==========================
@@ -363,11 +508,17 @@ function Checkout() {
 
         <div className="checkout-main">
 
-          {/* Address */}
+          {/* ==========================
+              Address
+          ========================== */}
 
           <div className="checkout-section">
+
             <div className="section-title">
-              <h2>Delivery Address</h2>
+
+              <h2>
+                Delivery Address
+              </h2>
 
               <button
                 type="button"
@@ -377,10 +528,17 @@ function Checkout() {
               >
                 Manage Addresses
               </button>
+
             </div>
 
+            {/* ==========================
+                No Address
+            ========================== */}
+
             {addresses.length === 0 ? (
+
               <div className="no-address">
+
                 <p>
                   No delivery address found.
                 </p>
@@ -393,10 +551,16 @@ function Checkout() {
                 >
                   Add Address
                 </button>
+
               </div>
+
             ) : (
+
               <div className="address-list">
-                {addresses.map((address) => (
+
+                {addresses.map(
+                  (address) => (
+
                   <label
                     className={`address-card ${
                       selectedAddress ===
@@ -406,6 +570,7 @@ function Checkout() {
                     }`}
                     key={address._id}
                   >
+
                     <input
                       type="radio"
                       name="address"
@@ -422,6 +587,7 @@ function Checkout() {
                     />
 
                     <div>
+
                       <h3>
                         {address.fullName}
                       </h3>
@@ -443,21 +609,34 @@ function Checkout() {
                       <p>
                         {address.country}
                       </p>
+
                     </div>
+
                   </label>
+
                 ))}
+
               </div>
             )}
+
           </div>
 
-          {/* Coupon */}
+          {/* ==========================
+              Coupon
+          ========================== */}
 
           <div className="checkout-section">
-            <h2>Coupon Code</h2>
+
+            <h2>
+              Coupon Code
+            </h2>
 
             {appliedCoupon ? (
+
               <div className="applied-coupon">
+
                 <div>
+
                   <strong>
                     {appliedCoupon.code}
                   </strong>
@@ -465,6 +644,7 @@ function Checkout() {
                   <span>
                     Coupon Applied
                   </span>
+
                 </div>
 
                 <button
@@ -475,9 +655,13 @@ function Checkout() {
                 >
                   Remove
                 </button>
+
               </div>
+
             ) : (
+
               <div className="coupon-box">
+
                 <input
                   type="text"
                   placeholder="Enter coupon code"
@@ -500,17 +684,28 @@ function Checkout() {
                     ? "Applying..."
                     : "Apply"}
                 </button>
+
               </div>
+
             )}
+
           </div>
 
-          {/* Products */}
+          {/* ==========================
+              Order Items
+          ========================== */}
 
           <div className="checkout-section">
-            <h2>Order Items</h2>
+
+            <h2>
+              Order Items
+            </h2>
 
             <div className="checkout-items">
-              {cartItems.map((item) => {
+
+              {cartItems.map(
+                (item) => {
+
                 const product =
                   item.product;
 
@@ -524,7 +719,9 @@ function Checkout() {
                   );
 
                 const quantity =
-                  Number(item.quantity || 0);
+                  Number(
+                    item.quantity || 0
+                  );
 
                 const total =
                   price * quantity;
@@ -534,7 +731,11 @@ function Checkout() {
                     className="checkout-item"
                     key={product._id}
                   >
+
+                    {/* Product Image */}
+
                     <div className="checkout-item-image">
+
                       {product.image ? (
                         <img
                           src={product.image}
@@ -545,9 +746,13 @@ function Checkout() {
                           No Image
                         </span>
                       )}
+
                     </div>
 
+                    {/* Product Info */}
+
                     <div className="checkout-item-info">
+
                       <h3>
                         {product.name}
                       </h3>
@@ -559,7 +764,10 @@ function Checkout() {
                         )}{" "}
                         × {quantity}
                       </p>
+
                     </div>
+
+                    {/* Item Total */}
 
                     <strong>
                       ₹
@@ -567,11 +775,15 @@ function Checkout() {
                         "en-IN"
                       )}
                     </strong>
+
                   </div>
                 );
               })}
+
             </div>
+
           </div>
+
         </div>
 
         {/* ==========================
@@ -579,10 +791,18 @@ function Checkout() {
         ========================== */}
 
         <div className="checkout-summary">
-          <h2>Order Summary</h2>
+
+          <h2>
+            Order Summary
+          </h2>
+
+          {/* Subtotal */}
 
           <div className="summary-row">
-            <span>Subtotal</span>
+
+            <span>
+              Subtotal
+            </span>
 
             <strong>
               ₹
@@ -590,16 +810,30 @@ function Checkout() {
                 "en-IN"
               )}
             </strong>
+
           </div>
+
+          {/* Shipping */}
 
           <div className="summary-row">
-            <span>Shipping</span>
 
-            <strong>Free</strong>
+            <span>
+              Shipping
+            </span>
+
+            <strong>
+              Free
+            </strong>
+
           </div>
 
+          {/* Discount */}
+
           <div className="summary-row discount-row">
-            <span>Discount</span>
+
+            <span>
+              Discount
+            </span>
 
             <strong>
               - ₹
@@ -607,12 +841,20 @@ function Checkout() {
                 "en-IN"
               )}
             </strong>
+
           </div>
+
+          {/* Divider */}
 
           <div className="summary-divider" />
 
+          {/* Final Total */}
+
           <div className="summary-total">
-            <span>Total</span>
+
+            <span>
+              Total
+            </span>
 
             <strong>
               ₹
@@ -620,7 +862,10 @@ function Checkout() {
                 "en-IN"
               )}
             </strong>
+
           </div>
+
+          {/* Place Order */}
 
           <button
             type="button"
@@ -629,7 +874,9 @@ function Checkout() {
               placingOrder ||
               addresses.length === 0
             }
-            onClick={handlePlaceOrder}
+            onClick={
+              handlePlaceOrder
+            }
           >
             {placingOrder
               ? "Placing Order..."
@@ -637,10 +884,14 @@ function Checkout() {
           </button>
 
           <p className="secure-checkout">
-            Your order will be processed securely.
+            Your order will be processed
+            securely.
           </p>
+
         </div>
+
       </div>
+
     </div>
   );
 }

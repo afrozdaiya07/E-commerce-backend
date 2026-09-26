@@ -5,7 +5,7 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
+import api from "../services/api";
 
 const AuthContext = createContext();
 
@@ -18,7 +18,10 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(true);
 
+  // ==========================
   // Login
+  // ==========================
+
   const login = (newToken, userData) => {
     localStorage.setItem("token", newToken);
 
@@ -26,7 +29,10 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
+  // ==========================
   // Logout
+  // ==========================
+
   const logout = () => {
     localStorage.removeItem("token");
 
@@ -34,31 +40,35 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // Get logged-in user after refresh
+  // ==========================
+  // Fetch Profile
+  // ==========================
+
   const fetchProfile = async () => {
     try {
-      const currentToken = localStorage.getItem("token");
+      const currentToken =
+        localStorage.getItem("token");
 
       if (!currentToken) {
         setUser(null);
+        setLoading(false);
         return;
       }
 
-      const response = await axios.get(
-        "http://localhost:5000/api/users/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${currentToken}`,
-          },
-        }
+      const response = await api.get(
+        "/users/profile"
       );
 
       setUser(response.data.user);
     } catch (error) {
-      console.log("Failed to load user profile");
+      console.log(
+        "Failed to load user profile:",
+        error.response?.data?.message ||
+          error.message
+      );
 
-      // Token invalid/expired
       localStorage.removeItem("token");
+
       setToken(null);
       setUser(null);
     } finally {
@@ -66,7 +76,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Run when app starts or token changes
+  // ==========================
+  // Initial / Token Change
+  // ==========================
+
   useEffect(() => {
     fetchProfile();
   }, [token]);
@@ -86,6 +99,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () =>
+  useContext(AuthContext);

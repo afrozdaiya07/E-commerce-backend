@@ -1,16 +1,28 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "./ChangePassword.css";
 
 function ChangePassword() {
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+
+  const [currentPassword, setCurrentPassword] =
+    useState("");
+
+  const [newPassword, setNewPassword] =
+    useState("");
+
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
 
   const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleChangePassword = async (e) => {
+  const token = localStorage.getItem("token");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -18,15 +30,19 @@ function ChangePassword() {
       setError("");
       setMessage("");
 
-      const token = localStorage.getItem("token");
-
       if (!token) {
-        setError("Please Login First");
+        navigate("/login");
         return;
       }
 
-      if (!oldPassword || !newPassword || !confirmPassword) {
-        setError("All fields are required");
+      if (
+        !currentPassword ||
+        !newPassword ||
+        !confirmPassword
+      ) {
+        setError(
+          "All password fields are required"
+        );
         return;
       }
 
@@ -38,14 +54,16 @@ function ChangePassword() {
       }
 
       if (newPassword !== confirmPassword) {
-        setError("New Passwords do not match");
+        setError(
+          "New password and confirm password do not match"
+        );
         return;
       }
 
       const response = await axios.put(
         "http://localhost:5000/api/users/change-password",
         {
-          oldPassword,
+          currentPassword,
           newPassword,
         },
         {
@@ -57,13 +75,19 @@ function ChangePassword() {
 
       setMessage(
         response.data.message ||
-          "Password Changed Successfully ✅"
+          "Password changed successfully ✅"
       );
 
-      setOldPassword("");
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (error) {
+      console.log(
+        "Change Password Error:",
+        error.response?.data ||
+          error.message
+      );
+
       setError(
         error.response?.data?.message ||
           "Failed to change password"
@@ -74,70 +98,161 @@ function ChangePassword() {
   };
 
   return (
-    <div>
-      <h1>Change Password</h1>
+    <div className="change-password-page">
 
-      {error && <p>{error}</p>}
-      {message && <p>{message}</p>}
+      {/* ==========================
+          Header
+      ========================== */}
 
-      <form onSubmit={handleChangePassword}>
+      <div className="change-password-header">
         <div>
-          <label>Old Password</label>
-          <br />
+          <h1>Change Password</h1>
 
-          <input
-            type="password"
-            value={oldPassword}
-            onChange={(e) =>
-              setOldPassword(e.target.value)
-            }
-            placeholder="Enter Old Password"
-          />
+          <p>
+            Update your account password securely.
+          </p>
         </div>
-
-        <br />
-
-        <div>
-          <label>New Password</label>
-          <br />
-
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) =>
-              setNewPassword(e.target.value)
-            }
-            placeholder="Enter New Password"
-          />
-        </div>
-
-        <br />
-
-        <div>
-          <label>Confirm New Password</label>
-          <br />
-
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) =>
-              setConfirmPassword(e.target.value)
-            }
-            placeholder="Confirm New Password"
-          />
-        </div>
-
-        <br />
 
         <button
-          type="submit"
-          disabled={loading}
+          type="button"
+          className="back-profile-btn"
+          onClick={() =>
+            navigate("/profile")
+          }
         >
-          {loading
-            ? "Changing..."
-            : "Change Password"}
+          ← Back To Profile
         </button>
-      </form>
+      </div>
+
+      {/* ==========================
+          Messages
+      ========================== */}
+
+      {error && (
+        <div className="password-message error">
+          {error}
+        </div>
+      )}
+
+      {message && (
+        <div className="password-message success">
+          {message}
+        </div>
+      )}
+
+      {/* ==========================
+          Main Card
+      ========================== */}
+
+      <div className="change-password-container">
+
+        <div className="password-icon">
+          🔐
+        </div>
+
+        <h2>Update Password</h2>
+
+        <p className="password-subtitle">
+          Enter your current password and choose
+          a new password.
+        </p>
+
+        <form
+          className="change-password-form"
+          onSubmit={handleSubmit}
+        >
+
+          {/* Current Password */}
+
+          <div className="password-form-group">
+            <label htmlFor="currentPassword">
+              Current Password
+            </label>
+
+            <input
+              id="currentPassword"
+              type="password"
+              value={currentPassword}
+              onChange={(e) =>
+                setCurrentPassword(
+                  e.target.value
+                )
+              }
+              placeholder="Enter current password"
+              required
+            />
+          </div>
+
+          {/* New Password */}
+
+          <div className="password-form-group">
+            <label htmlFor="newPassword">
+              New Password
+            </label>
+
+            <input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) =>
+                setNewPassword(
+                  e.target.value
+                )
+              }
+              placeholder="Enter new password"
+              required
+            />
+          </div>
+
+          {/* Confirm Password */}
+
+          <div className="password-form-group">
+            <label htmlFor="confirmPassword">
+              Confirm New Password
+            </label>
+
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) =>
+                setConfirmPassword(
+                  e.target.value
+                )
+              }
+              placeholder="Confirm new password"
+              required
+            />
+          </div>
+
+          {/* Password Rules */}
+
+          <div className="password-rules">
+            <strong>
+              Password requirements
+            </strong>
+
+            <span>
+              • At least 6 characters
+            </span>
+
+            <span>
+              • New passwords must match
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            className="change-password-btn"
+            disabled={loading}
+          >
+            {loading
+              ? "Updating..."
+              : "Change Password"}
+          </button>
+
+        </form>
+      </div>
     </div>
   );
 }

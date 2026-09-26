@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
+import "./AdminProducts.css";
 
 function AdminProducts() {
   const [products, setProducts] = useState([]);
 
+  // Form states
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -11,30 +13,35 @@ function AdminProducts() {
   const [brand, setBrand] = useState("");
   const [stock, setStock] = useState("");
 
+  // Image states
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
 
+  // Edit states
   const [editingId, setEditingId] = useState(null);
   const [oldImage, setOldImage] = useState("");
 
+  // Loading states
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  // Messages
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
   const fileInputRef = useRef(null);
 
-  const token = localStorage.getItem("token");
-
+  // ==========================
   // Fetch Products
+  // ==========================
+
   const fetchProducts = async () => {
     try {
+      setFetchLoading(true);
       setError("");
 
-      const response = await axios.get(
-        "http://localhost:5000/api/products"
-      );
+      const response = await api.get("/products");
 
       setProducts(response.data.products || []);
     } catch (error) {
@@ -44,6 +51,8 @@ function AdminProducts() {
         error.response?.data?.message ||
           "Failed to fetch products"
       );
+    } finally {
+      setFetchLoading(false);
     }
   };
 
@@ -51,7 +60,10 @@ function AdminProducts() {
     fetchProducts();
   }, []);
 
+  // ==========================
   // Select Image
+  // ==========================
+
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
 
@@ -64,8 +76,10 @@ function AdminProducts() {
       return;
     }
 
-    // Remove previous preview URL
-    if (imagePreview && imagePreview.startsWith("blob:")) {
+    if (
+      imagePreview &&
+      imagePreview.startsWith("blob:")
+    ) {
       URL.revokeObjectURL(imagePreview);
     }
 
@@ -76,7 +90,10 @@ function AdminProducts() {
     setMessage("");
   };
 
-  // Upload Image To Cloudinary
+  // ==========================
+  // Upload Image
+  // ==========================
+
   const uploadImage = async () => {
     if (!imageFile) {
       return oldImage || "";
@@ -86,24 +103,13 @@ function AdminProducts() {
       setUploadingImage(true);
       setError("");
 
-      const currentToken = localStorage.getItem("token");
-
-      if (!currentToken) {
-        throw new Error("Please Login First");
-      }
-
       const formData = new FormData();
 
       formData.append("image", imageFile);
 
-      const response = await axios.post(
-        "http://localhost:5000/api/upload",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${currentToken}`,
-          },
-        }
+      const response = await api.post(
+        "/upload",
+        formData
       );
 
       if (!response.data?.imageUrl) {
@@ -129,9 +135,15 @@ function AdminProducts() {
     }
   };
 
+  // ==========================
   // Clear Form
+  // ==========================
+
   const clearForm = () => {
-    if (imagePreview && imagePreview.startsWith("blob:")) {
+    if (
+      imagePreview &&
+      imagePreview.startsWith("blob:")
+    ) {
       URL.revokeObjectURL(imagePreview);
     }
 
@@ -153,7 +165,10 @@ function AdminProducts() {
     }
   };
 
+  // ==========================
   // Add / Update Product
+  // ==========================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -162,13 +177,7 @@ function AdminProducts() {
       setError("");
       setMessage("");
 
-      const currentToken = localStorage.getItem("token");
-
-      if (!currentToken) {
-        setError("Please Login First");
-        return;
-      }
-
+      // Validation
       if (
         !name.trim() ||
         !description.trim() ||
@@ -177,7 +186,9 @@ function AdminProducts() {
         !brand.trim() ||
         stock === ""
       ) {
-        setError("All product fields are required");
+        setError(
+          "All product fields are required"
+        );
         return;
       }
 
@@ -200,7 +211,7 @@ function AdminProducts() {
         return;
       }
 
-      // Upload image first
+      // Upload image
       const imageUrl = await uploadImage();
 
       const productData = {
@@ -220,29 +231,17 @@ function AdminProducts() {
 
       // Update Product
       if (editingId) {
-        response = await axios.put(
-          `http://localhost:5000/api/products/${editingId}`,
-          productData,
-          {
-            headers: {
-              Authorization: `Bearer ${currentToken}`,
-              "Content-Type": "application/json",
-            },
-          }
+        response = await api.put(
+          `/products/${editingId}`,
+          productData
         );
       }
 
       // Add Product
       else {
-        response = await axios.post(
-          "http://localhost:5000/api/products",
-          productData,
-          {
-            headers: {
-              Authorization: `Bearer ${currentToken}`,
-              "Content-Type": "application/json",
-            },
-          }
+        response = await api.post(
+          "/products",
+          productData
         );
       }
 
@@ -272,7 +271,10 @@ function AdminProducts() {
     }
   };
 
+  // ==========================
   // Edit Product
+  // ==========================
+
   const handleEdit = (product) => {
     setEditingId(product._id);
 
@@ -300,26 +302,25 @@ function AdminProducts() {
     });
   };
 
+  // ==========================
   // Delete Product
+  // ==========================
+
   const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     try {
       setError("");
       setMessage("");
 
-      const currentToken = localStorage.getItem("token");
-
-      if (!currentToken) {
-        setError("Please Login First");
-        return;
-      }
-
-      const response = await axios.delete(
-        `http://localhost:5000/api/products/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${currentToken}`,
-          },
-        }
+      const response = await api.delete(
+        `/products/${id}`
       );
 
       setMessage(
@@ -336,288 +337,393 @@ function AdminProducts() {
 
       setError(
         error.response?.data?.message ||
-          error.message ||
           "Failed to delete product"
       );
     }
   };
 
+  // ==========================
+  // Render
+  // ==========================
+
   return (
     <div className="admin-products-page">
-      <h1>Admin Product Management</h1>
+      <div className="admin-products-container">
 
-      {error && (
-        <p className="error-message">
-          {error}
-        </p>
-      )}
-
-      {message && (
-        <p className="success-message">
-          {message}
-        </p>
-      )}
-
-      <hr />
-
-      <section className="admin-product-form-card">
-        <h2>
-          {editingId
-            ? "Update Product"
-            : "Add Product"}
-        </h2>
-
-        <form onSubmit={handleSubmit}>
-          {/* Product Name */}
+        {/* Header */}
+        <div className="admin-products-header">
           <div>
-            <label>Product Name</label>
-            <br />
+            <p className="admin-products-badge">
+              ADMIN PANEL
+            </p>
 
-            <input
-              type="text"
-              value={name}
-              onChange={(e) =>
-                setName(e.target.value)
-              }
-              placeholder="Enter Product Name"
-            />
+            <h1>Product Management</h1>
+
+            <p>
+              Add, update and manage your store
+              products.
+            </p>
           </div>
 
-          <br />
-
-          {/* Description */}
-          <div>
-            <label>Description</label>
-            <br />
-
-            <textarea
-              value={description}
-              onChange={(e) =>
-                setDescription(e.target.value)
-              }
-              placeholder="Enter Description"
-            />
+          <div className="product-count-box">
+            <span>Total Products</span>
+            <strong>{products.length}</strong>
           </div>
+        </div>
 
-          <br />
-
-          {/* Price */}
-          <div>
-            <label>Price</label>
-            <br />
-
-            <input
-              type="number"
-              min="0"
-              value={price}
-              onChange={(e) =>
-                setPrice(e.target.value)
-              }
-              placeholder="Enter Price"
-            />
+        {/* Messages */}
+        {error && (
+          <div className="admin-alert admin-alert-error">
+            <span>⚠️</span>
+            <p>{error}</p>
           </div>
+        )}
 
-          <br />
-
-          {/* Category */}
-          <div>
-            <label>Category</label>
-            <br />
-
-            <input
-              type="text"
-              value={category}
-              onChange={(e) =>
-                setCategory(e.target.value)
-              }
-              placeholder="Enter Category"
-            />
+        {message && (
+          <div className="admin-alert admin-alert-success">
+            <span>✅</span>
+            <p>{message}</p>
           </div>
+        )}
 
-          <br />
+        {/* Form */}
+        <section className="admin-product-form-card">
 
-          {/* Brand */}
-          <div>
-            <label>Brand</label>
-            <br />
-
-            <input
-              type="text"
-              value={brand}
-              onChange={(e) =>
-                setBrand(e.target.value)
-              }
-              placeholder="Enter Brand"
-            />
-          </div>
-
-          <br />
-
-          {/* Stock */}
-          <div>
-            <label>Stock</label>
-            <br />
-
-            <input
-              type="number"
-              min="0"
-              value={stock}
-              onChange={(e) =>
-                setStock(e.target.value)
-              }
-              placeholder="Enter Stock"
-            />
-          </div>
-
-          <br />
-
-          {/* Image Upload */}
-          <div>
-            <label>
-              Product Image
-            </label>
-            <br />
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-          </div>
-
-          <br />
-
-          {/* Image Preview */}
-          {imagePreview && (
+          <div className="section-title">
             <div>
-              <p>
-                <strong>
-                  Image Preview
-                </strong>
-              </p>
+              <h2>
+                {editingId
+                  ? "Update Product"
+                  : "Add New Product"}
+              </h2>
 
-              <img
-                src={imagePreview}
-                alt="Product Preview"
-                width="200"
+              <p>
+                Fill in the product information
+                below.
+              </p>
+            </div>
+
+            {editingId && (
+              <span className="edit-mode-badge">
+                Editing Product
+              </span>
+            )}
+          </div>
+
+          <form
+            className="admin-product-form"
+            onSubmit={handleSubmit}
+          >
+
+            {/* Name */}
+            <div className="form-group">
+              <label htmlFor="name">
+                Product Name
+              </label>
+
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
+                placeholder="Enter product name"
               />
             </div>
-          )}
 
-          <br />
+            {/* Category */}
+            <div className="form-group">
+              <label htmlFor="category">
+                Category
+              </label>
 
-          {/* Buttons */}
-          <button
-            type="submit"
-            disabled={
-              loading ||
-              uploadingImage
-            }
-          >
-            {uploadingImage
-              ? "Uploading Image..."
-              : loading
-              ? "Saving..."
-              : editingId
-              ? "Update Product"
-              : "Add Product"}
-          </button>
-
-          {editingId && (
-            <>
-              {" "}
-
-              <button
-                type="button"
-                onClick={clearForm}
-                disabled={
-                  loading ||
-                  uploadingImage
+              <input
+                id="category"
+                type="text"
+                value={category}
+                onChange={(e) =>
+                  setCategory(e.target.value)
                 }
-              >
-                Cancel Edit
-              </button>
-            </>
-          )}
-        </form>
-      </section>
-
-      <hr />
-
-      <h2>All Products</h2>
-
-      {products.length === 0 ? (
-        <p>No Products Found</p>
-      ) : (
-        <div className="admin-products-grid">
-          {products.map((product) => (
-            <div
-              className="admin-product-card"
-              key={product._id}
-            >
-              {product.image ? (
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  width="200"
-                />
-              ) : (
-                <div className="no-image">
-                  No Image
-                </div>
-              )}
-
-              <h3>{product.name}</h3>
-
-              <p>
-                {product.description}
-              </p>
-
-              <p>
-                Price: ₹{product.price}
-              </p>
-
-              <p>
-                Category:{" "}
-                {product.category}
-              </p>
-
-              <p>
-                Brand: {product.brand}
-              </p>
-
-              <p>
-                Stock: {product.stock}
-              </p>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleEdit(product)
-                }
-              >
-                Edit
-              </button>
-
-              {" "}
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleDelete(
-                    product._id
-                  )
-                }
-              >
-                Delete
-              </button>
-
-              <hr />
+                placeholder="e.g. Electronics"
+              />
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Brand */}
+            <div className="form-group">
+              <label htmlFor="brand">
+                Brand
+              </label>
+
+              <input
+                id="brand"
+                type="text"
+                value={brand}
+                onChange={(e) =>
+                  setBrand(e.target.value)
+                }
+                placeholder="Enter brand name"
+              />
+            </div>
+
+            {/* Price */}
+            <div className="form-group">
+              <label htmlFor="price">
+                Price
+              </label>
+
+              <input
+                id="price"
+                type="number"
+                min="0"
+                value={price}
+                onChange={(e) =>
+                  setPrice(e.target.value)
+                }
+                placeholder="Enter price"
+              />
+            </div>
+
+            {/* Stock */}
+            <div className="form-group">
+              <label htmlFor="stock">
+                Stock
+              </label>
+
+              <input
+                id="stock"
+                type="number"
+                min="0"
+                step="1"
+                value={stock}
+                onChange={(e) =>
+                  setStock(e.target.value)
+                }
+                placeholder="Enter stock quantity"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="form-group form-group-full">
+              <label htmlFor="description">
+                Description
+              </label>
+
+              <textarea
+                id="description"
+                rows="5"
+                value={description}
+                onChange={(e) =>
+                  setDescription(e.target.value)
+                }
+                placeholder="Enter product description"
+              />
+            </div>
+
+            {/* Image */}
+            <div className="form-group form-group-full">
+              <label htmlFor="image">
+                Product Image
+              </label>
+
+              <div className="image-upload-box">
+                <input
+                  ref={fileInputRef}
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+
+                <p>
+                  Select an image for the product
+                </p>
+              </div>
+            </div>
+
+            {/* Preview */}
+            {imagePreview && (
+              <div className="form-group form-group-full">
+                <label>Image Preview</label>
+
+                <div className="admin-image-preview">
+                  <img
+                    src={imagePreview}
+                    alt="Product Preview"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Buttons */}
+            <div className="form-actions form-group-full">
+
+              <button
+                type="submit"
+                className="btn-save-product"
+                disabled={
+                  loading || uploadingImage
+                }
+              >
+                {uploadingImage
+                  ? "Uploading Image..."
+                  : loading
+                  ? "Saving..."
+                  : editingId
+                  ? "Update Product"
+                  : "Add Product"}
+              </button>
+
+              {editingId && (
+                <button
+                  type="button"
+                  className="btn-cancel-edit"
+                  onClick={() => {
+                    clearForm();
+                    setError("");
+                    setMessage("");
+                  }}
+                  disabled={
+                    loading || uploadingImage
+                  }
+                >
+                  Cancel Edit
+                </button>
+              )}
+            </div>
+          </form>
+        </section>
+
+        {/* Products */}
+        <section className="admin-products-list-section">
+
+          <div className="products-list-header">
+            <div>
+              <h2>All Products</h2>
+              <p>
+                Manage your available products.
+              </p>
+            </div>
+          </div>
+
+          {fetchLoading ? (
+            <div className="admin-products-loading">
+              <div className="loading-spinner"></div>
+              <p>Loading products...</p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="admin-products-empty">
+              <div className="empty-icon">📦</div>
+
+              <h3>No Products Found</h3>
+
+              <p>
+                Add your first product using the
+                form above.
+              </p>
+            </div>
+          ) : (
+            <div className="admin-products-grid">
+
+              {products.map((product) => (
+                <div
+                  className="admin-product-card"
+                  key={product._id}
+                >
+
+                  {/* Image */}
+                  <div className="admin-product-image-wrapper">
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="admin-product-image"
+                      />
+                    ) : (
+                      <div className="admin-product-no-image">
+                        <span>📷</span>
+                        <p>No Image</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="admin-product-content">
+
+                    <div className="product-category">
+                      {product.category}
+                    </div>
+
+                    <h3>
+                      {product.name}
+                    </h3>
+
+                    <p className="product-brand">
+                      Brand:{" "}
+                      <strong>
+                        {product.brand || "N/A"}
+                      </strong>
+                    </p>
+
+                    <p className="product-description">
+                      {product.description}
+                    </p>
+
+                    {/* Price + Stock */}
+                    <div className="product-meta">
+
+                      <div className="product-price">
+                        ₹{Number(product.price).toLocaleString("en-IN")}
+                      </div>
+
+                      <div
+                        className={`product-stock ${
+                          product.stock === 0
+                            ? "out-of-stock"
+                            : product.stock <= 5
+                            ? "low-stock"
+                            : ""
+                        }`}
+                      >
+                        {product.stock === 0
+                          ? "Out of Stock"
+                          : `Stock: ${product.stock}`}
+                      </div>
+
+                    </div>
+
+                    {/* Actions */}
+                    <div className="product-actions">
+
+                      <button
+                        type="button"
+                        className="btn-edit-product"
+                        onClick={() =>
+                          handleEdit(product)
+                        }
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn-delete-product"
+                        onClick={() =>
+                          handleDelete(product._id)
+                        }
+                      >
+                        Delete
+                      </button>
+
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+      </div>
     </div>
   );
 }

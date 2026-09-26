@@ -1,7 +1,11 @@
+/* ==========================
+   Orders Page
+========================== */
+
 .orders-page {
-  max-width: 1200px;
+  width: min(100% - 40px, 1200px);
   margin: 0 auto;
-  padding: 35px 25px;
+  padding: 40px 0;
 }
 
 /* ==========================
@@ -12,27 +16,48 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
   margin-bottom: 30px;
 }
 
 .orders-header h1 {
   margin: 0;
-  font-size: 34px;
+  color: var(--text-primary);
+  font-size: 36px;
+  font-weight: 800;
 }
 
 .orders-header p {
-  margin-top: 8px;
-  color: #666;
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 15px;
 }
 
 .orders-shop-btn {
-  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 11px 16px;
-  border: 1px solid #111;
-  border-radius: 8px;
-  color: #111;
-  font-weight: 600;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--white);
+  color: var(--text-primary);
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.orders-shop-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 /* ==========================
@@ -41,19 +66,22 @@
 
 .orders-message {
   padding: 13px 16px;
-  border-radius: 8px;
   margin-bottom: 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
   font-weight: 600;
 }
 
 .orders-message.error {
-  background: #ffe6e6;
-  color: #c00;
+  border: 1px solid #fecaca;
+  background: var(--danger-light);
+  color: #991b1b;
 }
 
 .orders-message.success {
-  background: #e5f7eb;
-  color: #18783c;
+  border: 1px solid #bbf7d0;
+  background: var(--success-light);
+  color: #166534;
 }
 
 /* ==========================
@@ -71,24 +99,39 @@
 ========================== */
 
 .order-card {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 14px;
   padding: 22px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+
+  background: var(--white);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.order-card:hover {
+  border-color: #d1d5db;
+  box-shadow: var(--shadow-md);
 }
 
 /* ==========================
-   Header
+   Order Header
 ========================== */
 
 .order-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   gap: 15px;
+
   padding-bottom: 18px;
-  border-bottom: 1px solid #eee;
+
+  border-bottom: 1px solid var(--border);
 }
 
 .order-card-header > div {
@@ -98,26 +141,42 @@
 }
 
 .order-label {
-  color: #777;
-  font-size: 13px;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
-.order-status-badge {
-  display: inline-block;
-  padding: 7px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: bold;
-  background: #eee;
+.order-card-header strong {
+  color: var(--text-primary);
+  font-size: 16px;
 }
 
 /* ==========================
-   Status
+   Status Badge
+========================== */
+
+.order-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 12px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  background: #f3f4f6;
+  color: var(--text-secondary);
+}
+
+/* ==========================
+   Status Colors
 ========================== */
 
 .status-pending {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--warning-light);
+  color: #92400e;
 }
 
 .status-confirmed {
@@ -131,51 +190,57 @@
 }
 
 .status-delivered {
-  background: #d1fae5;
-  color: #047857;
+  background: var(--success-light);
+  color: #166534;
 }
 
 .status-cancelled {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: var(--danger-light);
+  color: #991b1b;
 }
 
 /* ==========================
-   Info
+   Order Info
 ========================== */
 
 .order-card-info {
   display: grid;
+
   grid-template-columns: repeat(4, 1fr);
+
   gap: 20px;
+
   padding: 20px 0;
 }
 
 .order-card-info > div {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .order-card-info span {
-  color: #777;
-  font-size: 13px;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .order-card-info strong {
-  font-size: 15px;
+  color: var(--text-primary);
+  font-size: 14px;
 }
 
 /* ==========================
-   Product Preview
+   Products Preview
 ========================== */
 
 .order-products-preview {
   display: flex;
   flex-direction: column;
   gap: 12px;
+
   padding: 18px 0;
-  border-top: 1px solid #eee;
+
+  border-top: 1px solid var(--border);
 }
 
 .order-product-preview {
@@ -187,42 +252,55 @@
 .order-product-image {
   width: 60px;
   height: 60px;
+
   flex-shrink: 0;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: #f5f5f5;
-  border-radius: 8px;
   overflow: hidden;
+
+  border-radius: var(--radius-sm);
+
+  background: #f3f6f4;
 }
 
 .order-product-image img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  padding: 5px;
+  box-sizing: border-box;
 }
 
 .order-product-image span {
-  color: #888;
-  font-size: 11px;
+  color: var(--text-secondary);
+  font-size: 10px;
 }
 
 .order-product-preview strong {
   display: block;
   margin-bottom: 4px;
+
+  color: var(--text-primary);
+
+  font-size: 14px;
 }
 
 .order-product-preview p {
   margin: 0;
-  color: #666;
-  font-size: 13px;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
 }
 
 .more-items {
-  color: #666;
+  color: var(--primary-dark);
+
   font-size: 13px;
+  font-weight: 700;
 }
 
 /* ==========================
@@ -232,34 +310,55 @@
 .order-card-actions {
   display: flex;
   gap: 10px;
-  margin-top: 5px;
+
   padding-top: 18px;
-  border-top: 1px solid #eee;
+
+  border-top: 1px solid var(--border);
 }
 
 .view-order-btn,
 .cancel-order-btn {
-  padding: 10px 15px;
-  border-radius: 7px;
-  font-weight: 600;
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 9px 15px;
+
+  border-radius: var(--radius-md);
+
+  font-size: 13px;
+  font-weight: 700;
+
   cursor: pointer;
+
+  transition: 0.2s ease;
 }
 
 .view-order-btn {
+  border: 1px solid var(--primary);
+
+  background: var(--primary);
+  color: var(--white);
+
   text-decoration: none;
-  border: 1px solid #111;
-  color: #111;
-  background: white;
+}
+
+.view-order-btn:hover {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-sm);
 }
 
 .cancel-order-btn {
-  border: none;
-  background: #dc3545;
-  color: white;
+  border: 1px solid #fecaca;
+
+  background: white;
+  color: #b91c1c;
 }
 
 .cancel-order-btn:hover {
-  opacity: 0.85;
+  background: var(--danger-light);
 }
 
 .cancel-order-btn:disabled {
@@ -268,37 +367,60 @@
 }
 
 /* ==========================
-   Empty
+   Empty State
 ========================== */
 
 .empty-orders {
-  text-align: center;
   padding: 80px 20px;
 
-  border: 1px solid #ddd;
-  border-radius: 14px;
+  border: 1px dashed #cbd5cf;
+  border-radius: var(--radius-lg);
 
-  background: #fafafa;
+  background: var(--white);
+
+  text-align: center;
+
+  box-shadow: var(--shadow-sm);
 }
 
 .empty-orders-icon {
-  font-size: 50px;
   margin-bottom: 15px;
+  font-size: 52px;
+}
+
+.empty-orders h2 {
+  margin-bottom: 8px;
 }
 
 .empty-orders p {
-  color: #666;
   margin-bottom: 25px;
+
+  color: var(--text-secondary);
 }
 
 .start-shopping-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 12px 20px;
-  border-radius: 8px;
-  background: #111;
-  color: white;
+
+  border-radius: var(--radius-md);
+
+  background: var(--primary);
+  color: var(--white);
+
   text-decoration: none;
-  font-weight: bold;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.start-shopping-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
 }
 
 /* ==========================
@@ -306,8 +428,13 @@
 ========================== */
 
 .orders-loading {
-  text-align: center;
-  padding: 80px 20px;
+  min-height: 350px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--text-secondary);
 }
 
 /* ==========================
@@ -322,7 +449,8 @@
 
 @media (max-width: 600px) {
   .orders-page {
-    padding: 25px 15px;
+    width: min(100% - 24px, 1200px);
+    padding: 30px 0;
   }
 
   .orders-header {
@@ -330,13 +458,17 @@
     align-items: flex-start;
   }
 
+  .orders-header h1 {
+    font-size: 30px;
+  }
+
   .order-card {
     padding: 18px;
   }
 
   .order-card-header {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .order-card-info {
@@ -350,7 +482,5 @@
   .view-order-btn,
   .cancel-order-btn {
     width: 100%;
-    text-align: center;
-    box-sizing: border-box;
   }
 }

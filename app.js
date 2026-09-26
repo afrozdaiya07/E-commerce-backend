@@ -19,17 +19,46 @@ const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
-// Middleware
+// ======================================
+// CORS Configuration
+// ======================================
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: (origin, callback) => {
+      // Allow requests like Postman / server-to-server
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error("Not allowed by CORS")
+      );
+    },
     credentials: true,
   })
 );
 
+// ======================================
+// Middleware
+// ======================================
+
 app.use(express.json());
 
+// ======================================
 // Routes
+// ======================================
+
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
@@ -42,7 +71,10 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
+// ======================================
 // Test API
+// ======================================
+
 app.post("/test", async (req, res) => {
   try {
     const data = await Test.create(req.body);
@@ -60,7 +92,10 @@ app.post("/test", async (req, res) => {
   }
 });
 
-// Error handling
+// ======================================
+// Error Handling
+// ======================================
+
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
+import "./AdminCoupons.css";
 
 function AdminCoupons() {
   const [coupons, setCoupons] = useState([]);
@@ -23,6 +24,7 @@ function AdminCoupons() {
 
   const [loading, setLoading] =
     useState(false);
+
   const [deletingId, setDeletingId] =
     useState(null);
 
@@ -30,30 +32,17 @@ function AdminCoupons() {
   const [message, setMessage] =
     useState("");
 
-  const token = localStorage.getItem("token");
+  // =========================
+  // FETCH COUPONS
+  // =========================
 
-  // Fetch Coupons
   const fetchCoupons = async () => {
     try {
       setError("");
 
-      if (!token) {
-        setError("Please Login First");
-        return;
-      }
+      const response = await api.get("/coupons");
 
-      const response = await axios.get(
-        "http://localhost:5000/api/coupons",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setCoupons(
-        response.data.coupons || []
-      );
+      setCoupons(response.data.coupons || []);
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -66,7 +55,10 @@ function AdminCoupons() {
     fetchCoupons();
   }, []);
 
-  // Clear Form
+  // =========================
+  // CLEAR FORM
+  // =========================
+
   const clearForm = () => {
     setCode("");
     setDiscountType("percentage");
@@ -76,9 +68,13 @@ function AdminCoupons() {
     setExpiryDate("");
     setIsActive(true);
     setEditingId(null);
+    setError("");
   };
 
-  // Add / Update Coupon
+  // =========================
+  // SUBMIT COUPON
+  // =========================
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,27 +83,18 @@ function AdminCoupons() {
       setError("");
       setMessage("");
 
-      if (!token) {
-        setError("Please Login First");
-        return;
-      }
-
       if (!code.trim()) {
         setError("Coupon Code is required");
         return;
       }
 
       if (discountValue === "") {
-        setError(
-          "Discount Value is required"
-        );
+        setError("Discount Value is required");
         return;
       }
 
       if (!expiryDate) {
-        setError(
-          "Expiry Date is required"
-        );
+        setError("Expiry Date is required");
         return;
       }
 
@@ -123,9 +110,7 @@ function AdminCoupons() {
           : Number(maxDiscount);
 
       if (
-        !Number.isFinite(
-          numericDiscount
-        ) ||
+        !Number.isFinite(numericDiscount) ||
         numericDiscount < 0
       ) {
         setError(
@@ -135,9 +120,7 @@ function AdminCoupons() {
       }
 
       if (
-        !Number.isFinite(
-          numericMinOrder
-        ) ||
+        !Number.isFinite(numericMinOrder) ||
         numericMinOrder < 0
       ) {
         setError(
@@ -148,9 +131,7 @@ function AdminCoupons() {
 
       if (
         numericMaxDiscount !== null &&
-        (!Number.isFinite(
-          numericMaxDiscount
-        ) ||
+        (!Number.isFinite(numericMaxDiscount) ||
           numericMaxDiscount < 0)
       ) {
         setError(
@@ -159,15 +140,23 @@ function AdminCoupons() {
         return;
       }
 
+      // Percentage validation
+      if (
+        discountType === "percentage" &&
+        numericDiscount > 100
+      ) {
+        setError(
+          "Percentage discount cannot be more than 100%"
+        );
+        return;
+      }
+
       const couponData = {
         code: code.trim().toUpperCase(),
         discountType,
-        discountValue:
-          numericDiscount,
-        minOrderAmount:
-          numericMinOrder,
-        maxDiscount:
-          numericMaxDiscount,
+        discountValue: numericDiscount,
+        minOrderAmount: numericMinOrder,
+        maxDiscount: numericMaxDiscount,
         expiryDate,
         isActive,
       };
@@ -175,24 +164,14 @@ function AdminCoupons() {
       let response;
 
       if (editingId) {
-        response = await axios.put(
-          `http://localhost:5000/api/coupons/${editingId}`,
-          couponData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        response = await api.put(
+          `/coupons/${editingId}`,
+          couponData
         );
       } else {
-        response = await axios.post(
-          "http://localhost:5000/api/coupons",
-          couponData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        response = await api.post(
+          "/coupons",
+          couponData
         );
       }
 
@@ -216,7 +195,10 @@ function AdminCoupons() {
     }
   };
 
-  // Edit Coupon
+  // =========================
+  // EDIT COUPON
+  // =========================
+
   const handleEdit = (coupon) => {
     setEditingId(coupon._id);
 
@@ -260,25 +242,18 @@ function AdminCoupons() {
     });
   };
 
-  // Delete Coupon
+  // =========================
+  // DELETE COUPON
+  // =========================
+
   const handleDelete = async (id) => {
     try {
       setDeletingId(id);
       setError("");
       setMessage("");
 
-      if (!token) {
-        setError("Please Login First");
-        return;
-      }
-
-      const response = await axios.delete(
-        `http://localhost:5000/api/coupons/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await api.delete(
+        `/coupons/${id}`
       );
 
       setMessage(
@@ -297,294 +272,502 @@ function AdminCoupons() {
     }
   };
 
+  // =========================
+  // STATUS CLASS
+  // =========================
+
+  const getStatusClass = (coupon) => {
+    if (!coupon.isActive) {
+      return "coupon-inactive";
+    }
+
+    if (
+      coupon.expiryDate &&
+      new Date(coupon.expiryDate) < new Date()
+    ) {
+      return "coupon-expired";
+    }
+
+    return "coupon-active";
+  };
+
+  const getStatusText = (coupon) => {
+    if (!coupon.isActive) {
+      return "Inactive";
+    }
+
+    if (
+      coupon.expiryDate &&
+      new Date(coupon.expiryDate) < new Date()
+    ) {
+      return "Expired";
+    }
+
+    return "Active";
+  };
+
   return (
     <div className="admin-coupons-page">
-      <h1>Admin Coupon Management</h1>
+      <div className="admin-coupons-container">
 
-      {error && (
-        <p className="error-message">
-          {error}
-        </p>
-      )}
+        {/* =========================
+            HEADER
+        ========================= */}
 
-      {message && (
-        <p className="success-message">
-          {message}
-        </p>
-      )}
-
-      <hr />
-
-      {/* Coupon Form */}
-      <section className="admin-coupon-form-card">
-        <h2>
-          {editingId
-            ? "Update Coupon"
-            : "Create Coupon"}
-        </h2>
-
-        <form onSubmit={handleSubmit}>
+        <div className="coupons-page-header">
           <div>
-            <label>Coupon Code</label>
-            <br />
+            <span className="admin-section-label">
+              ADMIN PANEL
+            </span>
 
-            <input
-              type="text"
-              value={code}
-              onChange={(e) =>
-                setCode(e.target.value)
-              }
-              placeholder="SAVE10"
-            />
+            <h1>Coupon Management</h1>
+
+            <p>
+              Create, update and manage discount
+              coupons for your customers.
+            </p>
           </div>
 
-          <br />
-
-          <div>
-            <label>
-              Discount Type
-            </label>
-            <br />
-
-            <select
-              value={discountType}
-              onChange={(e) =>
-                setDiscountType(
-                  e.target.value
-                )
-              }
-            >
-              <option value="percentage">
-                Percentage
-              </option>
-
-              <option value="fixed">
-                Fixed
-              </option>
-            </select>
+          <div className="coupon-count-card">
+            <span>Total Coupons</span>
+            <strong>{coupons.length}</strong>
           </div>
+        </div>
 
-          <br />
+        {/* =========================
+            MESSAGES
+        ========================= */}
 
-          <div>
-            <label>
-              Discount Value
-            </label>
-            <br />
-
-            <input
-              type="number"
-              min="0"
-              value={discountValue}
-              onChange={(e) =>
-                setDiscountValue(
-                  e.target.value
-                )
-              }
-              placeholder="10"
-            />
+        {error && (
+          <div className="coupon-message coupon-error">
+            ❌ {error}
           </div>
+        )}
 
-          <br />
-
-          <div>
-            <label>
-              Minimum Order Amount
-            </label>
-            <br />
-
-            <input
-              type="number"
-              min="0"
-              value={minOrderAmount}
-              onChange={(e) =>
-                setMinOrderAmount(
-                  e.target.value
-                )
-              }
-              placeholder="1000"
-            />
+        {message && (
+          <div className="coupon-message coupon-success">
+            ✅ {message}
           </div>
+        )}
 
-          <br />
+        {/* =========================
+            CREATE / UPDATE FORM
+        ========================= */}
 
-          <div>
-            <label>
-              Maximum Discount
-            </label>
-            <br />
+        <section className="coupon-form-card">
 
-            <input
-              type="number"
-              min="0"
-              value={maxDiscount}
-              onChange={(e) =>
-                setMaxDiscount(
-                  e.target.value
-                )
-              }
-              placeholder="10000"
-            />
-          </div>
+          <div className="coupon-form-header">
+            <div>
+              <span className="form-small-label">
+                {editingId
+                  ? "EDIT COUPON"
+                  : "NEW COUPON"}
+              </span>
 
-          <br />
+              <h2>
+                {editingId
+                  ? "Update Coupon"
+                  : "Create Coupon"}
+              </h2>
 
-          <div>
-            <label>
-              Expiry Date
-            </label>
-            <br />
+              <p>
+                Set discount rules and coupon
+                availability.
+              </p>
+            </div>
 
-            <input
-              type="date"
-              value={expiryDate}
-              onChange={(e) =>
-                setExpiryDate(
-                  e.target.value
-                )
-              }
-            />
-          </div>
-
-          <br />
-
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={isActive}
-                onChange={(e) =>
-                  setIsActive(
-                    e.target.checked
-                  )
-                }
-                style={{
-                  width: "auto",
-                }}
-              />
-
-              {" "}Active Coupon
-            </label>
-          </div>
-
-          <br />
-
-          <button
-            type="submit"
-            disabled={loading}
-          >
-            {loading
-              ? "Saving..."
-              : editingId
-              ? "Update Coupon"
-              : "Create Coupon"}
-          </button>
-
-          {editingId && (
-            <>
-              {" "}
-
+            {editingId && (
               <button
                 type="button"
+                className="cancel-top-btn"
                 onClick={clearForm}
                 disabled={loading}
               >
                 Cancel Edit
               </button>
-            </>
-          )}
-        </form>
-      </section>
+            )}
+          </div>
 
-      <hr />
+          <form
+            className="coupon-form"
+            onSubmit={handleSubmit}
+          >
 
-      {/* Coupons */}
-      <h2>All Coupons</h2>
+            {/* Coupon Code */}
+            <div className="form-group">
+              <label htmlFor="coupon-code">
+                Coupon Code
+              </label>
 
-      {coupons.length === 0 ? (
-        <p>No Coupons Found</p>
-      ) : (
-        <div className="admin-coupons-grid">
-          {coupons.map((coupon) => (
-            <div
-              className="admin-coupon-card"
-              key={coupon._id}
-            >
-              <h3>
-                {coupon.code}
-              </h3>
-
-              <p>
-                Type:{" "}
-                {coupon.discountType}
-              </p>
-
-              <p>
-                Discount:{" "}
-                {coupon.discountValue}
-                {coupon.discountType ===
-                "percentage"
-                  ? "%"
-                  : " ₹"}
-              </p>
-
-              <p>
-                Minimum Order: ₹
-                {coupon.minOrderAmount}
-              </p>
-
-              <p>
-                Maximum Discount:{" "}
-                {coupon.maxDiscount !== null
-                  ? `₹${coupon.maxDiscount}`
-                  : "No Limit"}
-              </p>
-
-              <p>
-                Expiry:{" "}
-                {new Date(
-                  coupon.expiryDate
-                ).toLocaleDateString()}
-              </p>
-
-              <p>
-                Status:{" "}
-                {coupon.isActive
-                  ? "Active"
-                  : "Inactive"}
-              </p>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleEdit(coupon)
+              <input
+                id="coupon-code"
+                type="text"
+                value={code}
+                onChange={(e) =>
+                  setCode(e.target.value)
                 }
-              >
-                Edit
-              </button>
+                placeholder="SAVE10"
+                maxLength={30}
+              />
 
-              {" "}
+              <small>
+                Example: SAVE10, FESTIVE20
+              </small>
+            </div>
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleDelete(
-                    coupon._id
+            {/* Discount Type */}
+            <div className="form-group">
+              <label htmlFor="discount-type">
+                Discount Type
+              </label>
+
+              <select
+                id="discount-type"
+                value={discountType}
+                onChange={(e) =>
+                  setDiscountType(
+                    e.target.value
                   )
                 }
-                disabled={
-                  deletingId ===
-                  coupon._id
-                }
               >
-                {deletingId === coupon._id
-                  ? "Deleting..."
-                  : "Delete"}
-              </button>
+                <option value="percentage">
+                  Percentage
+                </option>
+
+                <option value="fixed">
+                  Fixed Amount
+                </option>
+              </select>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Discount Value */}
+            <div className="form-group">
+              <label htmlFor="discount-value">
+                Discount Value
+              </label>
+
+              <div className="input-with-symbol">
+                <input
+                  id="discount-value"
+                  type="number"
+                  min="0"
+                  value={discountValue}
+                  onChange={(e) =>
+                    setDiscountValue(
+                      e.target.value
+                    )
+                  }
+                  placeholder={
+                    discountType === "percentage"
+                      ? "10"
+                      : "500"
+                  }
+                />
+
+                <span>
+                  {discountType ===
+                  "percentage"
+                    ? "%"
+                    : "₹"}
+                </span>
+              </div>
+            </div>
+
+            {/* Minimum Order */}
+            <div className="form-group">
+              <label htmlFor="min-order">
+                Minimum Order Amount
+              </label>
+
+              <div className="input-with-symbol">
+                <span>₹</span>
+
+                <input
+                  id="min-order"
+                  type="number"
+                  min="0"
+                  value={minOrderAmount}
+                  onChange={(e) =>
+                    setMinOrderAmount(
+                      e.target.value
+                    )
+                  }
+                  placeholder="1000"
+                />
+              </div>
+            </div>
+
+            {/* Maximum Discount */}
+            <div className="form-group">
+              <label htmlFor="max-discount">
+                Maximum Discount
+              </label>
+
+              <div className="input-with-symbol">
+                <span>₹</span>
+
+                <input
+                  id="max-discount"
+                  type="number"
+                  min="0"
+                  value={maxDiscount}
+                  onChange={(e) =>
+                    setMaxDiscount(
+                      e.target.value
+                    )
+                  }
+                  placeholder="No Limit"
+                />
+              </div>
+
+              <small>
+                Leave empty for no maximum limit.
+              </small>
+            </div>
+
+            {/* Expiry */}
+            <div className="form-group">
+              <label htmlFor="expiry-date">
+                Expiry Date
+              </label>
+
+              <input
+                id="expiry-date"
+                type="date"
+                value={expiryDate}
+                onChange={(e) =>
+                  setExpiryDate(
+                    e.target.value
+                  )
+                }
+              />
+            </div>
+
+            {/* Active */}
+            <div className="form-group checkbox-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={isActive}
+                  onChange={(e) =>
+                    setIsActive(
+                      e.target.checked
+                    )
+                  }
+                />
+
+                <span className="custom-check"></span>
+
+                <span>
+                  Active Coupon
+                </span>
+              </label>
+
+              <small>
+                Active coupons can be applied by
+                customers.
+              </small>
+            </div>
+
+            {/* Buttons */}
+            <div className="coupon-form-actions">
+              <button
+                type="submit"
+                className="coupon-primary-btn"
+                disabled={loading}
+              >
+                {loading
+                  ? "Saving..."
+                  : editingId
+                  ? "Update Coupon"
+                  : "Create Coupon"}
+              </button>
+
+              {editingId && (
+                <button
+                  type="button"
+                  className="coupon-secondary-btn"
+                  onClick={clearForm}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        </section>
+
+        {/* =========================
+            ALL COUPONS
+        ========================= */}
+
+        <section className="all-coupons-section">
+
+          <div className="coupons-section-header">
+            <div>
+              <h2>All Coupons</h2>
+              <p>
+                View and manage your discount
+                coupons.
+              </p>
+            </div>
+          </div>
+
+          {coupons.length === 0 ? (
+            <div className="no-coupons-card">
+              <div className="coupon-empty-icon">
+                🎟️
+              </div>
+
+              <h3>No Coupons Found</h3>
+
+              <p>
+                Create your first coupon to offer
+                discounts to customers.
+              </p>
+            </div>
+          ) : (
+            <div className="coupons-grid">
+              {coupons.map((coupon) => (
+                <div
+                  className="coupon-card"
+                  key={coupon._id}
+                >
+                  {/* Card Header */}
+                  <div className="coupon-card-header">
+                    <div>
+                      <span className="coupon-code-label">
+                        COUPON CODE
+                      </span>
+
+                      <h3>
+                        {coupon.code}
+                      </h3>
+                    </div>
+
+                    <span
+                      className={`coupon-status ${getStatusClass(
+                        coupon
+                      )}`}
+                    >
+                      {getStatusText(coupon)}
+                    </span>
+                  </div>
+
+                  {/* Discount */}
+                  <div className="discount-banner">
+                    <div>
+                      <span>
+                        Discount
+                      </span>
+
+                      <strong>
+                        {coupon.discountValue}
+                        {coupon.discountType ===
+                        "percentage"
+                          ? "%"
+                          : " ₹"}
+                      </strong>
+                    </div>
+
+                    <div className="discount-type">
+                      {coupon.discountType ===
+                      "percentage"
+                        ? "Percentage"
+                        : "Fixed Amount"}
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="coupon-details">
+
+                    <div className="coupon-detail-row">
+                      <span>
+                        Minimum Order
+                      </span>
+
+                      <strong>
+                        ₹
+                        {Number(
+                          coupon.minOrderAmount || 0
+                        ).toLocaleString()}
+                      </strong>
+                    </div>
+
+                    <div className="coupon-detail-row">
+                      <span>
+                        Maximum Discount
+                      </span>
+
+                      <strong>
+                        {coupon.maxDiscount !==
+                        null &&
+                        coupon.maxDiscount !==
+                          undefined
+                          ? `₹${Number(
+                              coupon.maxDiscount
+                            ).toLocaleString()}`
+                          : "No Limit"}
+                      </strong>
+                    </div>
+
+                    <div className="coupon-detail-row">
+                      <span>
+                        Expiry Date
+                      </span>
+
+                      <strong>
+                        {coupon.expiryDate
+                          ? new Date(
+                              coupon.expiryDate
+                            ).toLocaleDateString(
+                              "en-IN"
+                            )
+                          : "No Date"}
+                      </strong>
+                    </div>
+
+                  </div>
+
+                  {/* Actions */}
+                  <div className="coupon-actions">
+
+                    <button
+                      type="button"
+                      className="edit-coupon-btn"
+                      onClick={() =>
+                        handleEdit(coupon)
+                      }
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className="delete-coupon-btn"
+                      onClick={() =>
+                        handleDelete(
+                          coupon._id
+                        )
+                      }
+                      disabled={
+                        deletingId ===
+                        coupon._id
+                      }
+                    >
+                      {deletingId === coupon._id
+                        ? "Deleting..."
+                        : "Delete"}
+                    </button>
+
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+      </div>
     </div>
   );
 }
