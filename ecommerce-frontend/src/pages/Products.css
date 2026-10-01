@@ -1,6 +1,4 @@
-/* ==========================
-   Products Page
-========================== */
+/* Products Page */
 
 .products-page {
   width: min(100% - 40px, 1300px);
@@ -8,39 +6,30 @@
   padding: 40px 0;
 }
 
-/* ==========================
-   Header
-========================== */
+/* Header */
 
 .products-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   gap: 30px;
   margin-bottom: 30px;
 }
 
 .products-header h1 {
   margin: 0;
-
   color: var(--text-primary);
-
   font-size: 36px;
   font-weight: 800;
 }
 
 .products-header p {
   margin: 8px 0 0;
-
   color: var(--text-secondary);
-
   font-size: 15px;
 }
 
-/* ==========================
-   Search
-========================== */
+/* Search */
 
 .products-search {
   min-width: 300px;
@@ -49,24 +38,15 @@
 .products-search input {
   width: 100%;
   box-sizing: border-box;
-
   padding: 13px 16px;
-
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-
   background: var(--white);
   color: var(--text-primary);
-
   outline: none;
-
   font-size: 14px;
-
   box-shadow: var(--shadow-sm);
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .products-search input::placeholder {
@@ -75,83 +55,56 @@
 
 .products-search input:focus {
   border-color: var(--primary);
-
-  box-shadow:
-    0 0 0 3px rgba(22, 163, 74, 0.12);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
 }
 
-/* ==========================
-   Messages
-========================== */
+/* Messages */
 
 .products-message {
   padding: 13px 16px;
-
   border-radius: var(--radius-md);
-
   margin-bottom: 20px;
-
   font-size: 14px;
   font-weight: 600;
 }
 
 .products-message.error {
   border: 1px solid #fecaca;
-
   background: var(--danger-light);
   color: #991b1b;
 }
 
 .products-message.success {
   border: 1px solid #bbf7d0;
-
   background: var(--success-light);
   color: #166534;
 }
 
-/* ==========================
-   Product Count
-========================== */
+/* Product Count */
 
 .products-count {
   margin-bottom: 20px;
-
   color: var(--text-secondary);
-
   font-size: 14px;
   font-weight: 600;
 }
 
-/* ==========================
-   Grid
-========================== */
+/* Grid */
 
 .products-grid {
   display: grid;
-
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(270px, 1fr)
-  );
-
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 24px;
 }
 
-/* ==========================
-   Product Card
-========================== */
+/* Product Card */
 
 .product-card {
   overflow: hidden;
-
   background: var(--white);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-lg);
-
   box-shadow: var(--shadow-md);
-
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease,
@@ -160,50 +113,37 @@
 
 .product-card:hover {
   transform: translateY(-5px);
-
   border-color: #d1d5db;
-
   box-shadow: var(--shadow-lg);
 }
 
-/* ==========================
-   Image
-========================== */
+/* Image */
 
 .product-image-wrapper {
   width: 100%;
   height: 250px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: #f3f6f4;
-
   border-bottom: 1px solid var(--border);
 }
 
 .product-image {
   width: 100%;
   height: 100%;
-
   object-fit: contain;
-
   padding: 15px;
-
   box-sizing: border-box;
 }
 
 .product-no-image {
   color: var(--text-secondary);
-
   font-size: 14px;
   font-weight: 600;
 }
 
-/* ==========================
-   Product Content
-========================== */
+/* Product Content */
 
 .product-content {
   padding: 20px;
@@ -211,80 +151,56 @@
 
 .product-category {
   display: inline-block;
-
   padding: 5px 9px;
-
   margin-bottom: 10px;
-
   border-radius: 20px;
-
   background: var(--primary-light);
   color: var(--primary-dark);
-
   font-size: 11px;
   font-weight: 800;
-
   text-transform: uppercase;
 }
 
 .product-content h2 {
   margin: 0 0 7px;
-
   color: var(--text-primary);
-
   font-size: 21px;
   font-weight: 750;
-
   line-height: 1.3;
 }
 
 .product-brand {
   margin: 0 0 10px;
-
   color: var(--text-secondary);
-
   font-size: 14px;
   font-weight: 600;
 }
 
 .product-description {
   min-height: 44px;
-
   margin: 0;
-
   color: var(--text-secondary);
-
   font-size: 14px;
-
   line-height: 1.6;
-
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-
   overflow: hidden;
 }
 
-/* ==========================
-   Price
-========================== */
+/* Price */
 
 .product-price {
   margin: 16px 0 8px;
-
   color: var(--text-primary);
-
   font-size: 24px;
   font-weight: 800;
 }
 
-/* ==========================
-   Stock
-========================== */
+/* Stock */
 
 .product-stock {
   margin: 0 0 16px;
-
   font-size: 13px;
   font-weight: 700;
 }
@@ -297,35 +213,25 @@
   color: var(--danger);
 }
 
-/* ==========================
-   Actions
-========================== */
+/* Actions */
 
 .product-actions {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
-
   gap: 10px;
 }
 
 .view-product-btn,
 .add-cart-btn {
   min-height: 42px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 10px 12px;
-
   border-radius: var(--radius-md);
-
   font-size: 13px;
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -335,79 +241,58 @@
 
 .view-product-btn {
   border: 1px solid var(--border);
-
   background: var(--white);
   color: var(--text-primary);
-
   text-decoration: none;
 }
 
 .view-product-btn:hover {
   border-color: var(--primary);
-
   color: var(--primary);
-
   background: var(--primary-light);
 }
 
 .add-cart-btn {
   border: 1px solid var(--primary);
-
   background: var(--primary);
   color: var(--white);
 }
 
 .add-cart-btn:hover {
   background: var(--primary-dark);
-
   transform: translateY(-1px);
 }
 
 .add-cart-btn:disabled {
   border-color: #d1d5db;
-
   background: #d1d5db;
-
   color: #6b7280;
-
   cursor: not-allowed;
-
   transform: none;
 }
 
-/* ==========================
-   Loading
-========================== */
+/* Loading */
 
 .products-loading {
   min-height: 350px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   text-align: center;
 }
 
 .products-loading h2 {
   color: var(--text-secondary);
-
   font-size: 20px;
 }
 
-/* ==========================
-   Empty State
-========================== */
+/* Empty State */
 
 .no-products {
   padding: 70px 20px;
-
   border: 1px dashed #cbd5cf;
-
   border-radius: var(--radius-lg);
-
   background: var(--white);
-
   text-align: center;
 }
 
@@ -417,13 +302,10 @@
 
 .no-products p {
   margin: 0;
-
   color: var(--text-secondary);
 }
 
-/* ==========================
-   Responsive
-========================== */
+/* Responsive */
 
 @media (max-width: 850px) {
   .products-page {
@@ -432,7 +314,6 @@
 
   .products-header {
     flex-direction: column;
-
     align-items: stretch;
   }
 
@@ -452,7 +333,6 @@
 
   .products-grid {
     grid-template-columns: 1fr;
-
     gap: 18px;
   }
 

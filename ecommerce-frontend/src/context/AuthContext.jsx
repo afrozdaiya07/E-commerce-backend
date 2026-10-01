@@ -15,13 +15,9 @@ export const AuthProvider = ({ children }) => {
   );
 
   const [user, setUser] = useState(null);
-
   const [loading, setLoading] = useState(true);
 
-  // ==========================
-  // Login
-  // ==========================
-
+  /* Login */
   const login = (newToken, userData) => {
     localStorage.setItem("token", newToken);
 
@@ -29,10 +25,7 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
-  // ==========================
-  // Logout
-  // ==========================
-
+  /* Logout */
   const logout = () => {
     localStorage.removeItem("token");
 
@@ -40,10 +33,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // ==========================
-  // Fetch Profile
-  // ==========================
-
+  /* Fetch Profile */
   const fetchProfile = async () => {
     try {
       const currentToken =
@@ -76,10 +66,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ==========================
-  // Initial / Token Change
-  // ==========================
-
+  /* Initial / Token Change */
   useEffect(() => {
     fetchProfile();
   }, [token]);

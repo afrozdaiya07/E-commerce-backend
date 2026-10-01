@@ -4,18 +4,13 @@ import "./AdminUsers.css";
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // =========================
-  // FETCH USERS
-  // =========================
-
+  /* Fetch Users */
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -38,10 +33,7 @@ function AdminUsers() {
     fetchUsers();
   }, []);
 
-  // =========================
-  // CHANGE ROLE
-  // =========================
-
+  /* Change Role */
   const handleRoleChange = async (id, role) => {
     try {
       setUpdatingId(id);
@@ -69,10 +61,7 @@ function AdminUsers() {
     }
   };
 
-  // =========================
-  // DELETE USER
-  // =========================
-
+  /* Delete User */
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this user?"
@@ -107,20 +96,14 @@ function AdminUsers() {
     }
   };
 
-  // =========================
-  // STATUS
-  // =========================
-
+  /* Status */
   const getInitial = (name) => {
     return (name || "U")
       .charAt(0)
       .toUpperCase();
   };
 
-  // =========================
-  // LOADING
-  // =========================
-
+  /* Loading */
   if (loading) {
     return (
       <div className="admin-users-page">
@@ -139,15 +122,11 @@ function AdminUsers() {
     );
   }
 
-  // =========================
-  // UI
-  // =========================
-
+  /* Responsive */
   return (
     <div className="admin-users-page">
       <div className="admin-users-container">
-
-        {/* HEADER */}
+        {/* Header */}
         <div className="admin-users-header">
           <div>
             <span className="admin-users-label">
@@ -168,8 +147,7 @@ function AdminUsers() {
           </div>
         </div>
 
-        {/* MESSAGES */}
-
+        {/* Messages */}
         {error && (
           <div className="users-message users-error">
             ❌ {error}
@@ -182,8 +160,7 @@ function AdminUsers() {
           </div>
         )}
 
-        {/* SECTION HEADER */}
-
+        {/* Section Header */}
         <div className="users-section-header">
           <div>
             <h2>All Users</h2>
@@ -199,8 +176,7 @@ function AdminUsers() {
           </div>
         </div>
 
-        {/* USERS */}
-
+        {/* Users */}
         {users.length === 0 ? (
           <div className="no-users-card">
             <div className="empty-users-icon">
@@ -221,19 +197,16 @@ function AdminUsers() {
                 className="admin-user-card"
                 key={user._id}
               >
-                {/* CARD HEADER */}
-
+                {/* Card Header */}
                 <div className="user-card-header">
                   <div className="user-profile">
-
                     <div className="user-avatar">
                       {getInitial(user.name)}
                     </div>
 
                     <div className="user-main-info">
                       <h3>
-                        {user.name ||
-                          "Unknown User"}
+                        {user.name || "Unknown User"}
                       </h3>
 
                       <p>
@@ -256,16 +229,12 @@ function AdminUsers() {
                   </span>
                 </div>
 
-                {/* USER DETAILS */}
-
+                {/* User Details */}
                 <div className="user-details">
-
                   <div className="user-detail-row">
                     <span>User ID</span>
 
-                    <strong
-                      title={user._id}
-                    >
+                    <strong title={user._id}>
                       {user._id}
                     </strong>
                   </div>
@@ -277,9 +246,7 @@ function AdminUsers() {
                       {user.createdAt
                         ? new Date(
                             user.createdAt
-                          ).toLocaleDateString(
-                            "en-IN"
-                          )
+                          ).toLocaleDateString("en-IN")
                         : "Not Available"}
                     </strong>
                   </div>
@@ -293,15 +260,11 @@ function AdminUsers() {
                         : "Customer"}
                     </strong>
                   </div>
-
                 </div>
 
-                {/* ROLE UPDATE */}
-
+                {/* Role Update */}
                 <div className="role-management">
-                  <label
-                    htmlFor={`role-${user._id}`}
-                  >
+                  <label htmlFor={`role-${user._id}`}>
                     Change User Role
                   </label>
 
@@ -327,8 +290,7 @@ function AdminUsers() {
                     </option>
                   </select>
 
-                  {updatingId ===
-                    user._id && (
+                  {updatingId === user._id && (
                     <div className="updating-user">
                       <span className="mini-spinner"></span>
                       Updating role...
@@ -336,8 +298,7 @@ function AdminUsers() {
                   )}
                 </div>
 
-                {/* DELETE */}
-
+                {/* Delete */}
                 <div className="user-card-actions">
                   <button
                     type="button"
@@ -358,7 +319,6 @@ function AdminUsers() {
             ))}
           </div>
         )}
-
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -100,6 +99,7 @@ function Orders() {
       .replace(/\s+/g, "-")}`;
   };
 
+  // Loading
   if (loading) {
     return (
       <div className="orders-page">
@@ -112,18 +112,11 @@ function Orders() {
 
   return (
     <div className="orders-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="orders-header">
         <div>
           <h1>My Orders</h1>
-
-          <p>
-            View and manage your orders.
-          </p>
+          <p>View and manage your orders.</p>
         </div>
 
         <Link
@@ -134,10 +127,7 @@ function Orders() {
         </Link>
       </div>
 
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {error && (
         <div className="orders-message error">
           {error}
@@ -150,21 +140,14 @@ function Orders() {
         </div>
       )}
 
-      {/* ==========================
-          Empty Orders
-      ========================== */}
-
+      {/* Empty Orders */}
       {orders.length === 0 ? (
         <div className="empty-orders">
-          <div className="empty-orders-icon">
-            📦
-          </div>
+          <div className="empty-orders-icon">📦</div>
 
           <h2>No Orders Yet</h2>
 
-          <p>
-            You have not placed any orders yet.
-          </p>
+          <p>You have not placed any orders yet.</p>
 
           <Link
             to="/products"
@@ -175,7 +158,6 @@ function Orders() {
         </div>
       ) : (
         <div className="orders-list">
-
           {orders.map((order) => {
             const orderAmount =
               Number(order.finalAmount) ||
@@ -185,8 +167,7 @@ function Orders() {
             const itemCount =
               order.items?.reduce(
                 (total, item) =>
-                  total +
-                  Number(item.quantity || 0),
+                  total + Number(item.quantity || 0),
                 0
               ) || 0;
 
@@ -203,11 +184,7 @@ function Orders() {
                 className="order-card"
                 key={order._id}
               >
-
-                {/* ==========================
-                    Order Header
-                ========================== */}
-
+                {/* Order Header */}
                 <div className="order-card-header">
                   <div>
                     <span className="order-label">
@@ -228,17 +205,11 @@ function Orders() {
                   </span>
                 </div>
 
-                {/* ==========================
-                    Order Info
-                ========================== */}
-
+                {/* Order Info */}
                 <div className="order-card-info">
-
                   <div>
                     <span>Items</span>
-                    <strong>
-                      {itemCount}
-                    </strong>
+                    <strong>{itemCount}</strong>
                   </div>
 
                   <div>
@@ -256,9 +227,7 @@ function Orders() {
                     <strong>
                       {new Date(
                         order.createdAt
-                      ).toLocaleDateString(
-                        "en-IN"
-                      )}
+                      ).toLocaleDateString("en-IN")}
                     </strong>
                   </div>
 
@@ -272,17 +241,12 @@ function Orders() {
                   </div>
                 </div>
 
-                {/* ==========================
-                    Product Preview
-                ========================== */}
-
+                {/* Product Preview */}
                 <div className="order-products-preview">
-
                   {order.items
                     ?.slice(0, 3)
                     .map((item, index) => {
-                      const product =
-                        item.product;
+                      const product = item.product;
 
                       if (!product) {
                         return null;
@@ -292,22 +256,17 @@ function Orders() {
                         <div
                           className="order-product-preview"
                           key={
-                            product._id ||
-                            index
+                            product._id || index
                           }
                         >
                           <div className="order-product-image">
                             {product.image ? (
                               <img
                                 src={product.image}
-                                alt={
-                                  product.name
-                                }
+                                alt={product.name}
                               />
                             ) : (
-                              <span>
-                                No Image
-                              </span>
+                              <span>No Image</span>
                             )}
                           </div>
 
@@ -317,8 +276,7 @@ function Orders() {
                             </strong>
 
                             <p>
-                              Qty:{" "}
-                              {item.quantity}
+                              Qty: {item.quantity}
                             </p>
                           </div>
                         </div>
@@ -332,12 +290,8 @@ function Orders() {
                   )}
                 </div>
 
-                {/* ==========================
-                    Actions
-                ========================== */}
-
+                {/* Actions */}
                 <div className="order-card-actions">
-
                   <Link
                     to={`/orders/${order._id}`}
                     className="view-order-btn"

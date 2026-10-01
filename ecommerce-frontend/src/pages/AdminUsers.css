@@ -1,3 +1,4 @@
+/* Admin Users Page */
 .admin-users-page {
   min-height: calc(100vh - 70px);
   padding: 40px 20px 60px;
@@ -10,10 +11,7 @@
   margin: 0 auto;
 }
 
-/* =========================
-   HEADER
-========================= */
-
+/* Header */
 .admin-users-header {
   display: flex;
   justify-content: space-between;
@@ -67,10 +65,7 @@
   font-weight: 800;
 }
 
-/* =========================
-   MESSAGES
-========================= */
-
+/* Messages */
 .users-message {
   margin-bottom: 22px;
   padding: 14px 18px;
@@ -91,10 +86,7 @@
   color: #991b1b;
 }
 
-/* =========================
-   SECTION HEADER
-========================= */
-
+/* Section Header */
 .users-section-header {
   display: flex;
   justify-content: space-between;
@@ -126,20 +118,14 @@
   font-weight: 700;
 }
 
-/* =========================
-   USERS GRID
-========================= */
-
+/* Users Grid */
 .admin-users-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 22px;
 }
 
-/* =========================
-   USER CARD
-========================= */
-
+/* User Card */
 .admin-user-card {
   padding: 22px;
   border: 1px solid var(--border);
@@ -156,10 +142,7 @@
   box-shadow: var(--shadow-md);
 }
 
-/* =========================
-   CARD HEADER
-========================= */
-
+/* Card Header */
 .user-card-header {
   display: flex;
   align-items: flex-start;
@@ -214,10 +197,7 @@
   white-space: nowrap;
 }
 
-/* =========================
-   ROLE BADGE
-========================= */
-
+/* Role Badge */
 .user-role-badge {
   flex-shrink: 0;
   padding: 6px 10px;
@@ -236,10 +216,7 @@
   color: #4b5563;
 }
 
-/* =========================
-   DETAILS
-========================= */
-
+/* Details */
 .user-details {
   display: flex;
   flex-direction: column;
@@ -269,10 +246,7 @@
   white-space: nowrap;
 }
 
-/* =========================
-   ROLE MANAGEMENT
-========================= */
-
+/* Role Management */
 .role-management {
   margin-top: 22px;
   padding-top: 18px;
@@ -322,10 +296,7 @@
   font-weight: 600;
 }
 
-/* =========================
-   ACTIONS
-========================= */
-
+/* Actions */
 .user-card-actions {
   margin-top: 15px;
 }
@@ -354,10 +325,7 @@
   opacity: 0.6;
 }
 
-/* =========================
-   EMPTY STATE
-========================= */
-
+/* Empty State */
 .no-users-card {
   padding: 60px 20px;
   border: 1px dashed #cbd5e1;
@@ -383,10 +351,7 @@
   font-size: 14px;
 }
 
-/* =========================
-   LOADING
-========================= */
-
+/* Loading */
 .users-loading-card {
   display: flex;
   min-height: 320px;
@@ -439,10 +404,7 @@
   }
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
-
+/* Responsive */
 @media (max-width: 850px) {
   .admin-users-grid {
     grid-template-columns: 1fr;

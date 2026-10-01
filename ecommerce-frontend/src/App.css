@@ -1,6 +1,4 @@
-/* =========================
-   APP LAYOUT
-========================= */
+/* APP LAYOUT */
 
 .app {
   min-height: 100vh;
@@ -12,9 +10,7 @@
   min-height: calc(100vh - 70px);
 }
 
-/* =========================
-   PAGE WRAPPER
-========================= */
+/* PAGE WRAPPER */
 
 .page {
   width: 100%;
@@ -23,9 +19,7 @@
   padding: 40px 20px 60px;
 }
 
-/* =========================
-   PAGE HEADER
-========================= */
+/* PAGE HEADER */
 
 .page-header {
   display: flex;
@@ -48,9 +42,7 @@
   font-size: 15px;
 }
 
-/* =========================
-   SECTION
-========================= */
+/* SECTION */
 
 .section {
   width: 100%;
@@ -70,9 +62,7 @@
   font-size: 14px;
 }
 
-/* =========================
-   GRID
-========================= */
+/* GRID */
 
 .grid {
   display: grid;
@@ -91,9 +81,7 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-/* =========================
-   COMMON CARD
-========================= */
+/* COMMON CARD */
 
 .card {
   padding: 22px;
@@ -112,9 +100,7 @@
   box-shadow: var(--shadow-md);
 }
 
-/* =========================
-   FLEX HELPERS
-========================= */
+/* FLEX HELPERS */
 
 .flex {
   display: flex;
@@ -137,9 +123,7 @@
   flex-direction: column;
 }
 
-/* =========================
-   GAP HELPERS
-========================= */
+/* GAP HELPERS */
 
 .gap-sm {
   gap: 8px;
@@ -153,9 +137,7 @@
   gap: 22px;
 }
 
-/* =========================
-   FORM LAYOUT
-========================= */
+/* FORM LAYOUT */
 
 .form {
   display: flex;
@@ -174,9 +156,7 @@
   flex-direction: column;
 }
 
-/* =========================
-   BUTTON GROUP
-========================= */
+/* BUTTON GROUP */
 
 .button-group {
   display: flex;
@@ -185,9 +165,7 @@
   flex-wrap: wrap;
 }
 
-/* =========================
-   TEXT
-========================= */
+/* TEXT */
 
 .text-primary {
   color: var(--text-primary);
@@ -209,9 +187,7 @@
   text-align: center;
 }
 
-/* =========================
-   BADGES
-========================= */
+/* BADGES */
 
 .badge {
   display: inline-flex;
@@ -241,9 +217,7 @@
   color: #92400e;
 }
 
-/* =========================
-   DIVIDER
-========================= */
+/* DIVIDER */
 
 .divider {
   width: 100%;
@@ -252,9 +226,7 @@
   background: var(--border);
 }
 
-/* =========================
-   LOADING
-========================= */
+/* LOADING */
 
 .page-loading {
   display: flex;
@@ -296,9 +268,7 @@
   }
 }
 
-/* =========================
-   SEARCH BAR
-========================= */
+/* SEARCH BAR */
 
 .search-bar {
   display: flex;
@@ -311,9 +281,7 @@
   flex: 1;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* RESPONSIVE */
 
 @media (max-width: 1000px) {
   .grid-4 {

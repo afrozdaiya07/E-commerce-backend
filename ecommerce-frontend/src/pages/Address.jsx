@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -6,8 +7,8 @@ import "./Address.css";
 function Address() {
   const navigate = useNavigate();
 
+  /* State */
   const [addresses, setAddresses] = useState([]);
-
   const [form, setForm] = useState({
     fullName: "",
     mobile: "",
@@ -19,24 +20,20 @@ function Address() {
   });
 
   const [editingId, setEditingId] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  /* Token */
   const token = localStorage.getItem("token");
 
   const headers = {
     Authorization: `Bearer ${token}`,
   };
 
-  // ==========================
-  // Fetch Addresses
-  // ==========================
-
+  /* Fetch Addresses */
   const fetchAddresses = async () => {
     try {
       setLoading(true);
@@ -54,9 +51,7 @@ function Address() {
         }
       );
 
-      setAddresses(
-        response.data.addresses || []
-      );
+      setAddresses(response.data.addresses || []);
     } catch (error) {
       console.log(
         "Address Error:",
@@ -76,10 +71,7 @@ function Address() {
     fetchAddresses();
   }, []);
 
-  // ==========================
-  // Handle Input
-  // ==========================
-
+  /* Handle Input */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -89,10 +81,7 @@ function Address() {
     }));
   };
 
-  // ==========================
-  // Reset Form
-  // ==========================
-
+  /* Reset Form */
   const resetForm = () => {
     setForm({
       fullName: "",
@@ -107,10 +96,7 @@ function Address() {
     setEditingId(null);
   };
 
-  // ==========================
-  // Submit Form
-  // ==========================
-
+  /* Submit Form */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -120,8 +106,7 @@ function Address() {
       setMessage("");
 
       if (editingId) {
-        // Update Address
-
+        /* Update Address */
         const response = await axios.put(
           `http://localhost:5000/api/address/${editingId}`,
           form,
@@ -135,8 +120,7 @@ function Address() {
             "Address updated successfully ✅"
         );
       } else {
-        // Add Address
-
+        /* Add Address */
         const response = await axios.post(
           "http://localhost:5000/api/address",
           form,
@@ -152,13 +136,11 @@ function Address() {
       }
 
       resetForm();
-
       await fetchAddresses();
     } catch (error) {
       console.log(
         "Save Address Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -170,18 +152,14 @@ function Address() {
     }
   };
 
-  // ==========================
-  // Edit Address
-  // ==========================
-
+  /* Edit Address */
   const handleEdit = (address) => {
     setEditingId(address._id);
 
     setForm({
       fullName: address.fullName || "",
       mobile: address.mobile || "",
-      addressLine:
-        address.addressLine || "",
+      addressLine: address.addressLine || "",
       city: address.city || "",
       state: address.state || "",
       pincode: address.pincode || "",
@@ -197,10 +175,7 @@ function Address() {
     });
   };
 
-  // ==========================
-  // Delete Address
-  // ==========================
-
+  /* Delete Address */
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this address?"
@@ -238,10 +213,7 @@ function Address() {
     }
   };
 
-  // ==========================
-  // Loading
-  // ==========================
-
+  /* Loading */
   if (loading) {
     return (
       <div className="address-page">
@@ -252,13 +224,10 @@ function Address() {
     );
   }
 
+  /* Responsive */
   return (
     <div className="address-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="address-header">
         <div>
           <h1>My Addresses</h1>
@@ -271,18 +240,13 @@ function Address() {
         <button
           type="button"
           className="back-checkout-btn"
-          onClick={() =>
-            navigate("/checkout")
-          }
+          onClick={() => navigate("/checkout")}
         >
           Back To Checkout
         </button>
       </div>
 
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {error && (
         <div className="address-message error">
           {error}
@@ -296,13 +260,8 @@ function Address() {
       )}
 
       <div className="address-layout">
-
-        {/* ==========================
-            Form
-        ========================== */}
-
+        {/* Form */}
         <div className="address-form-section">
-
           <div className="address-section-header">
             <h2>
               {editingId
@@ -325,7 +284,6 @@ function Address() {
             className="address-form"
             onSubmit={handleSubmit}
           >
-
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="fullName">
@@ -455,26 +413,17 @@ function Address() {
                 ? "Update Address"
                 : "Add Address"}
             </button>
-
           </form>
         </div>
 
-        {/* ==========================
-            Address List
-        ========================== */}
-
+        {/* Address List */}
         <div className="saved-addresses-section">
-
           <div className="address-list-header">
-            <h2>
-              Saved Addresses
-            </h2>
+            <h2>Saved Addresses</h2>
 
             <span>
               {addresses.length} Address
-              {addresses.length !== 1
-                ? "es"
-                : ""}
+              {addresses.length !== 1 ? "es" : ""}
             </span>
           </div>
 
@@ -484,9 +433,7 @@ function Address() {
                 📍
               </div>
 
-              <h3>
-                No Address Saved
-              </h3>
+              <h3>No Address Saved</h3>
 
               <p>
                 Add an address for delivery.
@@ -494,7 +441,6 @@ function Address() {
             </div>
           ) : (
             <div className="saved-address-list">
-
               {addresses.map((address) => (
                 <div
                   className="saved-address-card"
@@ -502,13 +448,9 @@ function Address() {
                 >
                   <div className="saved-address-top">
                     <div>
-                      <h3>
-                        {address.fullName}
-                      </h3>
+                      <h3>{address.fullName}</h3>
 
-                      <span>
-                        {address.mobile}
-                      </span>
+                      <span>{address.mobile}</span>
                     </div>
 
                     <span className="address-badge">
@@ -517,23 +459,17 @@ function Address() {
                   </div>
 
                   <div className="saved-address-content">
-                    <p>
-                      {address.addressLine}
-                    </p>
+                    <p>{address.addressLine}</p>
 
                     <p>
-                      {address.city},{" "}
-                      {address.state} -{" "}
+                      {address.city}, {address.state} -{" "}
                       {address.pincode}
                     </p>
 
-                    <p>
-                      {address.country}
-                    </p>
+                    <p>{address.country}</p>
                   </div>
 
                   <div className="address-card-actions">
-
                     <button
                       type="button"
                       className="edit-address-btn"
@@ -548,25 +484,19 @@ function Address() {
                       type="button"
                       className="delete-address-btn"
                       disabled={
-                        deletingId ===
-                        address._id
+                        deletingId === address._id
                       }
                       onClick={() =>
-                        handleDelete(
-                          address._id
-                        )
+                        handleDelete(address._id)
                       }
                     >
-                      {deletingId ===
-                      address._id
+                      {deletingId === address._id
                         ? "Deleting..."
                         : "Delete"}
                     </button>
-
                   </div>
                 </div>
               ))}
-
             </div>
           )}
         </div>

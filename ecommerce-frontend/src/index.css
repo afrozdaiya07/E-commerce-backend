@@ -38,9 +38,7 @@
     sans-serif;
 }
 
-/* =========================
-   RESET
-========================= */
+/*  RESE */
 
 * {
   box-sizing: border-box;
@@ -113,9 +111,7 @@ h4 {
   line-height: 1.25;
 }
 
-/* =========================
-   COMMON CONTAINER
-========================= */
+/* COMMON CONTAINE */
 
 .container {
   width: 100%;
@@ -124,9 +120,7 @@ h4 {
   padding: 0 20px;
 }
 
-/* =========================
-   COMMON CARD
-========================= */
+/* COMMON CARD */
 
 .common-card {
   padding: 24px;
@@ -136,9 +130,7 @@ h4 {
   box-shadow: var(--shadow-sm);
 }
 
-/* =========================
-   PRIMARY BUTTON
-========================= */
+/* PRIMARY BUTTON*/
 
 .btn-primary {
   display: inline-flex;
@@ -174,9 +166,7 @@ h4 {
   transform: none;
 }
 
-/* =========================
-   SECONDARY BUTTON
-========================= */
+/*  SECONDARY BUTTON*/
 
 .btn-secondary {
   display: inline-flex;
@@ -207,9 +197,7 @@ h4 {
   color: var(--primary-dark);
 }
 
-/* =========================
-   DANGER BUTTON
-========================= */
+/*  DANGER BUTTON */
 
 .btn-danger {
   display: inline-flex;
@@ -238,9 +226,7 @@ h4 {
   background: #fecaca;
 }
 
-/* =========================
-   FORM INPUT
-========================= */
+/*  FORM INPUT */
 
 .form-input {
   width: 100%;
@@ -276,26 +262,20 @@ h4 {
   opacity: 0.7;
 }
 
-/* =========================
-   TEXTAREA
-========================= */
+/* TEXTAREA */
 
 textarea.form-input {
   min-height: 120px;
   resize: vertical;
 }
 
-/* =========================
-   SELECT
-========================= */
+/* SELECT*/
 
 select.form-input {
   cursor: pointer;
 }
 
-/* =========================
-   LABEL
-========================= */
+/* LABEL */
 
 .form-label {
   display: block;
@@ -307,9 +287,7 @@ select.form-input {
   font-weight: 700;
 }
 
-/* =========================
-   SUCCESS MESSAGE
-========================= */
+/* SUCCESS MESSAGE */
 
 .message-success {
   margin-bottom: 20px;
@@ -325,9 +303,7 @@ select.form-input {
   font-weight: 600;
 }
 
-/* =========================
-   ERROR MESSAGE
-========================= */
+/* ERROR MESSAGE */
 
 .message-error {
   margin-bottom: 20px;
@@ -343,9 +319,7 @@ select.form-input {
   font-weight: 600;
 }
 
-/* =========================
-   WARNING
-========================= */
+/* WARNING */
 
 .message-warning {
   margin-bottom: 20px;
@@ -361,9 +335,7 @@ select.form-input {
   font-weight: 600;
 }
 
-/* =========================
-   LOADING
-========================= */
+/* LOADING */
 
 .loading-container {
   display: flex;
@@ -375,9 +347,7 @@ select.form-input {
   color: var(--text-secondary);
 }
 
-/* =========================
-   EMPTY STATE
-========================= */
+/*EMPTY STATE*/
 
 .empty-state {
   padding: 50px 20px;
@@ -401,17 +371,13 @@ select.form-input {
   font-size: 14px;
 }
 
-/* =========================
-   APP ROOT
-========================= */
+/* APP ROOT*/
 
 #root {
   min-height: 100vh;
 }
 
-/* =========================
-   SCROLLBAR
-========================= */
+/* SCROLLBAR*/
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -430,18 +396,14 @@ select.form-input {
   background: #86efac;
 }
 
-/* =========================
-   SELECTION
-========================= */
+/* SELECTION*/
 
 ::selection {
   background: var(--primary-light);
   color: var(--primary-dark);
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* MOBILE*/
 
 @media (max-width: 650px) {
   .container {

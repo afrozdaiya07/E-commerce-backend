@@ -9,14 +9,11 @@ function Profile() {
   const { logout } = useAuth();
 
   const [profile, setProfile] = useState(null);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -26,10 +23,7 @@ function Profile() {
     Authorization: `Bearer ${token}`,
   };
 
-  // ==========================
   // Fetch Profile
-  // ==========================
-
   const fetchProfile = async () => {
     try {
       setLoading(true);
@@ -50,14 +44,12 @@ function Profile() {
       const user = response.data.user;
 
       setProfile(user);
-
       setName(user.name || "");
       setEmail(user.email || "");
     } catch (error) {
       console.log(
         "Profile Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -73,10 +65,7 @@ function Profile() {
     fetchProfile();
   }, []);
 
-  // ==========================
   // Update Profile
-  // ==========================
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -106,11 +95,9 @@ function Profile() {
         }
       );
 
-      const updatedUser =
-        response.data.user;
+      const updatedUser = response.data.user;
 
       setProfile(updatedUser);
-
       setName(updatedUser.name || "");
       setEmail(updatedUser.email || "");
 
@@ -121,8 +108,7 @@ function Profile() {
     } catch (error) {
       console.log(
         "Update Profile Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -134,10 +120,7 @@ function Profile() {
     }
   };
 
-  // ==========================
   // Delete Account
-  // ==========================
-
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
       "Are you sure you want to delete your account? This action cannot be undone."
@@ -160,13 +143,11 @@ function Profile() {
       );
 
       logout();
-
       navigate("/register");
     } catch (error) {
       console.log(
         "Delete Account Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -178,10 +159,7 @@ function Profile() {
     }
   };
 
-  // ==========================
   // Loading
-  // ==========================
-
   if (loading) {
     return (
       <div className="profile-page">
@@ -192,16 +170,12 @@ function Profile() {
     );
   }
 
-  // ==========================
   // Profile Not Found
-  // ==========================
-
   if (!profile) {
     return (
       <div className="profile-page">
         <div className="profile-not-found">
           <h2>Profile Not Found</h2>
-
           <button
             type="button"
             onClick={() => navigate("/login")}
@@ -215,35 +189,23 @@ function Profile() {
 
   return (
     <div className="profile-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="profile-header">
         <div>
           <h1>My Profile</h1>
-
-          <p>
-            Manage your account information.
-          </p>
+          <p>Manage your account information.</p>
         </div>
 
         <button
           type="button"
           className="profile-orders-btn"
-          onClick={() =>
-            navigate("/orders")
-          }
+          onClick={() => navigate("/orders")}
         >
           My Orders
         </button>
       </div>
 
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {error && (
         <div className="profile-message error">
           {error}
@@ -257,21 +219,13 @@ function Profile() {
       )}
 
       <div className="profile-layout">
-
-        {/* ==========================
-            Profile Overview
-        ========================== */}
-
+        {/* Profile Overview */}
         <div className="profile-overview">
-
           <div className="profile-avatar">
-            {profile.name
-              ?.charAt(0)
-              .toUpperCase() || "U"}
+            {profile.name?.charAt(0).toUpperCase() || "U"}
           </div>
 
           <h2>{profile.name}</h2>
-
           <p>{profile.email}</p>
 
           <span
@@ -287,7 +241,6 @@ function Profile() {
           </span>
 
           <div className="profile-info-list">
-
             <div>
               <span>Account Status</span>
               <strong>Active</strong>
@@ -299,58 +252,42 @@ function Profile() {
                 {profile.createdAt
                   ? new Date(
                       profile.createdAt
-                    ).toLocaleDateString(
-                      "en-IN"
-                    )
+                    ).toLocaleDateString("en-IN")
                   : "—"}
               </strong>
             </div>
-
           </div>
         </div>
 
-        {/* ==========================
-            Edit Profile
-        ========================== */}
-
+        {/* Edit Profile */}
         <div className="profile-form-card">
-
           <h2>Account Information</h2>
 
           <form
             className="profile-form"
             onSubmit={handleSubmit}
           >
-
             <div className="profile-form-group">
-              <label htmlFor="name">
-                Full Name
-              </label>
+              <label htmlFor="name">Full Name</label>
 
               <input
                 id="name"
                 type="text"
                 value={name}
-                onChange={(e) =>
-                  setName(e.target.value)
-                }
+                onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
                 required
               />
             </div>
 
             <div className="profile-form-group">
-              <label htmlFor="email">
-                Email Address
-              </label>
+              <label htmlFor="email">Email Address</label>
 
               <input
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
               />
@@ -372,46 +309,32 @@ function Profile() {
               className="save-profile-btn"
               disabled={saving}
             >
-              {saving
-                ? "Saving..."
-                : "Save Changes"}
+              {saving ? "Saving..." : "Save Changes"}
             </button>
-
           </form>
 
           <div className="profile-security-links">
-
             <button
               type="button"
-              onClick={() =>
-                navigate("/change-password")
-              }
+              onClick={() => navigate("/change-password")}
             >
               Change Password →
             </button>
 
             <button
               type="button"
-              onClick={() =>
-                navigate("/address")
-              }
+              onClick={() => navigate("/address")}
             >
               Manage Addresses →
             </button>
-
           </div>
         </div>
       </div>
 
-      {/* ==========================
-          Danger Zone
-      ========================== */}
-
+      {/* Danger Zone */}
       <div className="profile-danger-zone">
-
         <div>
           <h2>Delete Account</h2>
-
           <p>
             Permanently delete your account and
             related account data.
@@ -428,7 +351,6 @@ function Profile() {
             ? "Deleting..."
             : "Delete My Account"}
         </button>
-
       </div>
     </div>
   );

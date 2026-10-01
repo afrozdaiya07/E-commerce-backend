@@ -14,9 +14,7 @@ const protect = require("../middleware/authMiddleware");
 const admin = require("../middleware/adminMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 
-// ======================================
 // USER ROUTES
-// ======================================
 
 // Place Order
 router.post(
@@ -40,9 +38,7 @@ router.put(
   cancelOrder
 );
 
-// ======================================
 // ADMIN ROUTES
-// ======================================
 
 // Get All Orders
 router.get(

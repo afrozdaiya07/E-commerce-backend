@@ -4,11 +4,7 @@ import "./Home.css";
 function Home() {
   return (
     <div className="home-page">
-
-      {/* ==========================
-          Hero Section
-      ========================== */}
-
+      {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
           <span className="hero-badge">
@@ -50,13 +46,9 @@ function Home() {
               🛍️
             </div>
 
-            <h3>
-              Quality Products
-            </h3>
+            <h3>Quality Products</h3>
 
-            <p>
-              Simple shopping experience
-            </p>
+            <p>Simple shopping experience</p>
           </div>
 
           <div className="hero-floating-card top-card">
@@ -71,10 +63,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ==========================
-          Features
-      ========================== */}
-
+      {/* Features */}
       <section className="features-section">
         <div className="section-heading">
           <span>Why Choose Us</span>
@@ -90,15 +79,10 @@ function Home() {
         </div>
 
         <div className="features-grid">
-
           <div className="feature-card">
-            <div className="feature-icon">
-              🚚
-            </div>
+            <div className="feature-icon">🚚</div>
 
-            <h3>
-              Fast Delivery
-            </h3>
+            <h3>Fast Delivery</h3>
 
             <p>
               Get your orders delivered quickly
@@ -107,13 +91,9 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">
-              🔒
-            </div>
+            <div className="feature-icon">🔒</div>
 
-            <h3>
-              Secure Shopping
-            </h3>
+            <h3>Secure Shopping</h3>
 
             <p>
               Your account and order information
@@ -122,13 +102,9 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">
-              💳
-            </div>
+            <div className="feature-icon">💳</div>
 
-            <h3>
-              Easy Payment
-            </h3>
+            <h3>Easy Payment</h3>
 
             <p>
               Choose the payment option that
@@ -137,32 +113,22 @@ function Home() {
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">
-              ⭐
-            </div>
+            <div className="feature-icon">⭐</div>
 
-            <h3>
-              Quality Products
-            </h3>
+            <h3>Quality Products</h3>
 
             <p>
               Explore products with reviews and
               ratings.
             </p>
           </div>
-
         </div>
       </section>
 
-      {/* ==========================
-          Shopping CTA
-      ========================== */}
-
+      {/* Shopping CTA */}
       <section className="shopping-cta">
         <div>
-          <span>
-            Start Shopping Today
-          </span>
+          <span>Start Shopping Today</span>
 
           <h2>
             Find your next favorite product.
@@ -181,7 +147,6 @@ function Home() {
           View Products →
         </Link>
       </section>
-
     </div>
   );
 }

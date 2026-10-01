@@ -6,11 +6,10 @@ function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // Fetch All Orders
+  /* Fetch All Orders */
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -33,16 +32,17 @@ function AdminOrders() {
     fetchOrders();
   }, []);
 
-  // Update Order Status
+  /* Update Order Status */
   const handleStatusChange = async (orderId, status) => {
     try {
       setUpdatingId(orderId);
       setError("");
       setMessage("");
 
-      const response = await api.put(`/orders/${orderId}`, {
-        status,
-      });
+      const response = await api.put(
+        `/orders/${orderId}`,
+        { status }
+      );
 
       setMessage(
         response.data.message ||
@@ -60,6 +60,7 @@ function AdminOrders() {
     }
   };
 
+  /* Status Class */
   const getStatusClass = (status) => {
     switch (status) {
       case "Pending":
@@ -79,24 +80,29 @@ function AdminOrders() {
     }
   };
 
+  /* Loading */
   if (loading) {
     return (
       <div className="admin-orders-page">
         <div className="admin-orders-container">
           <div className="orders-loading-card">
             <div className="loading-spinner"></div>
+
             <h2>Loading Orders...</h2>
-            <p>Please wait while we load all orders.</p>
+
+            <p>
+              Please wait while we load all orders.
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
+  /* Responsive */
   return (
     <div className="admin-orders-page">
       <div className="admin-orders-container">
-
         {/* Header */}
         <div className="admin-orders-header">
           <div>
@@ -107,8 +113,8 @@ function AdminOrders() {
             <h1>Order Management</h1>
 
             <p>
-              Manage customer orders and update their
-              delivery status.
+              Manage customer orders and update
+              their delivery status.
             </p>
           </div>
 
@@ -136,7 +142,9 @@ function AdminOrders() {
           <div className="section-heading">
             <div>
               <h2>All Orders</h2>
-              <p>View and manage every customer order.</p>
+              <p>
+                View and manage every customer order.
+              </p>
             </div>
           </div>
 
@@ -196,11 +204,13 @@ function AdminOrders() {
 
                       <div>
                         <p className="customer-name">
-                          {order.user?.name || "Unknown Customer"}
+                          {order.user?.name ||
+                            "Unknown Customer"}
                         </p>
 
                         <p className="customer-email">
-                          {order.user?.email || "No email available"}
+                          {order.user?.email ||
+                            "No email available"}
                         </p>
                       </div>
                     </div>
@@ -215,14 +225,20 @@ function AdminOrders() {
                       <div className="order-stat">
                         <span>Total Price</span>
                         <strong>
-                          ₹{Number(order.totalPrice || 0).toLocaleString()}
+                          ₹
+                          {Number(
+                            order.totalPrice || 0
+                          ).toLocaleString()}
                         </strong>
                       </div>
 
                       <div className="order-stat">
                         <span>Discount</span>
                         <strong>
-                          ₹{Number(order.discount || 0).toLocaleString()}
+                          ₹
+                          {Number(
+                            order.discount || 0
+                          ).toLocaleString()}
                         </strong>
                       </div>
                     </div>
@@ -231,6 +247,7 @@ function AdminOrders() {
                     <div className="final-amount-box">
                       <div>
                         <span>Final Amount</span>
+
                         <small>
                           After discount
                         </small>
@@ -299,7 +316,9 @@ function AdminOrders() {
 
                     {/* Status Update */}
                     <div className="status-update-section">
-                      <label htmlFor={`status-${order._id}`}>
+                      <label
+                        htmlFor={`status-${order._id}`}
+                      >
                         Update Order Status
                       </label>
 

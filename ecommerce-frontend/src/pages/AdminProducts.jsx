@@ -5,7 +5,7 @@ import "./AdminProducts.css";
 function AdminProducts() {
   const [products, setProducts] = useState([]);
 
-  // Form states
+  /* Form States */
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -13,29 +13,26 @@ function AdminProducts() {
   const [brand, setBrand] = useState("");
   const [stock, setStock] = useState("");
 
-  // Image states
+  /* Image States */
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
 
-  // Edit states
+  /* Edit States */
   const [editingId, setEditingId] = useState(null);
   const [oldImage, setOldImage] = useState("");
 
-  // Loading states
+  /* Loading States */
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  // Messages
+  /* Messages */
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
   const fileInputRef = useRef(null);
 
-  // ==========================
-  // Fetch Products
-  // ==========================
-
+  /* Fetch Products */
   const fetchProducts = async () => {
     try {
       setFetchLoading(true);
@@ -60,10 +57,7 @@ function AdminProducts() {
     fetchProducts();
   }, []);
 
-  // ==========================
-  // Select Image
-  // ==========================
-
+  /* Select Image */
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
 
@@ -85,15 +79,11 @@ function AdminProducts() {
 
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
-
     setError("");
     setMessage("");
   };
 
-  // ==========================
-  // Upload Image
-  // ==========================
-
+  /* Upload Image */
   const uploadImage = async () => {
     if (!imageFile) {
       return oldImage || "";
@@ -135,10 +125,7 @@ function AdminProducts() {
     }
   };
 
-  // ==========================
-  // Clear Form
-  // ==========================
-
+  /* Clear Form */
   const clearForm = () => {
     if (
       imagePreview &&
@@ -153,11 +140,9 @@ function AdminProducts() {
     setCategory("");
     setBrand("");
     setStock("");
-
     setImageFile(null);
     setImagePreview("");
     setOldImage("");
-
     setEditingId(null);
 
     if (fileInputRef.current) {
@@ -165,10 +150,7 @@ function AdminProducts() {
     }
   };
 
-  // ==========================
-  // Add / Update Product
-  // ==========================
-
+  /* Add / Update Product */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -177,7 +159,7 @@ function AdminProducts() {
       setError("");
       setMessage("");
 
-      // Validation
+      /* Validation */
       if (
         !name.trim() ||
         !description.trim() ||
@@ -186,9 +168,7 @@ function AdminProducts() {
         !brand.trim() ||
         stock === ""
       ) {
-        setError(
-          "All product fields are required"
-        );
+        setError("All product fields are required");
         return;
       }
 
@@ -211,7 +191,7 @@ function AdminProducts() {
         return;
       }
 
-      // Upload image
+      /* Upload Image */
       const imageUrl = await uploadImage();
 
       const productData = {
@@ -229,15 +209,14 @@ function AdminProducts() {
 
       let response;
 
-      // Update Product
+      /* Update Product */
       if (editingId) {
         response = await api.put(
           `/products/${editingId}`,
           productData
         );
       }
-
-      // Add Product
+      /* Add Product */
       else {
         response = await api.post(
           "/products",
@@ -253,7 +232,6 @@ function AdminProducts() {
       );
 
       clearForm();
-
       await fetchProducts();
     } catch (error) {
       console.error(
@@ -271,24 +249,18 @@ function AdminProducts() {
     }
   };
 
-  // ==========================
-  // Edit Product
-  // ==========================
-
+  /* Edit Product */
   const handleEdit = (product) => {
     setEditingId(product._id);
-
     setName(product.name || "");
     setDescription(product.description || "");
     setPrice(product.price ?? "");
     setCategory(product.category || "");
     setBrand(product.brand || "");
     setStock(product.stock ?? "");
-
     setOldImage(product.image || "");
     setImagePreview(product.image || "");
     setImageFile(null);
-
     setError("");
     setMessage("");
 
@@ -302,10 +274,7 @@ function AdminProducts() {
     });
   };
 
-  // ==========================
-  // Delete Product
-  // ==========================
-
+  /* Delete Product */
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this product?"
@@ -342,14 +311,10 @@ function AdminProducts() {
     }
   };
 
-  // ==========================
-  // Render
-  // ==========================
-
+  /* Responsive */
   return (
     <div className="admin-products-page">
       <div className="admin-products-container">
-
         {/* Header */}
         <div className="admin-products-header">
           <div>
@@ -388,7 +353,6 @@ function AdminProducts() {
 
         {/* Form */}
         <section className="admin-product-form-card">
-
           <div className="section-title">
             <div>
               <h2>
@@ -414,7 +378,6 @@ function AdminProducts() {
             className="admin-product-form"
             onSubmit={handleSubmit}
           >
-
             {/* Name */}
             <div className="form-group">
               <label htmlFor="name">
@@ -557,7 +520,6 @@ function AdminProducts() {
 
             {/* Buttons */}
             <div className="form-actions form-group-full">
-
               <button
                 type="submit"
                 className="btn-save-product"
@@ -596,10 +558,10 @@ function AdminProducts() {
 
         {/* Products */}
         <section className="admin-products-list-section">
-
           <div className="products-list-header">
             <div>
               <h2>All Products</h2>
+
               <p>
                 Manage your available products.
               </p>
@@ -624,13 +586,11 @@ function AdminProducts() {
             </div>
           ) : (
             <div className="admin-products-grid">
-
               {products.map((product) => (
                 <div
                   className="admin-product-card"
                   key={product._id}
                 >
-
                   {/* Image */}
                   <div className="admin-product-image-wrapper">
                     {product.image ? (
@@ -649,14 +609,11 @@ function AdminProducts() {
 
                   {/* Content */}
                   <div className="admin-product-content">
-
                     <div className="product-category">
                       {product.category}
                     </div>
 
-                    <h3>
-                      {product.name}
-                    </h3>
+                    <h3>{product.name}</h3>
 
                     <p className="product-brand">
                       Brand:{" "}
@@ -671,9 +628,11 @@ function AdminProducts() {
 
                     {/* Price + Stock */}
                     <div className="product-meta">
-
                       <div className="product-price">
-                        ₹{Number(product.price).toLocaleString("en-IN")}
+                        ₹
+                        {Number(
+                          product.price
+                        ).toLocaleString("en-IN")}
                       </div>
 
                       <div
@@ -689,12 +648,10 @@ function AdminProducts() {
                           ? "Out of Stock"
                           : `Stock: ${product.stock}`}
                       </div>
-
                     </div>
 
                     {/* Actions */}
                     <div className="product-actions">
-
                       <button
                         type="button"
                         className="btn-edit-product"
@@ -714,7 +671,6 @@ function AdminProducts() {
                       >
                         Delete
                       </button>
-
                     </div>
                   </div>
                 </div>
@@ -722,7 +678,6 @@ function AdminProducts() {
             </div>
           )}
         </section>
-
       </div>
     </div>
   );

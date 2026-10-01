@@ -9,10 +9,8 @@ function Products() {
 
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-
   const [loading, setLoading] = useState(true);
   const [addingId, setAddingId] = useState(null);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -89,17 +87,12 @@ function Products() {
 
   return (
     <div className="products-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="products-header">
         <div>
           <h1>Our Products</h1>
           <p>
-            Explore our latest products and find
-            what you need.
+            Explore our latest products and find what you need.
           </p>
         </div>
 
@@ -108,17 +101,12 @@ function Products() {
             type="text"
             placeholder="Search products..."
             value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
 
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {error && (
         <div className="products-message error">
           {error}
@@ -131,10 +119,7 @@ function Products() {
         </div>
       )}
 
-      {/* ==========================
-          Loading
-      ========================== */}
-
+      {/* Loading */}
       {loading ? (
         <div className="products-loading">
           <h2>Loading Products...</h2>
@@ -143,22 +128,15 @@ function Products() {
         <>
           <div className="products-count">
             {filteredProducts.length} Product
-            {filteredProducts.length !== 1
-              ? "s"
-              : ""}{" "}
-            Found
+            {filteredProducts.length !== 1 ? "s" : ""} Found
           </div>
 
-          {/* ==========================
-              No Products
-          ========================== */}
-
+          {/* No Products */}
           {filteredProducts.length === 0 ? (
             <div className="no-products">
               <h2>No Products Found</h2>
               <p>
-                Try searching with a different
-                keyword.
+                Try searching with a different keyword.
               </p>
             </div>
           ) : (
@@ -169,7 +147,6 @@ function Products() {
                   key={product._id}
                 >
                   {/* Image */}
-
                   <div className="product-image-wrapper">
                     {product.image ? (
                       <img
@@ -185,7 +162,6 @@ function Products() {
                   </div>
 
                   {/* Content */}
-
                   <div className="product-content">
                     <span className="product-category">
                       {product.category}
@@ -204,10 +180,7 @@ function Products() {
                     </p>
 
                     <div className="product-price">
-                      ₹
-                      {Number(
-                        product.price
-                      ).toLocaleString("en-IN")}
+                      ₹{Number(product.price).toLocaleString("en-IN")}
                     </div>
 
                     <p
@@ -223,7 +196,6 @@ function Products() {
                     </p>
 
                     {/* Buttons */}
-
                     <div className="product-actions">
                       <Link
                         to={`/products/${product._id}`}
@@ -240,9 +212,7 @@ function Products() {
                           addingId === product._id
                         }
                         onClick={() =>
-                          handleAddToCart(
-                            product._id
-                          )
+                          handleAddToCart(product._id)
                         }
                       >
                         {addingId === product._id

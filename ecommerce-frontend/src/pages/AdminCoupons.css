@@ -1,3 +1,5 @@
+/* Admin Coupons Page */
+
 .admin-coupons-page {
   min-height: calc(100vh - 70px);
   padding: 40px 20px 60px;
@@ -10,9 +12,7 @@
   margin: 0 auto;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* Header */
 
 .coupons-page-header {
   display: flex;
@@ -67,9 +67,7 @@
   font-weight: 800;
 }
 
-/* =========================
-   MESSAGES
-========================= */
+/* Messages */
 
 .coupon-message {
   margin-bottom: 22px;
@@ -91,9 +89,7 @@
   color: #991b1b;
 }
 
-/* =========================
-   FORM CARD
-========================= */
+/* Form Card */
 
 .coupon-form-card {
   margin-bottom: 45px;
@@ -149,9 +145,7 @@
   color: var(--primary-dark);
 }
 
-/* =========================
-   FORM
-========================= */
+/* Form */
 
 .coupon-form {
   display: grid;
@@ -198,9 +192,7 @@
   font-size: 11px;
 }
 
-/* =========================
-   INPUT WITH SYMBOL
-========================= */
+/* Input With Symbol */
 
 .input-with-symbol {
   display: flex;
@@ -225,9 +217,7 @@
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
-/* =========================
-   CHECKBOX
-========================= */
+/* Checkbox */
 
 .checkbox-group {
   justify-content: center;
@@ -247,9 +237,7 @@
   accent-color: var(--primary);
 }
 
-/* =========================
-   FORM BUTTONS
-========================= */
+/* Form Buttons */
 
 .coupon-form-actions {
   display: flex;
@@ -301,9 +289,7 @@
   color: var(--primary-dark);
 }
 
-/* =========================
-   ALL COUPONS
-========================= */
+/* All Coupons */
 
 .all-coupons-section {
   width: 100%;
@@ -326,9 +312,7 @@
   font-size: 14px;
 }
 
-/* =========================
-   COUPON GRID
-========================= */
+/* Coupon Grid */
 
 .coupons-grid {
   display: grid;
@@ -336,9 +320,7 @@
   gap: 22px;
 }
 
-/* =========================
-   COUPON CARD
-========================= */
+/* Coupon Card */
 
 .coupon-card {
   overflow: hidden;
@@ -357,9 +339,7 @@
   box-shadow: var(--shadow-md);
 }
 
-/* =========================
-   CARD HEADER
-========================= */
+/* Card Header */
 
 .coupon-card-header {
   display: flex;
@@ -409,9 +389,7 @@
   color: #991b1b;
 }
 
-/* =========================
-   DISCOUNT
-========================= */
+/* Discount */
 
 .discount-banner {
   display: flex;
@@ -448,9 +426,7 @@
   font-weight: 700;
 }
 
-/* =========================
-   DETAILS
-========================= */
+/* Details */
 
 .coupon-details {
   display: flex;
@@ -477,9 +453,7 @@
   text-align: right;
 }
 
-/* =========================
-   ACTIONS
-========================= */
+/* Actions */
 
 .coupon-actions {
   display: grid;
@@ -528,9 +502,7 @@
   opacity: 0.6;
 }
 
-/* =========================
-   EMPTY STATE
-========================= */
+/* Empty State */
 
 .no-coupons-card {
   padding: 60px 20px;
@@ -557,9 +529,7 @@
   font-size: 14px;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* Responsive */
 
 @media (max-width: 1050px) {
   .coupons-grid {

@@ -4,38 +4,20 @@ import "./AdminCoupons.css";
 
 function AdminCoupons() {
   const [coupons, setCoupons] = useState([]);
-
   const [code, setCode] = useState("");
-  const [discountType, setDiscountType] =
-    useState("percentage");
-  const [discountValue, setDiscountValue] =
-    useState("");
-  const [minOrderAmount, setMinOrderAmount] =
-    useState("0");
-  const [maxDiscount, setMaxDiscount] =
-    useState("");
-  const [expiryDate, setExpiryDate] =
-    useState("");
-  const [isActive, setIsActive] =
-    useState(true);
-
-  const [editingId, setEditingId] =
-    useState(null);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [deletingId, setDeletingId] =
-    useState(null);
-
+  const [discountType, setDiscountType] = useState("percentage");
+  const [discountValue, setDiscountValue] = useState("");
+  const [minOrderAmount, setMinOrderAmount] = useState("0");
+  const [maxDiscount, setMaxDiscount] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [isActive, setIsActive] = useState(true);
+  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
-  // =========================
-  // FETCH COUPONS
-  // =========================
-
+  /* Fetch Coupons */
   const fetchCoupons = async () => {
     try {
       setError("");
@@ -55,10 +37,7 @@ function AdminCoupons() {
     fetchCoupons();
   }, []);
 
-  // =========================
-  // CLEAR FORM
-  // =========================
-
+  /* Clear Form */
   const clearForm = () => {
     setCode("");
     setDiscountType("percentage");
@@ -71,10 +50,7 @@ function AdminCoupons() {
     setError("");
   };
 
-  // =========================
-  // SUBMIT COUPON
-  // =========================
-
+  /* Submit Coupon */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -98,24 +74,16 @@ function AdminCoupons() {
         return;
       }
 
-      const numericDiscount =
-        Number(discountValue);
-
-      const numericMinOrder =
-        Number(minOrderAmount);
-
+      const numericDiscount = Number(discountValue);
+      const numericMinOrder = Number(minOrderAmount);
       const numericMaxDiscount =
-        maxDiscount === ""
-          ? null
-          : Number(maxDiscount);
+        maxDiscount === "" ? null : Number(maxDiscount);
 
       if (
         !Number.isFinite(numericDiscount) ||
         numericDiscount < 0
       ) {
-        setError(
-          "Enter a valid discount value"
-        );
+        setError("Enter a valid discount value");
         return;
       }
 
@@ -123,9 +91,7 @@ function AdminCoupons() {
         !Number.isFinite(numericMinOrder) ||
         numericMinOrder < 0
       ) {
-        setError(
-          "Enter a valid minimum order amount"
-        );
+        setError("Enter a valid minimum order amount");
         return;
       }
 
@@ -134,13 +100,11 @@ function AdminCoupons() {
         (!Number.isFinite(numericMaxDiscount) ||
           numericMaxDiscount < 0)
       ) {
-        setError(
-          "Enter a valid maximum discount"
-        );
+        setError("Enter a valid maximum discount");
         return;
       }
 
-      // Percentage validation
+      /* Percentage Validation */
       if (
         discountType === "percentage" &&
         numericDiscount > 100
@@ -183,7 +147,6 @@ function AdminCoupons() {
       );
 
       clearForm();
-
       await fetchCoupons();
     } catch (error) {
       setError(
@@ -195,31 +158,16 @@ function AdminCoupons() {
     }
   };
 
-  // =========================
-  // EDIT COUPON
-  // =========================
-
+  /* Edit Coupon */
   const handleEdit = (coupon) => {
     setEditingId(coupon._id);
-
     setCode(coupon.code || "");
-
     setDiscountType(
-      coupon.discountType ||
-        "percentage"
+      coupon.discountType || "percentage"
     );
-
-    setDiscountValue(
-      coupon.discountValue ?? ""
-    );
-
-    setMinOrderAmount(
-      coupon.minOrderAmount ?? 0
-    );
-
-    setMaxDiscount(
-      coupon.maxDiscount ?? ""
-    );
+    setDiscountValue(coupon.discountValue ?? "");
+    setMinOrderAmount(coupon.minOrderAmount ?? 0);
+    setMaxDiscount(coupon.maxDiscount ?? "");
 
     setExpiryDate(
       coupon.expiryDate
@@ -229,10 +177,7 @@ function AdminCoupons() {
         : ""
     );
 
-    setIsActive(
-      coupon.isActive !== false
-    );
-
+    setIsActive(coupon.isActive !== false);
     setError("");
     setMessage("");
 
@@ -242,10 +187,7 @@ function AdminCoupons() {
     });
   };
 
-  // =========================
-  // DELETE COUPON
-  // =========================
-
+  /* Delete Coupon */
   const handleDelete = async (id) => {
     try {
       setDeletingId(id);
@@ -272,10 +214,7 @@ function AdminCoupons() {
     }
   };
 
-  // =========================
-  // STATUS CLASS
-  // =========================
-
+  /* Status Class */
   const getStatusClass = (coupon) => {
     if (!coupon.isActive) {
       return "coupon-inactive";
@@ -306,14 +245,11 @@ function AdminCoupons() {
     return "Active";
   };
 
+  /* Responsive */
   return (
     <div className="admin-coupons-page">
       <div className="admin-coupons-container">
-
-        {/* =========================
-            HEADER
-        ========================= */}
-
+        {/* Header */}
         <div className="coupons-page-header">
           <div>
             <span className="admin-section-label">
@@ -323,8 +259,8 @@ function AdminCoupons() {
             <h1>Coupon Management</h1>
 
             <p>
-              Create, update and manage discount
-              coupons for your customers.
+              Create, update and manage discount coupons
+              for your customers.
             </p>
           </div>
 
@@ -334,10 +270,7 @@ function AdminCoupons() {
           </div>
         </div>
 
-        {/* =========================
-            MESSAGES
-        ========================= */}
-
+        {/* Messages */}
         {error && (
           <div className="coupon-message coupon-error">
             ❌ {error}
@@ -350,18 +283,12 @@ function AdminCoupons() {
           </div>
         )}
 
-        {/* =========================
-            CREATE / UPDATE FORM
-        ========================= */}
-
+        {/* Create / Update Form */}
         <section className="coupon-form-card">
-
           <div className="coupon-form-header">
             <div>
               <span className="form-small-label">
-                {editingId
-                  ? "EDIT COUPON"
-                  : "NEW COUPON"}
+                {editingId ? "EDIT COUPON" : "NEW COUPON"}
               </span>
 
               <h2>
@@ -371,8 +298,7 @@ function AdminCoupons() {
               </h2>
 
               <p>
-                Set discount rules and coupon
-                availability.
+                Set discount rules and coupon availability.
               </p>
             </div>
 
@@ -392,7 +318,6 @@ function AdminCoupons() {
             className="coupon-form"
             onSubmit={handleSubmit}
           >
-
             {/* Coupon Code */}
             <div className="form-group">
               <label htmlFor="coupon-code">
@@ -403,9 +328,7 @@ function AdminCoupons() {
                 id="coupon-code"
                 type="text"
                 value={code}
-                onChange={(e) =>
-                  setCode(e.target.value)
-                }
+                onChange={(e) => setCode(e.target.value)}
                 placeholder="SAVE10"
                 maxLength={30}
               />
@@ -425,9 +348,7 @@ function AdminCoupons() {
                 id="discount-type"
                 value={discountType}
                 onChange={(e) =>
-                  setDiscountType(
-                    e.target.value
-                  )
+                  setDiscountType(e.target.value)
                 }
               >
                 <option value="percentage">
@@ -453,9 +374,7 @@ function AdminCoupons() {
                   min="0"
                   value={discountValue}
                   onChange={(e) =>
-                    setDiscountValue(
-                      e.target.value
-                    )
+                    setDiscountValue(e.target.value)
                   }
                   placeholder={
                     discountType === "percentage"
@@ -465,8 +384,7 @@ function AdminCoupons() {
                 />
 
                 <span>
-                  {discountType ===
-                  "percentage"
+                  {discountType === "percentage"
                     ? "%"
                     : "₹"}
                 </span>
@@ -488,9 +406,7 @@ function AdminCoupons() {
                   min="0"
                   value={minOrderAmount}
                   onChange={(e) =>
-                    setMinOrderAmount(
-                      e.target.value
-                    )
+                    setMinOrderAmount(e.target.value)
                   }
                   placeholder="1000"
                 />
@@ -512,9 +428,7 @@ function AdminCoupons() {
                   min="0"
                   value={maxDiscount}
                   onChange={(e) =>
-                    setMaxDiscount(
-                      e.target.value
-                    )
+                    setMaxDiscount(e.target.value)
                   }
                   placeholder="No Limit"
                 />
@@ -536,9 +450,7 @@ function AdminCoupons() {
                 type="date"
                 value={expiryDate}
                 onChange={(e) =>
-                  setExpiryDate(
-                    e.target.value
-                  )
+                  setExpiryDate(e.target.value)
                 }
               />
             </div>
@@ -550,22 +462,17 @@ function AdminCoupons() {
                   type="checkbox"
                   checked={isActive}
                   onChange={(e) =>
-                    setIsActive(
-                      e.target.checked
-                    )
+                    setIsActive(e.target.checked)
                   }
                 />
 
                 <span className="custom-check"></span>
 
-                <span>
-                  Active Coupon
-                </span>
+                <span>Active Coupon</span>
               </label>
 
               <small>
-                Active coupons can be applied by
-                customers.
+                Active coupons can be applied by customers.
               </small>
             </div>
 
@@ -597,18 +504,14 @@ function AdminCoupons() {
           </form>
         </section>
 
-        {/* =========================
-            ALL COUPONS
-        ========================= */}
-
+        {/* All Coupons */}
         <section className="all-coupons-section">
-
           <div className="coupons-section-header">
             <div>
               <h2>All Coupons</h2>
+
               <p>
-                View and manage your discount
-                coupons.
+                View and manage your discount coupons.
               </p>
             </div>
           </div>
@@ -640,9 +543,7 @@ function AdminCoupons() {
                         COUPON CODE
                       </span>
 
-                      <h3>
-                        {coupon.code}
-                      </h3>
+                      <h3>{coupon.code}</h3>
                     </div>
 
                     <span
@@ -657,9 +558,7 @@ function AdminCoupons() {
                   {/* Discount */}
                   <div className="discount-banner">
                     <div>
-                      <span>
-                        Discount
-                      </span>
+                      <span>Discount</span>
 
                       <strong>
                         {coupon.discountValue}
@@ -680,11 +579,8 @@ function AdminCoupons() {
 
                   {/* Details */}
                   <div className="coupon-details">
-
                     <div className="coupon-detail-row">
-                      <span>
-                        Minimum Order
-                      </span>
+                      <span>Minimum Order</span>
 
                       <strong>
                         ₹
@@ -695,15 +591,11 @@ function AdminCoupons() {
                     </div>
 
                     <div className="coupon-detail-row">
-                      <span>
-                        Maximum Discount
-                      </span>
+                      <span>Maximum Discount</span>
 
                       <strong>
-                        {coupon.maxDiscount !==
-                        null &&
-                        coupon.maxDiscount !==
-                          undefined
+                        {coupon.maxDiscount !== null &&
+                        coupon.maxDiscount !== undefined
                           ? `₹${Number(
                               coupon.maxDiscount
                             ).toLocaleString()}`
@@ -712,32 +604,24 @@ function AdminCoupons() {
                     </div>
 
                     <div className="coupon-detail-row">
-                      <span>
-                        Expiry Date
-                      </span>
+                      <span>Expiry Date</span>
 
                       <strong>
                         {coupon.expiryDate
                           ? new Date(
                               coupon.expiryDate
-                            ).toLocaleDateString(
-                              "en-IN"
-                            )
+                            ).toLocaleDateString("en-IN")
                           : "No Date"}
                       </strong>
                     </div>
-
                   </div>
 
                   {/* Actions */}
                   <div className="coupon-actions">
-
                     <button
                       type="button"
                       className="edit-coupon-btn"
-                      onClick={() =>
-                        handleEdit(coupon)
-                      }
+                      onClick={() => handleEdit(coupon)}
                     >
                       Edit
                     </button>
@@ -746,27 +630,20 @@ function AdminCoupons() {
                       type="button"
                       className="delete-coupon-btn"
                       onClick={() =>
-                        handleDelete(
-                          coupon._id
-                        )
+                        handleDelete(coupon._id)
                       }
-                      disabled={
-                        deletingId ===
-                        coupon._id
-                      }
+                      disabled={deletingId === coupon._id}
                     >
                       {deletingId === coupon._id
                         ? "Deleting..."
                         : "Delete"}
                     </button>
-
                   </div>
                 </div>
               ))}
             </div>
           )}
         </section>
-
       </div>
     </div>
   );

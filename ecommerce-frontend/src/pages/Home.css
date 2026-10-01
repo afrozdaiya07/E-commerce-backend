@@ -1,35 +1,22 @@
-/* ==========================
-   Home Page
-========================== */
+/* Home Page */
 
 .home-page {
   width: min(100% - 40px, 1300px);
   margin: 0 auto;
 }
 
-/* ==========================
-   Hero
-========================== */
+/* Hero */
 
 .hero-section {
   min-height: 560px;
-
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(350px, 0.8fr);
-
+  grid-template-columns: minmax(0, 1fr) minmax(350px, 0.8fr);
   gap: 50px;
-
   align-items: center;
-
   padding: 60px 0;
 }
 
-/* ==========================
-   Hero Content
-========================== */
+/* Hero Content */
 
 .hero-content {
   max-width: 650px;
@@ -37,79 +24,52 @@
 
 .hero-badge {
   display: inline-flex;
-
   padding: 7px 12px;
-
   margin-bottom: 18px;
-
   border: 1px solid #bbf7d0;
-
   border-radius: 20px;
-
   background: var(--primary-light);
-
   color: var(--primary-dark);
-
   font-size: 12px;
   font-weight: 800;
 }
 
 .hero-content h1 {
   margin: 0;
-
   color: var(--text-primary);
-
   font-size: clamp(42px, 6vw, 68px);
-
   line-height: 1.05;
-
   letter-spacing: -1.5px;
-
   font-weight: 850;
 }
 
 .hero-content p {
   max-width: 570px;
-
   margin: 22px 0 28px;
-
   color: var(--text-secondary);
-
   font-size: 17px;
-
   line-height: 1.7;
 }
 
-/* ==========================
-   Hero Buttons
-========================== */
+/* Hero Buttons */
 
 .hero-actions {
   display: flex;
-
   gap: 12px;
-
   flex-wrap: wrap;
 }
 
 .hero-primary-btn,
 .hero-secondary-btn {
   min-height: 46px;
-
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
   padding: 11px 20px;
-
   border-radius: var(--radius-md);
-
   text-decoration: none;
-
   font-size: 14px;
   font-weight: 800;
-
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -120,153 +80,105 @@
 
 .hero-primary-btn {
   border: 1px solid var(--primary);
-
   background: var(--primary);
-
   color: var(--white);
 }
 
 .hero-primary-btn:hover {
   background: var(--primary-dark);
-
   box-shadow: var(--shadow-md);
-
   transform: translateY(-1px);
 }
 
 .hero-secondary-btn {
   border: 1px solid var(--border);
-
   background: var(--white);
-
   color: var(--text-primary);
 }
 
 .hero-secondary-btn:hover {
   border-color: var(--primary);
-
   background: var(--primary-light);
-
   color: var(--primary-dark);
 }
 
-/* ==========================
-   Hero Visual
-========================== */
+/* Hero Visual */
 
 .hero-visual {
   position: relative;
-
   min-height: 450px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
 }
 
 .hero-visual::before {
   content: "";
-
   position: absolute;
-
   width: 330px;
   height: 330px;
-
   border-radius: 50%;
-
   background: var(--primary-light);
 }
 
-/* ==========================
-   Main Product Card
-========================== */
+/* Main Product Card */
 
 .hero-product-card {
   position: relative;
-
   width: min(100%, 340px);
-
   padding: 50px 35px;
-
   background: var(--white);
-
   border: 1px solid var(--border);
-
   border-radius: 24px;
-
   text-align: center;
-
   box-shadow: var(--shadow-lg);
 }
 
 .hero-product-icon {
   width: 110px;
   height: 110px;
-
   margin: 0 auto 20px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   border-radius: 50%;
-
   background: var(--primary-light);
-
   font-size: 52px;
 }
 
 .hero-product-card h3 {
   margin: 0 0 8px;
-
   color: var(--text-primary);
-
   font-size: 22px;
 }
 
 .hero-product-card p {
   margin: 0;
-
   color: var(--text-secondary);
-
   font-size: 14px;
 }
 
-/* ==========================
-   Floating Cards
-========================== */
+/* Floating Cards */
 
 .hero-floating-card {
   position: absolute;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 2px;
-
   padding: 12px 16px;
-
   background: var(--white);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-md);
-
   box-shadow: var(--shadow-md);
 }
 
 .hero-floating-card strong {
   color: var(--primary-dark);
-
   font-size: 14px;
 }
 
 .hero-floating-card span {
   color: var(--text-secondary);
-
   font-size: 12px;
 }
 
@@ -280,9 +192,7 @@
   left: 5px;
 }
 
-/* ==========================
-   Features Section
-========================== */
+/* Features Section */
 
 .features-section {
   padding: 70px 0;
@@ -290,64 +200,44 @@
 
 .section-heading {
   max-width: 650px;
-
   margin-bottom: 35px;
 }
 
 .section-heading > span {
   color: var(--primary-dark);
-
   font-size: 13px;
   font-weight: 800;
-
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .section-heading h2 {
   margin: 8px 0 10px;
-
   color: var(--text-primary);
-
   font-size: 34px;
-
   line-height: 1.2;
 }
 
 .section-heading p {
   margin: 0;
-
   color: var(--text-secondary);
-
   font-size: 15px;
 }
 
-/* ==========================
-   Features Grid
-========================== */
+/* Features Grid */
 
 .features-grid {
   display: grid;
-
-  grid-template-columns: repeat(
-    4,
-    1fr
-  );
-
+  grid-template-columns: repeat(4, 1fr);
   gap: 18px;
 }
 
 .feature-card {
   padding: 25px;
-
   background: var(--white);
-
   border: 1px solid var(--border);
-
   border-radius: var(--radius-lg);
-
   box-shadow: var(--shadow-sm);
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -356,74 +246,47 @@
 
 .feature-card:hover {
   transform: translateY(-4px);
-
   border-color: #d1d5db;
-
   box-shadow: var(--shadow-md);
 }
 
 .feature-icon {
   width: 50px;
   height: 50px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   margin-bottom: 16px;
-
   border-radius: var(--radius-md);
-
   background: var(--primary-light);
-
   font-size: 24px;
 }
 
 .feature-card h3 {
   margin: 0 0 8px;
-
   color: var(--text-primary);
-
   font-size: 18px;
 }
 
 .feature-card p {
   margin: 0;
-
   color: var(--text-secondary);
-
   font-size: 14px;
-
   line-height: 1.6;
 }
 
-/* ==========================
-   CTA
-========================== */
+/* CTA */
 
 .shopping-cta {
   display: flex;
-
   justify-content: space-between;
   align-items: center;
-
   gap: 30px;
-
   margin: 30px 0 70px;
-
   padding: 35px;
-
   border: 1px solid #bbf7d0;
-
   border-radius: var(--radius-xl);
-
-  background: linear-gradient(
-    135deg,
-    #f0fdf4,
-    #ffffff
-  );
-
+  background: linear-gradient(135deg, #f0fdf4, #ffffff);
   box-shadow: var(--shadow-sm);
 }
 
@@ -433,49 +296,34 @@
 
 .shopping-cta span {
   color: var(--primary-dark);
-
   font-size: 13px;
   font-weight: 800;
-
   text-transform: uppercase;
 }
 
 .shopping-cta h2 {
   margin: 7px 0 8px;
-
   color: var(--text-primary);
-
   font-size: 28px;
 }
 
 .shopping-cta p {
   margin: 0;
-
   color: var(--text-secondary);
-
   font-size: 14px;
-
   line-height: 1.6;
 }
 
 .cta-btn {
   flex-shrink: 0;
-
   padding: 12px 18px;
-
   border: 1px solid var(--primary);
-
   border-radius: var(--radius-md);
-
   background: var(--primary);
-
   color: var(--white);
-
   text-decoration: none;
-
   font-size: 14px;
   font-weight: 800;
-
   transition:
     background 0.2s ease,
     transform 0.2s ease,
@@ -484,20 +332,15 @@
 
 .cta-btn:hover {
   background: var(--primary-dark);
-
   box-shadow: var(--shadow-md);
-
   transform: translateY(-1px);
 }
 
-/* ==========================
-   Responsive
-========================== */
+/* Responsive */
 
 @media (max-width: 1000px) {
   .hero-section {
     grid-template-columns: 1fr;
-
     padding: 50px 0;
   }
 
@@ -510,10 +353,7 @@
   }
 
   .features-grid {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    );
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -545,14 +385,12 @@
 
   .hero-product-card {
     padding: 35px 25px;
-
     max-width: 300px;
   }
 
   .hero-product-icon {
     width: 85px;
     height: 85px;
-
     font-size: 40px;
   }
 
@@ -580,11 +418,8 @@
 
   .shopping-cta {
     flex-direction: column;
-
     align-items: flex-start;
-
     margin-bottom: 45px;
-
     padding: 25px;
   }
 
@@ -594,9 +429,7 @@
 
   .cta-btn {
     width: 100%;
-
     text-align: center;
-
     box-sizing: border-box;
   }
 }

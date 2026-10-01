@@ -31,87 +31,55 @@ function App() {
       <Navbar />
 
       <Routes>
-        {/* =========================
-            Public Routes
-        ========================= */}
-        <Route
-          path="/"
-          element={<Home />}
-        />
+        {/* Public Routes*/}
+        <Route path="/"
+          element={<Home />}/>
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/login"
+          element={<Login />}/>
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
+        <Route path="/register"
+          element={<Register />}/>
 
-        <Route
-          path="/products"
-          element={<Products />}
-        />
+        <Route path="/products"
+          element={<Products />}/>
 
-        <Route
-          path="/products/:id"
-          element={<ProductDetails />}
-        />
+        <Route path="/products/:id"
+          element={<ProductDetails />}/>
 
-        {/* =========================
-            Protected Routes
-        ========================= */}
-        <Route element={<ProtectedRoute />}>
-          <Route
-            path="/cart"
-            element={<Cart />}
-          />
+{/*Protected Routes*/}
+    <Route element={<ProtectedRoute />}>
+      <Route
+      path="/cart"
+       element={<Cart />}  />
 
-          <Route
-            path="/checkout"
-            element={<Checkout />}
-          />
+      <Route path="/checkout"
+            element={<Checkout />}/>
 
-          <Route
-            path="/payment"
-            element={<Payment />}
-          />
+   <Route path="/payment"
+     element={<Payment />} />
 
-          <Route
-            path="/address"
-            element={<Address />}
-          />
+     <Route path="/address"
+      element={<Address />}/>
 
-          <Route
-            path="/orders"
-            element={<Orders />}
-          />
+   <Route path="/orders"
+     element={<Orders />}/>
 
-          <Route
-            path="/orders/:id"
-            element={<OrderDetails />}
-          />
+          <Route path="/orders/:id"
+            element={<OrderDetails />}/>
 
-          <Route
-            path="/wishlist"
-            element={<Wishlist />}
-          />
+          <Route path="/wishlist"
+          element={<Wishlist />}/>
 
-          <Route
-            path="/profile"
-            element={<Profile />}
-          />
+          <Route path="/profile"
+          element={<Profile />}/>
 
-          <Route
-            path="/change-password"
-            element={<ChangePassword />}
-          />
+          <Route path="/change-password"
+          element={<ChangePassword />}/>
         </Route>
 
-        {/* =========================
-            Admin Routes
-        ========================= */}
+{/*          
+Admin Routes  */}
         <Route element={<AdminRoute />}>
           <Route
             path="/admin"

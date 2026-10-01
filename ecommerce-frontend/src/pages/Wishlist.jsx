@@ -5,16 +5,11 @@ import "./Wishlist.css";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // ==========================
   // Fetch Wishlist
-  // ==========================
-
   const fetchWishlist = async () => {
     try {
       setLoading(true);
@@ -36,14 +31,11 @@ function Wishlist() {
         }
       );
 
-      setWishlist(
-        response.data.wishlist || []
-      );
+      setWishlist(response.data.wishlist || []);
     } catch (error) {
       console.log(
         "Wishlist Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -59,19 +51,13 @@ function Wishlist() {
     fetchWishlist();
   }, []);
 
-  // ==========================
   // Remove Wishlist Item
-  // ==========================
-
-  const removeFromWishlist = async (
-    wishlistId
-  ) => {
+  const removeFromWishlist = async (wishlistId) => {
     try {
       setError("");
       setMessage("");
 
-      const token =
-        localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       if (!token) {
         setError("Please Login First");
@@ -96,8 +82,7 @@ function Wishlist() {
     } catch (error) {
       console.log(
         "Remove Wishlist Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -107,10 +92,7 @@ function Wishlist() {
     }
   };
 
-  // ==========================
   // Loading
-  // ==========================
-
   if (loading) {
     return (
       <div className="wishlist-page">
@@ -123,18 +105,12 @@ function Wishlist() {
 
   return (
     <div className="wishlist-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="wishlist-header">
         <div>
           <h1>My Wishlist</h1>
-
           <p>
-            Save your favorite products for
-            later.
+            Save your favorite products for later.
           </p>
         </div>
 
@@ -146,10 +122,7 @@ function Wishlist() {
         </Link>
       </div>
 
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {message && (
         <div className="wishlist-message success">
           {message}
@@ -162,10 +135,7 @@ function Wishlist() {
         </div>
       )}
 
-      {/* ==========================
-          Empty Wishlist
-      ========================== */}
-
+      {/* Empty Wishlist */}
       {wishlist.length === 0 ? (
         <div className="empty-wishlist">
           <div className="empty-wishlist-icon">
@@ -175,8 +145,8 @@ function Wishlist() {
           <h2>Your Wishlist Is Empty</h2>
 
           <p>
-            Add products to your wishlist and
-            they will appear here.
+            Add products to your wishlist and they
+            will appear here.
           </p>
 
           <Link
@@ -188,7 +158,6 @@ function Wishlist() {
         </div>
       ) : (
         <div className="wishlist-grid">
-
           {wishlist.map((item) => {
             const product = item.product;
 
@@ -207,9 +176,7 @@ function Wishlist() {
                 className="wishlist-card"
                 key={item._id}
               >
-
                 {/* Image */}
-
                 <div className="wishlist-image-wrapper">
                   {product.image ? (
                     <img
@@ -224,18 +191,14 @@ function Wishlist() {
                 </div>
 
                 {/* Content */}
-
                 <div className="wishlist-content">
-
                   {product.category && (
                     <span className="wishlist-category">
                       {product.category}
                     </span>
                   )}
 
-                  <h2>
-                    {product.name}
-                  </h2>
+                  <h2>{product.name}</h2>
 
                   {product.brand && (
                     <p className="wishlist-brand">
@@ -244,10 +207,7 @@ function Wishlist() {
                   )}
 
                   <div className="wishlist-price">
-                    ₹
-                    {price.toLocaleString(
-                      "en-IN"
-                    )}
+                    ₹{price.toLocaleString("en-IN")}
                   </div>
 
                   <p
@@ -263,9 +223,7 @@ function Wishlist() {
                   </p>
 
                   {/* Actions */}
-
                   <div className="wishlist-actions">
-
                     <Link
                       to={`/products/${product._id}`}
                       className="wishlist-view-btn"
@@ -277,14 +235,11 @@ function Wishlist() {
                       type="button"
                       className="wishlist-remove-btn"
                       onClick={() =>
-                        removeFromWishlist(
-                          item._id
-                        )
+                        removeFromWishlist(item._id)
                       }
                     >
                       Remove
                     </button>
-
                   </div>
                 </div>
               </div>

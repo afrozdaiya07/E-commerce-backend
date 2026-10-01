@@ -9,12 +9,9 @@ function ProductDetails() {
   const { token, user } = useAuth();
 
   const [product, setProduct] = useState(null);
-
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
-
   const [quantity, setQuantity] = useState(1);
-
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
 
@@ -27,10 +24,7 @@ function ProductDetails() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // ==========================
   // Fetch Product
-  // ==========================
-
   const fetchProduct = async () => {
     try {
       setLoading(true);
@@ -51,10 +45,7 @@ function ProductDetails() {
     }
   };
 
-  // ==========================
   // Fetch Reviews
-  // ==========================
-
   const fetchReviews = async () => {
     try {
       const response = await axios.get(
@@ -70,10 +61,7 @@ function ProductDetails() {
     }
   };
 
-  // ==========================
   // Fetch Average Rating
-  // ==========================
-
   const fetchAverageRating = async () => {
     try {
       const response = await axios.get(
@@ -97,10 +85,7 @@ function ProductDetails() {
     fetchAverageRating();
   }, [id]);
 
-  // ==========================
   // Add To Cart
-  // ==========================
-
   const handleAddToCart = async () => {
     if (!token) {
       setError("Please login to add product to cart");
@@ -130,9 +115,7 @@ function ProductDetails() {
         }
       );
 
-      setMessage(
-        "Product added to cart successfully ✅"
-      );
+      setMessage("Product added to cart successfully ✅");
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -143,10 +126,7 @@ function ProductDetails() {
     }
   };
 
-  // ==========================
   // Add To Wishlist
-  // ==========================
-
   const handleAddToWishlist = async () => {
     if (!token) {
       setError("Please login to add product to wishlist");
@@ -170,9 +150,7 @@ function ProductDetails() {
         }
       );
 
-      setMessage(
-        "Product added to wishlist successfully ❤️"
-      );
+      setMessage("Product added to wishlist successfully ❤️");
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -183,10 +161,7 @@ function ProductDetails() {
     }
   };
 
-  // ==========================
   // Submit Review
-  // ==========================
-
   const handleSubmitReview = async (e) => {
     e.preventDefault();
 
@@ -221,7 +196,6 @@ function ProductDetails() {
 
       setComment("");
       setRating(5);
-
       setMessage("Review added successfully ✅");
 
       await fetchReviews();
@@ -236,10 +210,7 @@ function ProductDetails() {
     }
   };
 
-  // ==========================
   // Delete Review
-  // ==========================
-
   const handleDeleteReview = async (reviewId) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this review?"
@@ -277,10 +248,7 @@ function ProductDetails() {
     }
   };
 
-  // ==========================
   // Loading
-  // ==========================
-
   if (loading) {
     return (
       <div className="product-details-page">
@@ -291,10 +259,7 @@ function ProductDetails() {
     );
   }
 
-  // ==========================
   // Product Not Found
-  // ==========================
-
   if (!product) {
     return (
       <div className="product-details-page">
@@ -311,11 +276,7 @@ function ProductDetails() {
 
   return (
     <div className="product-details-page">
-
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {error && (
         <div className="details-message error">
           {error}
@@ -328,14 +289,9 @@ function ProductDetails() {
         </div>
       )}
 
-      {/* ==========================
-          Product Details
-      ========================== */}
-
+      {/* Product Details */}
       <div className="product-details-container">
-
         {/* Image */}
-
         <div className="details-image-section">
           {product.image ? (
             <img
@@ -351,9 +307,7 @@ function ProductDetails() {
         </div>
 
         {/* Information */}
-
         <div className="details-info-section">
-
           <span className="details-category">
             {product.category}
           </span>
@@ -386,10 +340,7 @@ function ProductDetails() {
           </div>
 
           <div className="details-price">
-            ₹
-            {Number(
-              product.price
-            ).toLocaleString("en-IN")}
+            ₹{Number(product.price).toLocaleString("en-IN")}
           </div>
 
           <p className="details-description">
@@ -409,7 +360,6 @@ function ProductDetails() {
           </div>
 
           {/* Quantity */}
-
           {product.stock > 0 && (
             <div className="quantity-section">
               <label htmlFor="quantity">
@@ -448,9 +398,7 @@ function ProductDetails() {
           )}
 
           {/* Actions */}
-
           <div className="details-actions">
-
             <button
               type="button"
               className="details-cart-btn"
@@ -488,12 +436,8 @@ function ProductDetails() {
         </div>
       </div>
 
-      {/* ==========================
-          Reviews Section
-      ========================== */}
-
+      {/* Reviews Section */}
       <div className="reviews-section">
-
         <div className="reviews-header">
           <h2>Customer Reviews</h2>
 
@@ -514,7 +458,6 @@ function ProductDetails() {
         </div>
 
         {/* Add Review */}
-
         {token ? (
           <form
             className="review-form"
@@ -536,19 +479,15 @@ function ProductDetails() {
               <option value="5">
                 5 - Excellent
               </option>
-
               <option value="4">
                 4 - Very Good
               </option>
-
               <option value="3">
                 3 - Good
               </option>
-
               <option value="2">
                 2 - Average
               </option>
-
               <option value="1">
                 1 - Poor
               </option>
@@ -590,9 +529,7 @@ function ProductDetails() {
         )}
 
         {/* Reviews List */}
-
         <div className="reviews-list">
-
           {reviews.length === 0 ? (
             <div className="no-reviews">
               <h3>No Reviews Yet</h3>
@@ -604,10 +541,8 @@ function ProductDetails() {
             </div>
           ) : (
             reviews.map((review) => {
-
               const reviewUser =
-                review.user?.name ||
-                "User";
+                review.user?.name || "User";
 
               const isOwnReview =
                 user &&
@@ -619,11 +554,8 @@ function ProductDetails() {
                   key={review._id}
                 >
                   <div className="review-top">
-
                     <div>
-                      <h3>
-                        {reviewUser}
-                      </h3>
+                      <h3>{reviewUser}</h3>
 
                       <span className="review-date">
                         {review.createdAt
@@ -641,8 +573,7 @@ function ProductDetails() {
                         Number(review.rating)
                       )}
                       {"☆".repeat(
-                        5 -
-                          Number(review.rating)
+                        5 - Number(review.rating)
                       )}
                     </div>
                   </div>

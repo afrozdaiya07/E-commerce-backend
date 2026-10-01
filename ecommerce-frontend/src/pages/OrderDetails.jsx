@@ -8,11 +8,8 @@ function OrderDetails() {
   const navigate = useNavigate();
 
   const [order, setOrder] = useState(null);
-
   const [loading, setLoading] = useState(true);
-  const [cancelling, setCancelling] =
-    useState(false);
-
+  const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -32,8 +29,7 @@ function OrderDetails() {
         }
       );
 
-      const orders =
-        response.data.orders || [];
+      const orders = response.data.orders || [];
 
       const foundOrder = orders.find(
         (item) => item._id === id
@@ -110,6 +106,7 @@ function OrderDetails() {
       .replace(/\s+/g, "-")}`;
   };
 
+  // Loading
   if (loading) {
     return (
       <div className="order-details-page">
@@ -120,6 +117,7 @@ function OrderDetails() {
     );
   }
 
+  // Order Not Found
   if (!order) {
     return (
       <div className="order-details-page">
@@ -151,11 +149,7 @@ function OrderDetails() {
 
   return (
     <div className="order-details-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="order-details-header">
         <div>
           <Link
@@ -173,18 +167,13 @@ function OrderDetails() {
         </div>
 
         <span
-          className={getStatusClass(
-            order.status
-          )}
+          className={getStatusClass(order.status)}
         >
           {order.status}
         </span>
       </div>
 
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {error && (
         <div className="order-details-message error">
           {error}
@@ -198,94 +187,69 @@ function OrderDetails() {
       )}
 
       <div className="order-details-layout">
-
-        {/* ==========================
-            Main
-        ========================== */}
-
+        {/* Main */}
         <div className="order-details-main">
-
           {/* Items */}
-
           <div className="order-details-section">
             <h2>Order Items</h2>
 
             <div className="details-items-list">
+              {order.items?.map((item, index) => {
+                const product = item.product;
 
-              {order.items?.map(
-                (item, index) => {
-                  const product =
-                    item.product;
-
-                  if (!product) {
-                    return null;
-                  }
-
-                  const price =
-                    Number(
-                      product.price || 0
-                    );
-
-                  const quantity =
-                    Number(
-                      item.quantity || 0
-                    );
-
-                  const total =
-                    price * quantity;
-
-                  return (
-                    <div
-                      className="details-item"
-                      key={
-                        product._id ||
-                        index
-                      }
-                    >
-                      <div className="details-item-image">
-                        {product.image ? (
-                          <img
-                            src={product.image}
-                            alt={
-                              product.name
-                            }
-                          />
-                        ) : (
-                          <span>
-                            No Image
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="details-item-info">
-                        <h3>
-                          {product.name}
-                        </h3>
-
-                        <p>
-                          ₹
-                          {price.toLocaleString(
-                            "en-IN"
-                          )}{" "}
-                          × {quantity}
-                        </p>
-                      </div>
-
-                      <strong>
-                        ₹
-                        {total.toLocaleString(
-                          "en-IN"
-                        )}
-                      </strong>
-                    </div>
-                  );
+                if (!product) {
+                  return null;
                 }
-              )}
+
+                const price =
+                  Number(product.price) || 0;
+
+                const quantity =
+                  Number(item.quantity) || 0;
+
+                const total = price * quantity;
+
+                return (
+                  <div
+                    className="details-item"
+                    key={product._id || index}
+                  >
+                    <div className="details-item-image">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                        />
+                      ) : (
+                        <span>No Image</span>
+                      )}
+                    </div>
+
+                    <div className="details-item-info">
+                      <h3>{product.name}</h3>
+
+                      <p>
+                        ₹
+                        {price.toLocaleString(
+                          "en-IN"
+                        )}{" "}
+                        × {quantity}
+                      </p>
+                    </div>
+
+                    <strong>
+                      ₹
+                      {total.toLocaleString(
+                        "en-IN"
+                      )}
+                    </strong>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           {/* Address */}
-
           <div className="order-details-section">
             <h2>Delivery Address</h2>
 
@@ -295,9 +259,7 @@ function OrderDetails() {
                   {order.address.fullName}
                 </h3>
 
-                <p>
-                  {order.address.mobile}
-                </p>
+                <p>{order.address.mobile}</p>
 
                 <p>
                   {order.address.addressLine}
@@ -309,9 +271,7 @@ function OrderDetails() {
                   {order.address.pincode}
                 </p>
 
-                <p>
-                  {order.address.country}
-                </p>
+                <p>{order.address.country}</p>
               </div>
             ) : (
               <p>
@@ -321,12 +281,10 @@ function OrderDetails() {
           </div>
 
           {/* Order Timeline */}
-
           <div className="order-details-section">
             <h2>Order Status</h2>
 
             <div className="order-timeline">
-
               <div
                 className={`timeline-step ${
                   [
@@ -340,10 +298,9 @@ function OrderDetails() {
                 }`}
               >
                 <span>1</span>
+
                 <div>
-                  <strong>
-                    Order Placed
-                  </strong>
+                  <strong>Order Placed</strong>
                   <p>
                     Your order has been placed.
                   </p>
@@ -362,10 +319,9 @@ function OrderDetails() {
                 }`}
               >
                 <span>2</span>
+
                 <div>
-                  <strong>
-                    Confirmed
-                  </strong>
+                  <strong>Confirmed</strong>
                   <p>
                     Your order is confirmed.
                   </p>
@@ -383,10 +339,9 @@ function OrderDetails() {
                 }`}
               >
                 <span>3</span>
+
                 <div>
-                  <strong>
-                    Shipped
-                  </strong>
+                  <strong>Shipped</strong>
                   <p>
                     Your order has been shipped.
                   </p>
@@ -401,20 +356,17 @@ function OrderDetails() {
                 }`}
               >
                 <span>4</span>
+
                 <div>
-                  <strong>
-                    Delivered
-                  </strong>
+                  <strong>Delivered</strong>
                   <p>
                     Your order has been delivered.
                   </p>
                 </div>
               </div>
-
             </div>
 
-            {order.status ===
-              "Cancelled" && (
+            {order.status === "Cancelled" && (
               <div className="cancelled-order-box">
                 This order has been cancelled.
               </div>
@@ -422,12 +374,8 @@ function OrderDetails() {
           </div>
         </div>
 
-        {/* ==========================
-            Summary
-        ========================== */}
-
+        {/* Summary */}
         <div className="order-details-summary">
-
           <h2>Order Summary</h2>
 
           <div className="details-summary-row">
@@ -435,9 +383,7 @@ function OrderDetails() {
 
             <strong>
               ₹
-              {subtotal.toLocaleString(
-                "en-IN"
-              )}
+              {subtotal.toLocaleString("en-IN")}
             </strong>
           </div>
 
@@ -446,9 +392,7 @@ function OrderDetails() {
 
             <strong className="discount-value">
               - ₹
-              {discount.toLocaleString(
-                "en-IN"
-              )}
+              {discount.toLocaleString("en-IN")}
             </strong>
           </div>
 
@@ -468,9 +412,7 @@ function OrderDetails() {
 
             <strong>
               ₹
-              {finalAmount.toLocaleString(
-                "en-IN"
-              )}
+              {finalAmount.toLocaleString("en-IN")}
             </strong>
           </div>
 
@@ -478,9 +420,7 @@ function OrderDetails() {
             Ordered on{" "}
             {new Date(
               order.createdAt
-            ).toLocaleDateString(
-              "en-IN"
-            )}
+            ).toLocaleDateString("en-IN")}
           </div>
 
           {canCancel && (

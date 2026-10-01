@@ -1,3 +1,5 @@
+/* Admin Products Page */
+
 .admin-products-page {
   min-height: calc(100vh - 70px);
   padding: 40px 20px 60px;
@@ -9,9 +11,7 @@
   margin: 0 auto;
 }
 
-/* ==========================
-   Header
-========================== */
+/* Header */
 
 .admin-products-header {
   display: flex;
@@ -66,9 +66,7 @@
   font-size: 28px;
 }
 
-/* ==========================
-   Alerts
-========================== */
+/* Alerts */
 
 .admin-alert {
   display: flex;
@@ -96,9 +94,7 @@
   color: #991b1b;
 }
 
-/* ==========================
-   Form Card
-========================== */
+/* Form Card */
 
 .admin-product-form-card {
   margin-bottom: 40px;
@@ -138,9 +134,7 @@
   white-space: nowrap;
 }
 
-/* ==========================
-   Form
-========================== */
+/* Form */
 
 .admin-product-form {
   display: grid;
@@ -191,9 +185,7 @@
   color: #9ca3af;
 }
 
-/* ==========================
-   Upload
-========================== */
+/* Upload */
 
 .image-upload-box {
   padding: 18px;
@@ -219,9 +211,7 @@
   font-size: 13px;
 }
 
-/* ==========================
-   Image Preview
-========================== */
+/* Image Preview */
 
 .admin-image-preview {
   width: 220px;
@@ -238,9 +228,7 @@
   object-fit: cover;
 }
 
-/* ==========================
-   Buttons
-========================== */
+/* Buttons */
 
 .form-actions {
   display: flex;
@@ -286,9 +274,7 @@
   background: #e5e7eb;
 }
 
-/* ==========================
-   Products List
-========================== */
+/* Products List */
 
 .admin-products-list-section {
   margin-top: 10px;
@@ -308,9 +294,7 @@
   color: var(--text-secondary);
 }
 
-/* ==========================
-   Grid
-========================== */
+/* Grid */
 
 .admin-products-grid {
   display: grid;
@@ -318,9 +302,7 @@
   gap: 24px;
 }
 
-/* ==========================
-   Card
-========================== */
+/* Card */
 
 .admin-product-card {
   overflow: hidden;
@@ -328,7 +310,9 @@
   border-radius: var(--radius-xl);
   background: var(--white);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .admin-product-card:hover {
@@ -368,9 +352,7 @@
   margin: 0;
 }
 
-/* ==========================
-   Product Content
-========================== */
+/* Product Content */
 
 .admin-product-content {
   padding: 20px;
@@ -443,9 +425,7 @@
   color: #991b1b;
 }
 
-/* ==========================
-   Product Actions
-========================== */
+/* Product Actions */
 
 .product-actions {
   display: flex;
@@ -476,9 +456,7 @@
   background: #fecaca;
 }
 
-/* ==========================
-   Loading
-========================== */
+/* Loading */
 
 .admin-products-loading {
   display: flex;
@@ -512,9 +490,7 @@
   }
 }
 
-/* ==========================
-   Empty State
-========================== */
+/* Empty State */
 
 .admin-products-empty {
   padding: 60px 20px;
@@ -538,9 +514,7 @@
   color: var(--text-secondary);
 }
 
-/* ==========================
-   Responsive
-========================== */
+/* Responsive */
 
 @media (max-width: 1000px) {
   .admin-products-grid {

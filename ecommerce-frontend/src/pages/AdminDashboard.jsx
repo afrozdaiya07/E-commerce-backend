@@ -8,7 +8,6 @@ function AdminDashboard() {
   const [products, setProducts] = useState(0);
   const [orders, setOrders] = useState(0);
   const [coupons, setCoupons] = useState(0);
-
   const [revenue, setRevenue] = useState(0);
 
   const [pendingOrders, setPendingOrders] = useState(0);
@@ -17,10 +16,10 @@ function AdminDashboard() {
   const [deliveredOrders, setDeliveredOrders] = useState(0);
 
   const [recentOrders, setRecentOrders] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  /* Fetch Dashboard Data */
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
@@ -43,76 +42,48 @@ function AdminDashboard() {
         ordersResponse,
         couponsResponse,
       ] = await Promise.all([
-        // Users
-        axios.get(
-          "http://localhost:5000/api/users/admin",
-          {
-            headers,
-          }
-        ),
+        /* Users */
+        axios.get("http://localhost:5000/api/users/admin", {
+          headers,
+        }),
 
-        // Products
-        axios.get(
-          "http://localhost:5000/api/products"
-        ),
+        /* Products */
+        axios.get("http://localhost:5000/api/products"),
 
-        // All Orders - Admin
-        axios.get(
-          "http://localhost:5000/api/orders/all",
-          {
-            headers,
-          }
-        ),
+        /* All Orders - Admin */
+        axios.get("http://localhost:5000/api/orders/all", {
+          headers,
+        }),
 
-        // Coupons
-        axios.get(
-          "http://localhost:5000/api/coupons",
-          {
-            headers,
-          }
-        ),
+        /* Coupons */
+        axios.get("http://localhost:5000/api/coupons", {
+          headers,
+        }),
       ]);
 
-      // ==========================
-      // Basic Counts
-      // ==========================
-
-      const usersData =
-        usersResponse.data.users || [];
-
-      const productsData =
-        productsResponse.data.products || [];
-
-      const ordersData =
-        ordersResponse.data.orders || [];
-
-      const couponsData =
-        couponsResponse.data.coupons || [];
+      /* Basic Counts */
+      const usersData = usersResponse.data.users || [];
+      const productsData = productsResponse.data.products || [];
+      const ordersData = ordersResponse.data.orders || [];
+      const couponsData = couponsResponse.data.coupons || [];
 
       setUsers(
-        usersResponse.data.count ??
-          usersData.length
+        usersResponse.data.count ?? usersData.length
       );
 
       setProducts(
-        productsResponse.data.count ??
-          productsData.length
+        productsResponse.data.count ?? productsData.length
       );
 
       setOrders(
-        ordersResponse.data.count ??
-          ordersData.length
+        ordersResponse.data.count ?? ordersData.length
       );
 
       setCoupons(
-        couponsResponse.data.count ??
-          couponsData.length
+        couponsResponse.data.count ?? couponsData.length
       );
 
-      // ==========================
-      // Revenue
-      // ==========================
-
+      /* Revenue */
       const totalRevenue = ordersData.reduce(
         (total, order) => {
           if (order.status === "Cancelled") {
@@ -131,42 +102,32 @@ function AdminDashboard() {
 
       setRevenue(totalRevenue);
 
-      // ==========================
-      // Order Status Counts
-      // ==========================
-
+      /* Order Status Counts */
       setPendingOrders(
         ordersData.filter(
-          (order) =>
-            order.status === "Pending"
+          (order) => order.status === "Pending"
         ).length
       );
 
       setConfirmedOrders(
         ordersData.filter(
-          (order) =>
-            order.status === "Confirmed"
+          (order) => order.status === "Confirmed"
         ).length
       );
 
       setShippedOrders(
         ordersData.filter(
-          (order) =>
-            order.status === "Shipped"
+          (order) => order.status === "Shipped"
         ).length
       );
 
       setDeliveredOrders(
         ordersData.filter(
-          (order) =>
-            order.status === "Delivered"
+          (order) => order.status === "Delivered"
         ).length
       );
 
-      // ==========================
-      // Recent Orders
-      // ==========================
-
+      /* Recent Orders */
       const sortedOrders = [...ordersData]
         .sort(
           (a, b) =>
@@ -179,8 +140,7 @@ function AdminDashboard() {
     } catch (error) {
       console.log(
         "Dashboard Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -197,10 +157,7 @@ function AdminDashboard() {
     fetchDashboardData();
   }, []);
 
-  // ==========================
-  // Loading
-  // ==========================
-
+  /* Loading */
   if (loading) {
     return (
       <div className="admin-dashboard">
@@ -210,19 +167,15 @@ function AdminDashboard() {
     );
   }
 
+  /* Responsive */
   return (
     <div className="admin-dashboard">
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="dashboard-header">
         <div>
           <h1>Admin Dashboard</h1>
 
-          <p>
-            Manage your e-commerce store
-          </p>
+          <p>Manage your e-commerce store</p>
         </div>
 
         <button
@@ -233,20 +186,17 @@ function AdminDashboard() {
         </button>
       </div>
 
+      {/* Error */}
       {error && (
         <div className="dashboard-error">
           {error}
         </div>
       )}
 
-      {/* ==========================
-          Main Statistics
-      ========================== */}
-
+      {/* Main Statistics */}
       <div className="dashboard-stats">
         <div className="dashboard-card">
           <h3>Total Users</h3>
-
           <p>{users}</p>
 
           <Link to="/admin/users">
@@ -256,7 +206,6 @@ function AdminDashboard() {
 
         <div className="dashboard-card">
           <h3>Total Products</h3>
-
           <p>{products}</p>
 
           <Link to="/admin/products">
@@ -266,7 +215,6 @@ function AdminDashboard() {
 
         <div className="dashboard-card">
           <h3>Total Orders</h3>
-
           <p>{orders}</p>
 
           <Link to="/admin/orders">
@@ -276,7 +224,6 @@ function AdminDashboard() {
 
         <div className="dashboard-card">
           <h3>Total Coupons</h3>
-
           <p>{coupons}</p>
 
           <Link to="/admin/coupons">
@@ -285,10 +232,7 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {/* ==========================
-          Revenue
-      ========================== */}
-
+      {/* Revenue */}
       <div className="revenue-card">
         <div>
           <h2>Total Revenue</h2>
@@ -299,10 +243,7 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {/* ==========================
-          Order Status
-      ========================== */}
-
+      {/* Order Status */}
       <div className="status-section">
         <h2>Order Status</h2>
 
@@ -329,10 +270,7 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {/* ==========================
-          Recent Orders
-      ========================== */}
-
+      {/* Recent Orders */}
       <div className="recent-orders-section">
         <div className="section-header">
           <h2>Recent Orders</h2>
@@ -371,19 +309,12 @@ function AdminDashboard() {
 
                   return (
                     <tr key={order._id}>
-                      <td>
-                        {order._id.slice(-8)}
-                      </td>
+                      <td>{order._id.slice(-8)}</td>
+
+                      <td>{customerName}</td>
 
                       <td>
-                        {customerName}
-                      </td>
-
-                      <td>
-                        ₹
-                        {amount.toLocaleString(
-                          "en-IN"
-                        )}
+                        ₹{amount.toLocaleString("en-IN")}
                       </td>
 
                       <td>
@@ -397,9 +328,7 @@ function AdminDashboard() {
                       <td>
                         {new Date(
                           order.createdAt
-                        ).toLocaleDateString(
-                          "en-IN"
-                        )}
+                        ).toLocaleDateString("en-IN")}
                       </td>
                     </tr>
                   );
@@ -410,10 +339,7 @@ function AdminDashboard() {
         )}
       </div>
 
-      {/* ==========================
-          Quick Actions
-      ========================== */}
-
+      {/* Quick Actions */}
       <div className="quick-actions">
         <h2>Quick Actions</h2>
 

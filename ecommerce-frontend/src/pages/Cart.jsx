@@ -6,22 +6,14 @@ import "./Cart.css";
 function Cart() {
   const navigate = useNavigate();
 
-  // ==========================
-  // State
-  // ==========================
-
+  /* State */
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [updatingId, setUpdatingId] = useState(null);
   const [removingId, setRemovingId] = useState(null);
-
   const [error, setError] = useState("");
 
-  // ==========================
-  // Fetch Cart
-  // ==========================
-
+  /* Fetch Cart */
   const fetchCart = async () => {
     try {
       setLoading(true);
@@ -36,15 +28,15 @@ function Cart() {
 
       const response = await api.get("/cart");
 
-      // Backend response check
+      /* Backend response check */
       console.log("CART RESPONSE:", response.data);
 
-      // Backend returns:
-      // {
-      //   success: true,
-      //   cart: [...]
-      // }
-
+      /* Backend returns:
+         {
+           success: true,
+           cart: [...]
+         }
+      */
       setCart(response.data.cart || []);
     } catch (error) {
       console.log(
@@ -53,30 +45,20 @@ function Cart() {
       );
 
       setError(
-        error.response?.data?.message ||
-          "Failed to load cart"
+        error.response?.data?.message || "Failed to load cart"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // ==========================
-  // Fetch cart on page load
-  // ==========================
-
+  /* Fetch cart on page load */
   useEffect(() => {
     fetchCart();
   }, []);
 
-  // ==========================
-  // Update Quantity
-  // ==========================
-
-  const handleQuantityChange = async (
-    productId,
-    newQuantity
-  ) => {
+  /* Update Quantity */
+  const handleQuantityChange = async (productId, newQuantity) => {
     if (newQuantity < 1) {
       return;
     }
@@ -105,10 +87,7 @@ function Cart() {
     }
   };
 
-  // ==========================
-  // Remove Item
-  // ==========================
-
+  /* Remove Item */
   const handleRemove = async (productId) => {
     try {
       setRemovingId(productId);
@@ -132,10 +111,7 @@ function Cart() {
     }
   };
 
-  // ==========================
-  // Loading
-  // ==========================
-
+  /* Loading */
   if (loading) {
     return (
       <div className="cart-page">
@@ -146,49 +122,25 @@ function Cart() {
     );
   }
 
-  // ==========================
-  // Cart Items
-  // ==========================
-
+  /* Cart Items */
   const cartItems = cart;
 
-  // ==========================
-  // Subtotal
-  // ==========================
+  /* Subtotal */
+  const subtotal = cartItems.reduce((total, item) => {
+    const price = Number(item.product?.price || 0);
+    const quantity = Number(item.quantity || 0);
 
-  const subtotal = cartItems.reduce(
-    (total, item) => {
-      const price = Number(
-        item.product?.price || 0
-      );
+    return total + price * quantity;
+  }, 0);
 
-      const quantity = Number(
-        item.quantity || 0
-      );
-
-      return total + price * quantity;
-    },
-    0
-  );
-
-  // ==========================
-  // UI
-  // ==========================
-
+  /* Responsive */
   return (
     <div className="cart-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="cart-header">
         <div>
           <h1>Shopping Cart</h1>
-
-          <p>
-            Review your items before checkout.
-          </p>
+          <p>Review your items before checkout.</p>
         </div>
 
         <Link
@@ -199,32 +151,22 @@ function Cart() {
         </Link>
       </div>
 
-      {/* ==========================
-          Error
-      ========================== */}
-
+      {/* Error */}
       {error && (
         <div className="cart-error">
           {error}
         </div>
       )}
 
-      {/* ==========================
-          Empty Cart
-      ========================== */}
-
+      {/* Empty Cart */}
       {cartItems.length === 0 ? (
         <div className="empty-cart">
-
-          <div className="empty-cart-icon">
-            🛒
-          </div>
+          <div className="empty-cart-icon">🛒</div>
 
           <h2>Your Cart Is Empty</h2>
 
           <p>
-            Add some products to your cart and
-            come back here.
+            Add some products to your cart and come back here.
           </p>
 
           <Link
@@ -233,43 +175,27 @@ function Cart() {
           >
             Start Shopping
           </Link>
-
         </div>
       ) : (
-
         <div className="cart-layout">
-
-          {/* ==========================
-              Cart Items Section
-          ========================== */}
-
+          {/* Cart Items Section */}
           <div className="cart-items-section">
-
             <div className="cart-items-header">
-              <h2>
-                Cart Items ({cartItems.length})
-              </h2>
+              <h2>Cart Items ({cartItems.length})</h2>
             </div>
 
             <div className="cart-items-list">
-
               {cartItems.map((item) => {
-
                 const product = item.product;
 
-                // Safety check
+                /* Safety check */
                 if (!product) {
                   return null;
                 }
 
-                const itemPrice =
-                  Number(product.price) || 0;
-
-                const itemQuantity =
-                  Number(item.quantity) || 0;
-
-                const itemTotal =
-                  itemPrice * itemQuantity;
+                const itemPrice = Number(product.price) || 0;
+                const itemQuantity = Number(item.quantity) || 0;
+                const itemTotal = itemPrice * itemQuantity;
 
                 const isUpdating =
                   updatingId === product._id;
@@ -280,37 +206,22 @@ function Cart() {
                 return (
                   <div
                     className="cart-item"
-                    key={
-                      item._id ||
-                      product._id
-                    }
+                    key={item._id || product._id}
                   >
-
-                    {/* ==========================
-                        Product Image
-                    ========================== */}
-
+                    {/* Product Image */}
                     <div className="cart-item-image">
-
                       {product.image ? (
                         <img
                           src={product.image}
                           alt={product.name}
                         />
                       ) : (
-                        <span>
-                          No Image
-                        </span>
+                        <span>No Image</span>
                       )}
-
                     </div>
 
-                    {/* ==========================
-                        Product Info
-                    ========================== */}
-
+                    {/* Product Info */}
                     <div className="cart-item-info">
-
                       <Link
                         to={`/products/${product._id}`}
                         className="cart-product-name"
@@ -319,36 +230,24 @@ function Cart() {
                       </Link>
 
                       {/* Brand */}
-
                       {product.brand && (
                         <p>
-                          Brand:{" "}
-                          {product.brand}
+                          Brand: {product.brand}
                         </p>
                       )}
 
                       {/* Price */}
-
                       <p className="cart-item-price">
-                        ₹
-                        {itemPrice.toLocaleString(
-                          "en-IN"
-                        )}
+                        ₹{itemPrice.toLocaleString("en-IN")}
                       </p>
 
-                      {/* ==========================
-                          Quantity
-                      ========================== */}
-
+                      {/* Quantity */}
                       <div className="cart-quantity">
-
                         {/* Minus */}
-
                         <button
                           type="button"
                           disabled={
-                            isUpdating ||
-                            itemQuantity <= 1
+                            isUpdating || itemQuantity <= 1
                           }
                           onClick={() =>
                             handleQuantityChange(
@@ -361,21 +260,16 @@ function Cart() {
                         </button>
 
                         {/* Quantity */}
-
                         <span>
-                          {isUpdating
-                            ? "..."
-                            : itemQuantity}
+                          {isUpdating ? "..." : itemQuantity}
                         </span>
 
                         {/* Plus */}
-
                         <button
                           type="button"
                           disabled={
                             isUpdating ||
-                            itemQuantity >=
-                              product.stock
+                            itemQuantity >= product.stock
                           }
                           onClick={() =>
                             handleQuantityChange(
@@ -386,124 +280,81 @@ function Cart() {
                         >
                           +
                         </button>
-
                       </div>
 
-                      {/* ==========================
-                          Remove Button
-                      ========================== */}
-
+                      {/* Remove Button */}
                       <button
                         type="button"
                         className="remove-cart-btn"
                         disabled={isRemoving}
                         onClick={() =>
-                          handleRemove(
-                            product._id
-                          )
+                          handleRemove(product._id)
                         }
                       >
-                        {isRemoving
-                          ? "Removing..."
-                          : "Remove"}
+                        {isRemoving ? "Removing..." : "Remove"}
                       </button>
-
                     </div>
 
-                    {/* ==========================
-                        Item Total
-                    ========================== */}
-
+                    {/* Item Total */}
                     <div className="cart-item-total">
-                      ₹
-                      {itemTotal.toLocaleString(
-                        "en-IN"
-                      )}
+                      ₹{itemTotal.toLocaleString("en-IN")}
                     </div>
-
                   </div>
                 );
               })}
-
             </div>
           </div>
 
-          {/* ==========================
-              Order Summary
-          ========================== */}
-
+          {/* Order Summary */}
           <div className="cart-summary">
-
             <h2>Order Summary</h2>
 
             {/* Subtotal */}
-
             <div className="summary-row">
               <span>Subtotal</span>
 
               <strong>
-                ₹
-                {subtotal.toLocaleString(
-                  "en-IN"
-                )}
+                ₹{subtotal.toLocaleString("en-IN")}
               </strong>
             </div>
 
             {/* Shipping */}
-
             <div className="summary-row">
               <span>Shipping</span>
-
-              <strong>
-                Free
-              </strong>
+              <strong>Free</strong>
             </div>
 
             {/* Divider */}
-
             <div className="summary-divider" />
 
             {/* Total */}
-
             <div className="summary-total">
-
               <span>Total</span>
 
               <strong>
-                ₹
-                {subtotal.toLocaleString(
-                  "en-IN"
-                )}
+                ₹{subtotal.toLocaleString("en-IN")}
               </strong>
-
             </div>
 
             {/* Checkout */}
-
             <button
               type="button"
               className="checkout-btn"
-              onClick={() =>
-                navigate("/checkout")
-              }
+              onClick={() => navigate("/checkout")}
             >
               Proceed To Checkout
             </button>
 
             {/* Continue Shopping */}
-
             <Link
               to="/products"
               className="summary-shopping-link"
             >
               Continue Shopping
             </Link>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

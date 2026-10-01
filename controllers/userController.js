@@ -7,9 +7,7 @@ const Address = require("../models/Address");
 const Review = require("../models/Review");
 const Order = require("../models/Order");
 
-// ======================================
 // Get My Profile
-// ======================================
 const getMyProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select(
@@ -34,10 +32,7 @@ const getMyProfile = async (req, res) => {
     });
   }
 };
-
-// ======================================
 // Update My Profile
-// ======================================
 const updateMyProfile = async (req, res) => {
   try {
     const { name, email } = req.body;
@@ -86,9 +81,7 @@ const updateMyProfile = async (req, res) => {
   }
 };
 
-// ======================================
 // Change Password
-// ======================================
 const changePassword = async (req, res) => {
   try {
     const {
@@ -151,10 +144,7 @@ const changePassword = async (req, res) => {
     });
   }
 };
-
-// ======================================
 // Delete My Account
-// ======================================
 const deleteMyAccount = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -205,9 +195,7 @@ const deleteMyAccount = async (req, res) => {
   }
 };
 
-// ======================================
 // ADMIN - Get All Users
-// ======================================
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({})
@@ -227,9 +215,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// ======================================
 // ADMIN - Update User Role
-// ======================================
 const updateUserRole = async (req, res) => {
   try {
     const { role } = req.body;
@@ -282,9 +268,8 @@ const updateUserRole = async (req, res) => {
   }
 };
 
-// ======================================
 // ADMIN - Delete User
-// ======================================
+
 const deleteUserByAdmin = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -343,9 +328,7 @@ const deleteUserByAdmin = async (req, res) => {
   }
 };
 
-// ======================================
 // EXPORTS
-// ======================================
 module.exports = {
   getMyProfile,
   updateMyProfile,

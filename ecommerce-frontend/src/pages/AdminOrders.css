@@ -1,3 +1,5 @@
+/* Admin Orders Page */
+
 .admin-orders-page {
   min-height: calc(100vh - 70px);
   background: var(--background);
@@ -10,9 +12,7 @@
   margin: 0 auto;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* Header */
 
 .admin-orders-header {
   display: flex;
@@ -67,9 +67,7 @@
   font-weight: 800;
 }
 
-/* =========================
-   MESSAGES
-========================= */
+/* Messages */
 
 .order-message {
   margin-bottom: 22px;
@@ -91,9 +89,7 @@
   color: #991b1b;
 }
 
-/* =========================
-   SECTION
-========================= */
+/* Section */
 
 .orders-section {
   width: 100%;
@@ -115,9 +111,7 @@
   font-size: 14px;
 }
 
-/* =========================
-   ORDERS GRID
-========================= */
+/* Orders Grid */
 
 .orders-grid {
   display: grid;
@@ -125,9 +119,7 @@
   gap: 24px;
 }
 
-/* =========================
-   ORDER CARD
-========================= */
+/* Order Card */
 
 .admin-order-card {
   overflow: hidden;
@@ -146,9 +138,7 @@
   box-shadow: var(--shadow-lg);
 }
 
-/* =========================
-   CARD TOP
-========================= */
+/* Card Top */
 
 .order-card-top {
   display: flex;
@@ -179,9 +169,7 @@
   white-space: nowrap;
 }
 
-/* =========================
-   STATUS
-========================= */
+/* Status */
 
 .order-status {
   flex-shrink: 0;
@@ -211,9 +199,7 @@
   color: #15803d;
 }
 
-/* =========================
-   CUSTOMER
-========================= */
+/* Customer */
 
 .order-customer {
   display: flex;
@@ -249,9 +235,7 @@
   font-size: 13px;
 }
 
-/* =========================
-   STATS
-========================= */
+/* Stats */
 
 .order-stats {
   display: grid;
@@ -282,9 +266,7 @@
   font-size: 14px;
 }
 
-/* =========================
-   FINAL AMOUNT
-========================= */
+/* Final Amount */
 
 .final-amount-box {
   display: flex;
@@ -317,9 +299,7 @@
   font-weight: 800;
 }
 
-/* =========================
-   ITEMS
-========================= */
+/* Items */
 
 .order-items-section {
   margin-top: 22px;
@@ -386,9 +366,7 @@
   font-size: 13px;
 }
 
-/* =========================
-   DATE
-========================= */
+/* Date */
 
 .order-date {
   display: flex;
@@ -410,9 +388,7 @@
   text-align: right;
 }
 
-/* =========================
-   STATUS UPDATE
-========================= */
+/* Status Update */
 
 .status-update-section {
   margin-top: 18px;
@@ -464,9 +440,7 @@
   font-weight: 600;
 }
 
-/* =========================
-   EMPTY
-========================= */
+/* Empty */
 
 .no-orders-card {
   padding: 55px 20px;
@@ -492,9 +466,7 @@
   font-size: 14px;
 }
 
-/* =========================
-   LOADING
-========================= */
+/* Loading */
 
 .orders-loading-card {
   display: flex;
@@ -540,9 +512,7 @@
   border-width: 2px;
 }
 
-/* =========================
-   ANIMATION
-========================= */
+/* Animation */
 
 @keyframes spin {
   to {
@@ -550,9 +520,7 @@
   }
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* Responsive */
 
 @media (max-width: 900px) {
   .orders-grid {

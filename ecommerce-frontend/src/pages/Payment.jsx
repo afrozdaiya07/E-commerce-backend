@@ -6,43 +6,31 @@ import "./Payment.css";
 function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
-
   const order = location.state?.order;
 
-  const [paymentMethod, setPaymentMethod] =
-    useState("COD");
-
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
-  // ==========================
   // No Order
-  // ==========================
-
   if (!order) {
     return (
       <div className="payment-page">
         <div className="payment-empty">
-          <div className="payment-icon">
-            💳
-          </div>
+          <div className="payment-icon">💳</div>
 
           <h2>Order Not Found</h2>
 
           <p>
-            Please place an order before opening
-            the payment page.
+            Please place an order before opening the payment page.
           </p>
 
           <button
             type="button"
-            onClick={() =>
-              navigate("/products")
-            }
+            onClick={() => navigate("/products")}
           >
             Continue Shopping
           </button>
@@ -51,10 +39,7 @@ function Payment() {
     );
   }
 
-  // ==========================
   // Payment
-  // ==========================
-
   const handlePayment = async () => {
     try {
       setLoading(true);
@@ -70,10 +55,7 @@ function Payment() {
         Authorization: `Bearer ${token}`,
       };
 
-      // ==========================
       // Create Payment
-      // ==========================
-
       const response = await axios.post(
         "http://localhost:5000/api/payments",
         {
@@ -85,13 +67,9 @@ function Payment() {
         }
       );
 
-      const payment =
-        response.data.payment;
+      const payment = response.data.payment;
 
-      // ==========================
       // COD
-      // ==========================
-
       if (paymentMethod === "COD") {
         setMessage(
           "Cash on Delivery selected successfully ✅"
@@ -104,12 +82,8 @@ function Payment() {
         return;
       }
 
-      // ==========================
       // ONLINE - Demo
-      // ==========================
-
-      const transactionId =
-        `DEMO-${Date.now()}`;
+      const transactionId = `DEMO-${Date.now()}`;
 
       await axios.put(
         `http://localhost:5000/api/payments/${payment._id}/status`,
@@ -122,9 +96,7 @@ function Payment() {
         }
       );
 
-      setMessage(
-        "Online Payment Successful ✅"
-      );
+      setMessage("Online Payment Successful ✅");
 
       setTimeout(() => {
         navigate("/orders");
@@ -132,8 +104,7 @@ function Payment() {
     } catch (error) {
       console.log(
         "Payment Error:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setError(
@@ -150,31 +121,22 @@ function Payment() {
     Number(order.totalPrice) ||
     0;
 
-  const orderItems =
-    order.items || [];
+  const orderItems = order.items || [];
 
   return (
     <div className="payment-page">
-
-      {/* ==========================
-          Header
-      ========================== */}
-
+      {/* Header */}
       <div className="payment-header">
         <div>
           <h1>Payment</h1>
 
           <p>
-            Complete your payment to confirm
-            your order.
+            Complete your payment to confirm your order.
           </p>
         </div>
       </div>
 
-      {/* ==========================
-          Messages
-      ========================== */}
-
+      {/* Messages */}
       {error && (
         <div className="payment-message error">
           {error}
@@ -188,15 +150,9 @@ function Payment() {
       )}
 
       <div className="payment-layout">
-
-        {/* ==========================
-            Order Details
-        ========================== */}
-
+        {/* Order Details */}
         <div className="payment-main">
-
           {/* Order Info */}
-
           <div className="payment-section">
             <div className="payment-section-header">
               <h2>Order Details</h2>
@@ -207,35 +163,24 @@ function Payment() {
             </div>
 
             <div className="payment-order-items">
-
               {orderItems.length === 0 ? (
-                <p>
-                  No order items available.
-                </p>
+                <p>No order items available.</p>
               ) : (
                 orderItems.map((item, index) => {
-                  const product =
-                    item.product;
-
-                  const price =
-                    Number(
-                      product?.price || 0
-                    );
-
-                  const quantity =
-                    Number(
-                      item.quantity || 0
-                    );
-
-                  const total =
-                    price * quantity;
+                  const product = item.product;
+                  const price = Number(
+                    product?.price || 0
+                  );
+                  const quantity = Number(
+                    item.quantity || 0
+                  );
+                  const total = price * quantity;
 
                   return (
                     <div
                       className="payment-item"
                       key={
-                        product?._id ||
-                        index
+                        product?._id || index
                       }
                     >
                       <div className="payment-item-image">
@@ -248,9 +193,7 @@ function Payment() {
                             }
                           />
                         ) : (
-                          <span>
-                            No Image
-                          </span>
+                          <span>No Image</span>
                         )}
                       </div>
 
@@ -283,14 +226,11 @@ function Payment() {
           </div>
 
           {/* Payment Method */}
-
           <div className="payment-section">
             <h2>Select Payment Method</h2>
 
             <div className="payment-methods">
-
               {/* COD */}
-
               <label
                 className={`payment-method ${
                   paymentMethod === "COD"
@@ -303,8 +243,7 @@ function Payment() {
                   name="paymentMethod"
                   value="COD"
                   checked={
-                    paymentMethod ===
-                    "COD"
+                    paymentMethod === "COD"
                   }
                   onChange={(e) =>
                     setPaymentMethod(
@@ -325,8 +264,7 @@ function Payment() {
                       </h3>
 
                       <p>
-                        Pay when your order
-                        is delivered.
+                        Pay when your order is delivered.
                       </p>
                     </div>
                   </div>
@@ -334,7 +272,6 @@ function Payment() {
               </label>
 
               {/* Online */}
-
               <label
                 className={`payment-method ${
                   paymentMethod === "ONLINE"
@@ -347,8 +284,7 @@ function Payment() {
                   name="paymentMethod"
                   value="ONLINE"
                   checked={
-                    paymentMethod ===
-                    "ONLINE"
+                    paymentMethod === "ONLINE"
                   }
                   onChange={(e) =>
                     setPaymentMethod(
@@ -364,46 +300,33 @@ function Payment() {
                     </span>
 
                     <div>
-                      <h3>
-                        Online Payment
-                      </h3>
+                      <h3>Online Payment</h3>
 
                       <p>
-                        Demo payment flow for
-                        project testing.
+                        Demo payment flow for project testing.
                       </p>
                     </div>
                   </div>
                 </div>
               </label>
-
             </div>
           </div>
 
           {/* Demo Notice */}
-
-          {paymentMethod ===
-            "ONLINE" && (
+          {paymentMethod === "ONLINE" && (
             <div className="demo-notice">
-              <strong>
-                Demo Payment Mode
-              </strong>
+              <strong>Demo Payment Mode</strong>
 
               <p>
-                This project currently uses a
-                simulated online payment flow.
-                No real money is charged.
+                This project currently uses a simulated
+                online payment flow. No real money is charged.
               </p>
             </div>
           )}
         </div>
 
-        {/* ==========================
-            Payment Summary
-        ========================== */}
-
+        {/* Payment Summary */}
         <div className="payment-summary">
-
           <h2>Payment Summary</h2>
 
           <div className="payment-summary-row">
@@ -431,9 +354,7 @@ function Payment() {
 
             <strong>
               ₹
-              {orderAmount.toLocaleString(
-                "en-IN"
-              )}
+              {orderAmount.toLocaleString("en-IN")}
             </strong>
           </div>
 
@@ -453,16 +374,13 @@ function Payment() {
           <button
             type="button"
             className="back-orders-btn"
-            onClick={() =>
-              navigate("/orders")
-            }
+            onClick={() => navigate("/orders")}
           >
             View My Orders
           </button>
 
           <p className="payment-security">
-            Secure checkout • Your order
-            information is protected.
+            Secure checkout • Your order information is protected.
           </p>
         </div>
       </div>

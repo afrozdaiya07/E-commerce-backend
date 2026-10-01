@@ -19,9 +19,7 @@ const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
-// ======================================
 // CORS Configuration
-// ======================================
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -49,16 +47,12 @@ app.use(
   })
 );
 
-// ======================================
+
 // Middleware
-// ======================================
 
 app.use(express.json());
 
-// ======================================
 // Routes
-// ======================================
-
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
@@ -71,9 +65,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// ======================================
 // Test API
-// ======================================
 
 app.post("/test", async (req, res) => {
   try {
@@ -92,9 +84,8 @@ app.post("/test", async (req, res) => {
   }
 });
 
-// ======================================
+
 // Error Handling
-// ======================================
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

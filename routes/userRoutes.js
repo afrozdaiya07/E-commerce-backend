@@ -18,9 +18,7 @@ const protect = require("../middleware/authMiddleware");
 const admin = require("../middleware/adminMiddleware");
 const validateObjectId = require("../middleware/validateObjectId");
 
-// ======================================
 // USER ROUTES
-// ======================================
 
 // Get Profile
 router.get(
@@ -49,10 +47,7 @@ router.delete(
   protect,
   deleteMyAccount
 );
-
-// ======================================
-// ADMIN USER MANAGEMENT
-// ======================================
+// ADMIN USER MANAGEMEN
 
 // Get All Users
 router.get(
